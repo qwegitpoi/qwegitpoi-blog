@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
+
 <head>
 
 
@@ -10,13 +11,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 
+
 <title>
-文章详情
+文章阅读
 </title>
 
-
-
-<link rel="stylesheet" href="css/style.css">
 
 
 
@@ -26,7 +25,17 @@
 
 
 
+
+
 <style>
+
+
+*{
+
+box-sizing:border-box;
+
+}
+
 
 
 body{
@@ -60,9 +69,9 @@ color:white;
 
 display:flex;
 
-align-items:center;
-
 justify-content:space-between;
+
+align-items:center;
 
 padding:0 40px;
 
@@ -72,10 +81,11 @@ padding:0 40px;
 
 
 
+
 .logo{
 
 
-font-size:24px;
+font-size:25px;
 
 font-weight:bold;
 
@@ -85,19 +95,18 @@ font-weight:bold;
 
 
 
-
-.back-btn{
+.back{
 
 
 color:white;
 
+text-decoration:none;
+
 background:#1976d2;
 
-padding:8px 15px;
+padding:8px 18px;
 
 border-radius:5px;
-
-text-decoration:none;
 
 
 }
@@ -107,8 +116,7 @@ text-decoration:none;
 
 
 
-
-.article-container{
+.container{
 
 
 max-width:900px;
@@ -128,14 +136,14 @@ border-radius:12px;
 
 
 
-.article-title{
+.title{
 
 
 font-size:36px;
 
-line-height:1.4;
+line-height:1.5;
 
-margin-bottom:20px;
+margin-bottom:15px;
 
 
 }
@@ -144,7 +152,7 @@ margin-bottom:20px;
 
 
 
-.article-info{
+.info{
 
 
 color:#888;
@@ -164,12 +172,14 @@ margin-bottom:30px;
 
 
 
+
+
 .cover{
 
 
 width:100%;
 
-max-height:500px;
+max-height:450px;
 
 object-fit:cover;
 
@@ -184,7 +194,9 @@ margin-bottom:30px;
 
 
 
-.content{
+
+
+.article-content{
 
 
 font-size:18px;
@@ -200,7 +212,13 @@ color:#333;
 
 
 
-.content img{
+
+/*
+适配后台编辑内容
+*/
+
+
+.article-content img{
 
 
 max-width:100%;
@@ -219,13 +237,22 @@ border-radius:8px;
 
 
 
-
-.content h1,
-.content h2,
-.content h3{
+.article-content a{
 
 
-margin-top:35px;
+color:#1976d2;
+
+text-decoration:none;
+
+
+}
+
+
+
+.article-content a:hover{
+
+
+text-decoration:underline;
 
 
 }
@@ -234,7 +261,30 @@ margin-top:35px;
 
 
 
-.content blockquote{
+
+.article-content b{
+
+
+font-weight:bold;
+
+
+}
+
+
+
+.article-content i{
+
+
+font-style:italic;
+
+
+}
+
+
+
+
+
+.article-content blockquote{
 
 
 border-left:5px solid #1976d2;
@@ -245,9 +295,17 @@ color:#666;
 
 background:#f7f7f7;
 
-padding-top:10px;
 
-padding-bottom:10px;
+}
+
+
+
+
+
+.article-content font[size="5"]{
+
+
+font-size:28px;
 
 
 }
@@ -256,18 +314,27 @@ padding-bottom:10px;
 
 
 
-.content pre{
+.article-content font[size="7"]{
 
 
-background:#272822;
+font-size:36px;
 
-color:white;
 
-padding:20px;
+}
 
-border-radius:8px;
 
-overflow-x:auto;
+
+
+
+
+.loading{
+
+
+text-align:center;
+
+font-size:20px;
+
+color:#777;
 
 
 }
@@ -280,10 +347,31 @@ overflow-x:auto;
 
 
 
-.article-container{
+.header{
 
 
-margin:20px 10px;
+padding:0 15px;
+
+
+}
+
+
+
+.logo{
+
+
+font-size:20px;
+
+
+}
+
+
+
+
+.container{
+
+
+margin:15px 10px;
 
 padding:20px;
 
@@ -292,13 +380,24 @@ padding:20px;
 
 
 
-.article-title{
+.title{
 
 
 font-size:28px;
 
 
 }
+
+
+
+.article-content{
+
+
+font-size:16px;
+
+
+}
+
 
 
 }
@@ -325,16 +424,20 @@ font-size:28px;
 
 <div class="logo">
 
-qwe个人博客
+qwe博客
 
 </div>
 
 
-<a class="back-btn" href="index.html">
+
+<a href="index.html"
+
+class="back">
 
 返回首页
 
 </a>
+
 
 
 </header>
@@ -344,16 +447,19 @@ qwe个人博客
 
 
 
+<div class="container"
 
-<div id="article" class="article-container">
+id="article">
 
+
+<div class="loading">
 
 正在加载文章...
-
 
 </div>
 
 
+</div>
 
 
 
@@ -364,6 +470,8 @@ qwe个人博客
 <script>
 
 
+
+// Firebase配置
 
 
 const firebaseConfig = {
@@ -405,6 +513,7 @@ firebase.initializeApp(firebaseConfig);
 
 const db =
 firebase.firestore();
+
 
 
 
@@ -454,7 +563,6 @@ loadArticle();
 
 
 
-
 function loadArticle(){
 
 
@@ -466,6 +574,7 @@ db.collection("articles")
 .get()
 
 
+
 .then(doc=>{
 
 
@@ -473,11 +582,10 @@ db.collection("articles")
 if(!doc.exists){
 
 
-
 document.getElementById("article")
 .innerHTML=
 
-"找不到该文章";
+"文章不存在";
 
 
 return;
@@ -487,9 +595,10 @@ return;
 
 
 
-let data=
-doc.data();
 
+
+let data =
+doc.data();
 
 
 
@@ -500,9 +609,7 @@ document.getElementById("article")
 
 `
 
-
-
-<h1 class="article-title">
+<h1 class="title">
 
 ${data.title}
 
@@ -510,23 +617,21 @@ ${data.title}
 
 
 
-
-<div class="article-info">
+<div class="info">
 
 作者：
 
 ${data.author || "管理员"}
 
-&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;
+
 
 发布时间：
 
-${data.time}
+${data.time || ""}
 
 
 </div>
-
-
 
 
 
@@ -553,15 +658,11 @@ src="${data.cover}">
 
 
 
-
-<div class="content">
-
+<div class="article-content">
 
 ${data.content}
 
-
 </div>
-
 
 
 `;
@@ -573,13 +674,17 @@ ${data.content}
 })
 
 
+
 .catch(error=>{
 
 
 document.getElementById("article")
 .innerHTML=
 
-"加载失败："+error.message;
+"加载失败："
+
++error.message;
+
 
 
 });
@@ -591,12 +696,15 @@ document.getElementById("article")
 
 
 
+
 </script>
 
 
 
 
 
+
 </body>
+
 
 </html>

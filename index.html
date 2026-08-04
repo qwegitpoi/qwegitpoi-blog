@@ -7,29 +7,18 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>博客管理后台</title>
 
-
-<!-- Quill 富文本编辑器 -->
-
-<link 
-href="https://cdn.quilljs.com/1.3.7/quill.snow.css"
-rel="stylesheet">
-
-
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<title>
+qwe博客
+</title>
 
 
 
-<!-- Firebase SDK -->
+<!-- Firebase -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
 
 
 
@@ -43,6 +32,7 @@ box-sizing:border-box;
 }
 
 
+
 body{
 
 margin:0;
@@ -50,6 +40,7 @@ margin:0;
 background:#f5f6fa;
 
 font-family:
+
 "Microsoft YaHei",
 Arial,
 sans-serif;
@@ -58,9 +49,10 @@ sans-serif;
 
 
 
+
 .header{
 
-height:65px;
+height:70px;
 
 background:#222;
 
@@ -72,7 +64,8 @@ align-items:center;
 
 justify-content:space-between;
 
-padding:0 30px;
+padding:0 40px;
+
 
 }
 
@@ -80,7 +73,7 @@ padding:0 30px;
 
 .logo{
 
-font-size:24px;
+font-size:26px;
 
 font-weight:bold;
 
@@ -88,21 +81,23 @@ font-weight:bold;
 
 
 
-.header button{
+
+.admin-btn{
+
 
 background:#1976d2;
 
-border:none;
-
 color:white;
+
+text-decoration:none;
 
 padding:8px 18px;
 
 border-radius:5px;
 
-cursor:pointer;
 
 }
+
 
 
 
@@ -110,178 +105,207 @@ cursor:pointer;
 
 max-width:1100px;
 
-margin:30px auto;
+margin:40px auto;
 
-background:white;
+padding:0 20px;
 
-padding:30px;
-
-border-radius:12px;
 
 }
 
 
 
-input{
 
-width:100%;
+.title{
 
-padding:12px;
+font-size:32px;
 
-font-size:18px;
+margin-bottom:30px;
 
-border:1px solid #ddd;
-
-border-radius:5px;
-
-margin-bottom:20px;
 
 }
 
 
 
-#editor{
 
-height:400px;
 
-background:white;
+.article-list{
 
-margin-bottom:20px;
+
+display:grid;
+
+grid-template-columns:
+
+repeat(auto-fit,minmax(300px,1fr));
+
+gap:25px;
+
 
 }
 
 
 
-.toolbar-tip{
 
-color:#666;
-
-font-size:14px;
-
-margin-bottom:10px;
-
-}
-
-
-
-button{
-
-padding:10px 20px;
-
-border:none;
-
-border-radius:5px;
-
-background:#1976d2;
-
-color:white;
-
-cursor:pointer;
-
-margin-right:10px;
-
-}
-
-
-
-button:hover{
-
-opacity:.85;
-
-}
-
-
-
-.cancel{
-
-background:#777;
-
-}
-
-
-
-.message{
-
-color:#1976d2;
-
-margin:15px 0;
-
-}
 
 
 
 .article-card{
 
-border:1px solid #ddd;
 
-border-radius:8px;
+background:white;
 
-padding:15px;
+border-radius:12px;
 
-margin:15px 0;
+overflow:hidden;
+
+box-shadow:
+
+0 3px 12px rgba(0,0,0,.1);
+
 
 }
+
 
 
 
 .article-card img{
 
-width:180px;
 
-height:120px;
+width:100%;
+
+height:220px;
 
 object-fit:cover;
 
-border-radius:6px;
 
 }
 
 
 
-.article-card h3{
 
-margin:10px 0;
+
+.content{
+
+
+padding:20px;
+
 
 }
 
 
 
-.delete{
+.content h2{
 
-background:#d32f2f;
+
+margin-top:0;
+
+font-size:24px;
+
+
+}
+
+
+
+
+.time{
+
+
+font-size:14px;
+
+color:#888;
+
+margin-bottom:15px;
+
 
 }
 
 
 
-.edit{
 
-background:#388e3c;
+
+.summary{
+
+
+color:#555;
+
+line-height:1.8;
+
+height:70px;
+
+overflow:hidden;
+
 
 }
+
+
+
+
+
+.read{
+
+
+display:inline-block;
+
+margin-top:15px;
+
+background:#1976d2;
+
+color:white;
+
+text-decoration:none;
+
+padding:8px 18px;
+
+border-radius:5px;
+
+
+}
+
+
+
+
+
+.empty{
+
+
+text-align:center;
+
+color:#777;
+
+font-size:18px;
+
+}
+
 
 
 
 @media(max-width:700px){
 
 
+
+.header{
+
+padding:0 15px;
+
+}
+
+
+
+.logo{
+
+font-size:20px;
+
+}
+
+
 .container{
 
-margin:10px;
-
-padding:15px;
-
-}
-
-
-#editor{
-
-height:300px;
+margin-top:20px;
 
 }
 
 
 }
+
 
 
 </style>
@@ -291,7 +315,10 @@ height:300px;
 
 
 
+
+
 <body>
+
 
 
 <header class="header">
@@ -299,16 +326,20 @@ height:300px;
 
 <div class="logo">
 
-博客管理后台
+qwe博客
 
 </div>
 
 
-<button onclick="logout()">
 
-退出登录
+<a href="admin-login.html"
 
-</button>
+class="admin-btn">
+
+管理员登录
+
+</a>
+
 
 
 </header>
@@ -317,70 +348,23 @@ height:300px;
 
 
 
+
 <div class="container">
 
 
-<h2>
-文章编辑
-</h2>
+<h1 class="title">
 
+最新文章
 
-<input 
-id="title"
-placeholder="请输入文章标题">
+</h1>
 
 
 
-<div class="toolbar-tip">
+<div id="articleList"
 
-支持：标题、加粗、列表、链接、图片上传
+class="article-list">
 
-</div>
-
-
-
-<div id="editor"></div>
-
-
-
-<button onclick="saveArticle()">
-
-发布文章
-
-</button>
-
-
-<button 
-class="cancel"
-id="cancelBtn"
-onclick="cancelEdit()"
-style="display:none">
-
-取消编辑
-
-</button>
-
-
-
-<div id="message" class="message"></div>
-
-
-
-<hr>
-
-
-
-<h2>
-
-文章管理
-
-</h2>
-
-
-
-<div id="articleList">
-
-正在加载...
+加载中...
 
 </div>
 
@@ -397,9 +381,9 @@ style="display:none">
 <script>
 
 
-// ============================
-// Firebase 配置
-// ============================
+// =====================
+// Firebase配置
+// =====================
 
 
 const firebaseConfig = {
@@ -428,7 +412,9 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
+
 
 
 
@@ -437,631 +423,63 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const auth =
-firebase.auth();
-
-
 
 const db =
+
 firebase.firestore();
 
 
 
-const storage =
-firebase.storage();
 
 
-
-
-// 当前编辑文章ID
-
-let editId = null;
-
-
-// 当前文章图片
-
-let uploadImages = [];
-
-
-
-
-// ============================
-// 初始化 Quill
-// ============================
-
-
-const quill = new Quill(
-"#editor",
-{
-
-theme:"snow",
-
-
-modules:{
-
-
-toolbar:{
-
-
-container:[
-
-
-[
-"header",
-1,
-2
-],
-
-
-[
-"bold",
-"italic",
-"underline"
-],
-
-
-[
-"blockquote"
-],
-
-
-[
-"list",
-"ordered",
-"bullet"
-],
-
-
-[
-"link",
-"image"
-]
-
-
-],
-
-
-handlers:{
-
-
-image:function(){
-
-chooseImage();
-
-}
-
-
-}
-
-
-}
-
-
-
-}
-
-
-});
-
-
-
-
-// ============================
-// 登录状态检测
-// ============================
-
-
-auth.onAuthStateChanged(user=>{
-
-
-    if(!user){
-
-
-        window.location.href =
-        "admin-login.html";
-
-
-    }else{
-
-
-        loadArticles();
-
-
-    }
-
-
-});
-
-
-
-
-// ============================
-// 图片上传
-// ============================
-
-
-function chooseImage(){
-
-
-    const input =
-    document.createElement("input");
-
-
-    input.type="file";
-
-
-    input.accept="image/*";
-
-
-    input.click();
-
-
-
-    input.onchange=function(){
-
-
-        const file =
-        input.files[0];
-
-
-        if(file){
-
-
-            uploadImage(file);
-
-
-        }
-
-
-    };
-
-
-}
-
-
-
-
-
-
-
-function uploadImage(file){
-
-
-
-    const filename =
-
-    Date.now()+"_"+file.name;
-
-
-
-    const ref =
-
-    storage.ref(
-        "images/"+filename
-    );
-
-
-
-    const task =
-
-    ref.put(file);
-
-
-
-
-
-    task.on(
-
-        "state_changed",
-
-
-        snapshot=>{
-
-
-            const progress =
-
-            snapshot.bytesTransferred /
-
-            snapshot.totalBytes *
-
-            100;
-
-
-
-            document.getElementById("message")
-            .innerHTML =
-
-            "上传图片："
-
-            + progress.toFixed(0)
-
-            +"%";
-
-
-        },
-
-
-        error=>{
-
-
-            alert(
-                "上传失败："+error.message
-            );
-
-
-        },
-
-
-        ()=>{
-
-
-            task.snapshot.ref
-            .getDownloadURL()
-
-            .then(url=>{
-
-
-                uploadImages.push(url);
-
-
-
-                let range =
-                quill.getSelection();
-
-
-
-                if(range){
-
-
-                    quill.insertEmbed(
-
-                        range.index,
-
-                        "image",
-
-                        url
-
-                    );
-
-
-                }
-
-
-
-                document.getElementById("message")
-                .innerHTML =
-                "图片上传成功";
-
-
-            });
-
-
-
-        }
-
-
-    );
-
-
-}
-
-
-
-
-
-
-
-// ============================
-// 保存文章
-// 新增 / 编辑
-// ============================
-
-
-function saveArticle(){
-
-
-
-    const title =
-
-    document.getElementById("title")
-    .value.trim();
-
-
-
-
-    const content =
-
-    quill.root.innerHTML;
-
-
-
-
-    if(!title){
-
-
-        alert(
-            "请输入文章标题"
-        );
-
-
-        return;
-
-
-    }
-
-
-
-
-
-    const articleData = {
-
-
-        title:title,
-
-
-        content:content,
-
-
-        cover:
-
-        uploadImages.length>0
-
-        ?
-
-        uploadImages[0]
-
-        :
-
-        "",
-
-
-
-        images:
-
-        uploadImages,
-
-
-
-        author:
-
-        "管理员",
-
-
-
-        time:
-
-        new Date()
-        .toLocaleString("zh-CN")
-
-    };
-
-
-
-
-
-
-
-    // 编辑模式
-
-    if(editId){
-
-
-
-        db.collection("articles")
-
-        .doc(editId)
-
-        .update(articleData)
-
-
-        .then(()=>{
-
-
-            alert(
-                "修改成功"
-            );
-
-
-            cancelEdit();
-
-
-            loadArticles();
-
-
-        });
-
-
-
-    }
-
-
-
-    // 新增模式
-
-    else{
-
-
-
-        db.collection("articles")
-
-        .add(articleData)
-
-
-        .then(()=>{
-
-
-            alert(
-                "发布成功"
-            );
-
-
-            clearEditor();
-
-
-            loadArticles();
-
-
-        });
-
-
-
-    }
-
-
-
-}
-
-
-
-
-
-
-
-
-// ============================
-// 读取文章列表
-// ============================
 
 
 function loadArticles(){
 
 
 
-    db.collection("articles")
+db.collection("articles")
 
-    .orderBy(
-        "time",
-        "desc"
-    )
 
-    .get()
+.orderBy(
+"time",
+"desc"
+)
 
 
+.get()
 
-    .then(snapshot=>{
 
 
+.then(snapshot=>{
 
-        let html="";
 
 
+let html="";
 
 
-        if(snapshot.empty){
 
 
-            html =
-            "暂无文章";
 
+if(snapshot.empty){
 
-        }
 
+document.getElementById(
+"articleList"
+)
+.innerHTML=
 
+`
 
-        snapshot.forEach(doc=>{
+<div class="empty">
 
+暂无文章
 
-            const data =
-            doc.data();
+</div>
 
+`;
 
-
-
-            html += `
-
-
-            <div class="article-card">
-
-
-
-            ${
-                data.cover
-
-                ?
-
-                `<img src="${data.cover}">`
-
-                :
-
-                ""
-
-            }
-
-
-
-            <h3>
-
-            ${data.title}
-
-            </h3>
-
-
-
-            <p>
-
-            ${data.time}
-
-            </p>
-
-
-
-            <button 
-            class="edit"
-            onclick="editArticle('${doc.id}')">
-
-            编辑
-
-            </button>
-
-
-
-            <button 
-            class="delete"
-            onclick="deleteArticle('${doc.id}')">
-
-            删除
-
-            </button>
-
-
-
-            </div>
-
-
-            `;
-
-
-
-        });
-
-
-
-
-
-        document.getElementById(
-            "articleList"
-        )
-        .innerHTML = html;
-
-
-
-    })
-
-
-    .catch(error=>{
-
-
-        document.getElementById(
-            "articleList"
-        )
-        .innerHTML =
-
-        "读取失败："+error.message;
-
-
-
-    });
-
+return;
 
 
 }
@@ -1071,99 +489,172 @@ function loadArticles(){
 
 
 
-
-
-// ============================
-// 编辑文章
-// ============================
-
-
-function editArticle(id){
+snapshot.forEach(doc=>{
 
 
 
-    db.collection("articles")
-
-    .doc(id)
-
-    .get()
-
-
-    .then(doc=>{
-
-
-
-        if(!doc.exists){
-
-            return;
-
-        }
-
-
-
-
-        const data =
-        doc.data();
-
-
-
-
-        editId=id;
-
-
-
-
-        document.getElementById(
-            "title"
-        )
-        .value=data.title;
+let data =
+doc.data();
 
 
 
 
 
-        quill.root.innerHTML =
-        data.content;
+// 去除HTML生成摘要
+
+
+let text =
+
+data.content
+
+.replace(
+/<[^>]*>/g,
+""
+);
+
+
+
+let summary =
+
+text.substring(
+0,
+120
+);
 
 
 
 
 
-        uploadImages =
-        data.images || [];
+
+html += `
+
+
+
+<div class="article-card">
 
 
 
 
 
-        document.querySelector(
-            "button[onclick='saveArticle()']"
-        )
-        .innerHTML =
-        "保存修改";
+${
+
+data.cover
+
+?
+
+`
+
+<img src="${data.cover}">
+
+`
+
+:
+
+""
+
+}
+
+
+
+
+<div class="content">
+
+
+
+<h2>
+
+${data.title}
+
+</h2>
+
+
+
+<div class="time">
+
+${data.time || ""}
+
+</div>
+
+
+
+
+<div class="summary">
+
+${summary}
+
+...
+
+</div>
+
+
+
+
+<a class="read"
+
+href="article.html?id=${doc.id}">
+
+阅读全文
+
+</a>
+
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+});
 
 
 
 
 
-        document.getElementById(
-            "cancelBtn"
-        )
-        .style.display =
-        "inline-block";
+
+document.getElementById(
+"articleList"
+)
+.innerHTML=html;
 
 
 
-
-
-        window.scrollTo(
-            0,
-            0
-        );
+})
 
 
 
-    });
+.catch(error=>{
+
+
+document.getElementById(
+"articleList"
+)
+
+.innerHTML=
+
+`
+
+<div class="empty">
+
+文章加载失败：
+
+${error.message}
+
+</div>
+
+`;
+
+
+
+});
 
 
 
@@ -1173,210 +664,14 @@ function editArticle(id){
 
 
 
+loadArticles();
 
 
 
-// ============================
-// 取消编辑
-// ============================
+</script>
 
 
-function cancelEdit(){
 
+</body>
 
-    editId=null;
-
-
-    clearEditor();
-
-
-
-    document.querySelector(
-        "button[onclick='saveArticle()']"
-    )
-    .innerHTML =
-    "发布文章";
-
-
-
-    document.getElementById(
-        "cancelBtn"
-    )
-    .style.display =
-    "none";
-
-
-
-}
-
-
-
-
-
-
-
-
-function clearEditor(){
-
-
-
-    document.getElementById(
-        "title"
-    )
-    .value="";
-
-
-
-    quill.setContents([]);
-
-
-
-    uploadImages=[];
-
-
-
-}
-
-
-
-
-
-
-
-
-// ============================
-// 删除文章
-// 同时删除Storage图片
-// ============================
-
-
-async function deleteArticle(id){
-
-
-
-    if(
-        !confirm(
-            "确定删除这篇文章？"
-        )
-    ){
-
-        return;
-
-    }
-
-
-
-
-    const ref =
-
-    db.collection("articles")
-    .doc(id);
-
-
-
-
-    const doc =
-    await ref.get();
-
-
-
-    const data =
-    doc.data();
-
-
-
-
-
-    if(data.images){
-
-
-
-        for(
-            const url of data.images
-        ){
-
-
-            try{
-
-
-                const imgRef =
-                storage.refFromURL(url);
-
-
-
-                await imgRef.delete();
-
-
-
-            }
-
-            catch(e){
-
-
-                console.log(
-                    "图片删除失败",
-                    e
-                );
-
-
-            }
-
-
-
-        }
-
-
-
-    }
-
-
-
-
-
-
-    await ref.delete();
-
-
-
-
-    alert(
-        "删除完成"
-    );
-
-
-
-    loadArticles();
-
-
-
-}
-
-
-
-
-
-
-
-
-// ============================
-// 退出登录
-// ============================
-
-
-function logout(){
-
-
-
-    auth.signOut()
-
-    .then(()=>{
-
-
-        window.location.href =
-        "admin-login.html";
-
-
-    });
-
-
-}
+</html>
