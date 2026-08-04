@@ -7,27 +7,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <title>
 博客管理后台
 </title>
 
-
-<link rel="stylesheet" href="css/style.css">
-
-
-<!-- Quill 富文本编辑器 -->
-
-<link 
-href="https://cdn.quilljs.com/1.3.7/quill.snow.css" 
-rel="stylesheet">
-
-
-<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
-
-
-
-<!-- Firebase -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
@@ -38,27 +21,41 @@ rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
 
 
+
 <style>
 
 
-body{
+*{
 
-font-family:
-Arial,
-"Microsoft YaHei",
-sans-serif;
-
-background:#f5f6fa;
+box-sizing:border-box;
 
 }
 
 
 
+body{
+
+margin:0;
+
+background:#f5f6fa;
+
+font-family:
+
+"Microsoft YaHei",
+Arial,
+sans-serif;
+
+}
+
+
+
+
 .header{
 
-height:60px;
 
-background:#333;
+height:65px;
+
+background:#222;
 
 color:white;
 
@@ -70,33 +67,42 @@ justify-content:space-between;
 
 padding:0 30px;
 
+
 }
+
 
 
 
 .logo{
 
-font-size:22px;
+
+font-size:24px;
 
 font-weight:bold;
+
 
 }
 
 
 
+
 button{
 
-padding:8px 16px;
+
+padding:8px 15px;
 
 border:none;
+
+border-radius:5px;
 
 background:#1976d2;
 
 color:white;
 
-border-radius:5px;
-
 cursor:pointer;
+
+margin:3px;
+
 
 }
 
@@ -110,9 +116,11 @@ opacity:.85;
 
 
 
-.admin-container{
 
-max-width:1000px;
+.container{
+
+
+max-width:1100px;
 
 margin:30px auto;
 
@@ -122,11 +130,15 @@ padding:30px;
 
 border-radius:10px;
 
+
 }
 
 
 
+
+
 input{
+
 
 width:100%;
 
@@ -134,21 +146,77 @@ padding:12px;
 
 font-size:18px;
 
-margin-bottom:20px;
+border:1px solid #ddd;
 
-box-sizing:border-box;
+border-radius:5px;
+
+margin-bottom:15px;
+
 
 }
 
 
 
-#editor{
 
-height:400px;
+
+.toolbar{
+
+
+background:#eee;
+
+padding:10px;
+
+border-radius:5px 5px 0 0;
+
+
+}
+
+
+
+
+
+.toolbar button{
+
 
 background:white;
 
-margin-bottom:30px;
+color:#333;
+
+border:1px solid #ccc;
+
+
+}
+
+
+
+
+
+.editor{
+
+
+min-height:350px;
+
+border:1px solid #ccc;
+
+padding:20px;
+
+font-size:18px;
+
+line-height:1.8;
+
+outline:none;
+
+
+}
+
+
+
+
+
+.editor img{
+
+
+max-width:100%;
 
 }
 
@@ -156,13 +224,15 @@ margin-bottom:30px;
 
 .article-card{
 
+
 border:1px solid #ddd;
 
 padding:15px;
 
-margin:15px 0;
+margin-top:15px;
 
 border-radius:8px;
+
 
 }
 
@@ -170,9 +240,28 @@ border-radius:8px;
 
 .article-card img{
 
-max-width:200px;
 
-margin:10px 0;
+width:160px;
+
+height:100px;
+
+object-fit:cover;
+
+}
+
+
+
+.delete{
+
+background:#d32f2f;
+
+}
+
+
+
+.edit{
+
+background:#388e3c;
 
 }
 
@@ -181,6 +270,8 @@ margin:10px 0;
 .message{
 
 color:#1976d2;
+
+margin:10px 0;
 
 }
 
@@ -193,12 +284,10 @@ color:#1976d2;
 
 
 
-
 <body>
 
 
-
-<header class="header">
+<div class="header">
 
 
 <div class="logo">
@@ -206,9 +295,6 @@ color:#1976d2;
 博客管理后台
 
 </div>
-
-
-<div>
 
 
 <button onclick="logout()">
@@ -221,35 +307,135 @@ color:#1976d2;
 </div>
 
 
-</header>
 
 
 
-
-
-
-<div class="admin-container">
-
+<div class="container">
 
 
 <h2>
+
 文章编辑
+
 </h2>
 
 
 
-
-<input 
-id="title"
+<input id="title"
 placeholder="请输入文章标题">
 
 
 
 
 
-<div id="editor"></div>
+<!-- 工具栏 -->
 
 
+<div class="toolbar">
+
+
+<button onclick="format('bold')">
+
+加粗
+
+</button>
+
+
+<button onclick="format('italic')">
+
+斜体
+
+</button>
+
+
+
+<button onclick="format('justifyLeft')">
+
+左对齐
+
+</button>
+
+
+<button onclick="format('justifyCenter')">
+
+居中
+
+</button>
+
+
+<button onclick="format('justifyRight')">
+
+右对齐
+
+</button>
+
+
+
+<select onchange="fontSize(this.value)">
+
+<option value="">文字大小</option>
+
+<option value="3">
+正常
+</option>
+
+<option value="5">
+大
+</option>
+
+<option value="7">
+超大
+</option>
+
+
+</select>
+
+
+
+
+<button onclick="insertLink()">
+
+链接
+
+</button>
+
+
+
+<button onclick="chooseImage()">
+
+图片
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+
+
+<!-- 编辑区域 -->
+
+
+<div id="editor"
+
+class="editor"
+
+contenteditable="true">
+
+请输入正文内容...
+
+
+</div>
+
+
+
+
+
+<br>
 
 
 
@@ -262,9 +448,10 @@ placeholder="请输入文章标题">
 
 
 <button 
-id="cancelEditBtn"
-onclick="cancelEdit()"
-style="display:none;background:#777">
+id="cancelBtn"
+style="display:none;background:#777"
+
+onclick="cancelEdit()">
 
 取消编辑
 
@@ -273,7 +460,14 @@ style="display:none;background:#777">
 
 
 
-<p id="message" class="message"></p>
+
+<div id="message"
+
+class="message">
+
+</div>
+
+
 
 
 
@@ -287,6 +481,7 @@ style="display:none;background:#777">
 文章管理
 
 </h2>
+
 
 
 
@@ -309,7 +504,10 @@ style="display:none;background:#777">
 <script>
 
 
-// Firebase 配置
+// ========================
+// Firebase配置
+// ========================
+
 
 const firebaseConfig = {
 
@@ -337,13 +535,15 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
 
 
 
-// 初始化 Firebase
+
 
 firebase.initializeApp(firebaseConfig);
+
 
 
 
@@ -351,8 +551,10 @@ const auth =
 firebase.auth();
 
 
+
 const db =
 firebase.firestore();
+
 
 
 const storage =
@@ -361,76 +563,46 @@ firebase.storage();
 
 
 
-// 当前编辑文章ID
 
-let editId = null;
+let editId=null;
 
 
-// 当前文章图片
-
-let uploadImages = [];
+let images=[];
 
 
 
-
-// Quill 编辑器
-
-const quill = new Quill(
-"#editor",
-{
-
-theme:"snow",
+// ========================
+// 编辑器功能
+// ========================
 
 
-modules:{
+
+function format(command){
 
 
-toolbar:{
+document.execCommand(
+command,
+false,
+null
+);
 
 
-container:[
-
-[
-"header",
-1,
-2
-],
+}
 
 
-[
-"bold",
-"italic",
-"underline"
-],
+
+function fontSize(size){
 
 
-[
-"blockquote"
-],
+if(size){
 
 
-[
-"list",
-"ordered",
-"bullet"
-],
+document.execCommand(
+"fontSize",
+false,
+size
+);
 
-
-[
-"link",
-"image"
-]
-
-
-],
-
-
-handlers:{
-
-
-image:function(){
-
-selectImage();
 
 }
 
@@ -439,39 +611,61 @@ selectImage();
 
 
 
-}
 
 
+function insertLink(){
 
-}
 
-
-}
+let url=
+prompt(
+"请输入链接地址"
 );
 
 
 
+if(url){
 
-// 后续JS继续...
 
-// ===============================
-// 登录状态检查
-// ===============================
+document.execCommand(
+"createLink",
+false,
+url
+);
+
+
+}
+
+
+}
+
+
+
+
+
+
+// ========================
+// 登录检测
+// ========================
 
 
 auth.onAuthStateChanged(user=>{
 
 
-    if(!user){
+if(!user){
 
-        location.href="admin-login.html";
 
-    }
-    else{
+window.location.href =
+"admin-login.html";
 
-        loadArticles();
 
-    }
+}
+else{
+
+
+loadArticles();
+
+
+}
 
 
 });
@@ -480,41 +674,56 @@ auth.onAuthStateChanged(user=>{
 
 
 
-// ===============================
+// ========================
 // 图片上传
-// ===============================
+// ========================
 
 
-function selectImage(){
-
-
-    let input=document.createElement("input");
-
-
-    input.type="file";
-
-
-    input.accept="image/*";
-
-
-    input.click();
+function chooseImage(){
 
 
 
-    input.onchange=()=>{
+let input =
+document.createElement("input");
 
 
-        let file=input.files[0];
+
+input.type="file";
+
+input.accept="image/*";
 
 
-        if(file){
 
-            uploadImage(file);
-
-        }
+input.click();
 
 
-    };
+
+
+
+input.onchange=function(){
+
+
+
+let file =
+input.files[0];
+
+
+
+if(!file){
+
+return;
+
+}
+
+
+
+
+uploadImage(file);
+
+
+
+};
+
 
 
 }
@@ -529,100 +738,117 @@ function uploadImage(file){
 
 
 
-    let filename=
-    Date.now()+"_"+file.name;
+let filename =
+
+Date.now()+"_"+file.name;
 
 
 
-    let storageRef=
-    storage.ref(
-        "images/"+filename
-    );
+let ref =
+
+storage.ref(
+"images/"+filename
+);
 
 
 
-    let uploadTask=
-    storageRef.put(file);
+let task =
+
+ref.put(file);
 
 
 
-    uploadTask.on(
-        
-        "state_changed",
 
 
-        snapshot=>{
+task.on(
+"state_changed",
 
 
-            let progress=
-            snapshot.bytesTransferred /
-            snapshot.totalBytes *
-            100;
+snapshot=>{
 
 
-            document.getElementById("message")
-            .innerHTML=
-            "图片上传："+progress.toFixed(0)+"%";
+let progress =
 
+snapshot.bytesTransferred /
 
-        },
-
-
-        error=>{
-
-
-            alert(
-                "上传失败："+error.message
-            );
-
-
-        },
-
-
-        ()=>{
-
-
-            uploadTask.snapshot.ref
-            .getDownloadURL()
-            .then(url=>{
-
-
-                uploadImages.push(url);
+snapshot.totalBytes *
+100;
 
 
 
-                let range=
-                quill.getSelection();
+document.getElementById(
+"message"
+)
+.innerHTML=
+
+"图片上传："
+
++progress.toFixed(0)
+
++"%";
+
+
+},
+
+
+error=>{
+
+
+alert(
+"图片上传失败："+error.message
+);
+
+
+},
+
+
+()=>{
+
+
+task.snapshot.ref
+.getDownloadURL()
+
+.then(url=>{
 
 
 
-                if(range){
-
-
-                    quill.insertEmbed(
-                        range.index,
-                        "image",
-                        url
-                    );
-
-
-                }
+images.push(url);
 
 
 
-                document.getElementById("message")
-                .innerHTML=
-                "图片上传完成";
 
 
-            });
+document.execCommand(
+
+"insertImage",
+
+false,
+
+url
+
+);
 
 
 
-        }
 
 
-    );
+document.getElementById(
+"message"
+)
+.innerHTML=
+
+"图片插入成功";
+
+
+});
+
+
+
+}
+
+
+
+);
 
 
 
@@ -633,130 +859,177 @@ function uploadImage(file){
 
 
 
-
-// ===============================
-// 保存文章（新增/编辑）
-// ===============================
-
+// ========================
+// 保存文章
+// ========================
 
 
 function saveArticle(){
 
 
 
-    let title=
-    document.getElementById("title").value;
+let title =
 
+document.getElementById(
+"title"
+)
+.value.trim();
 
 
-    let content=
-    quill.root.innerHTML;
 
+let content =
 
+document.getElementById(
+"editor"
+)
+.innerHTML;
 
-    if(!title){
 
 
-        alert("请输入文章标题");
 
-        return;
 
-    }
+if(!title){
 
 
+alert(
+"请输入标题"
+);
 
-    let articleData={
 
+return;
 
-        title:title,
 
+}
 
-        content:content,
 
 
-        images:uploadImages,
 
 
-        cover:
-        uploadImages.length>0
-        ?
-        uploadImages[0]
-        :
-        "",
+let data={
 
 
-        time:
-        new Date()
-        .toLocaleString("zh-CN"),
 
+title:title,
 
-        author:"管理员"
 
+content:content,
 
-    };
 
+cover:
 
+images.length
 
+?
 
+images[0]
 
-    // 编辑状态
+:
 
-    if(editId){
+"",
 
 
 
-        db.collection("articles")
-        .doc(editId)
-        .update(articleData)
+images:images,
 
 
-        .then(()=>{
 
+author:
 
-            alert("修改成功");
+"管理员",
 
 
-            cancelEdit();
 
+time:
 
-            loadArticles();
+new Date()
+.toLocaleString(
+"zh-CN"
+)
 
 
-        });
 
+};
 
 
-    }
 
 
 
-    // 新文章
 
-    else{
+// 编辑
 
 
+if(editId){
 
-        db.collection("articles")
-        .add(articleData)
 
 
-        .then(()=>{
+db.collection("articles")
 
+.doc(editId)
 
-            alert("发布成功");
+.update(data)
 
 
-            clearEditor();
+.then(()=>{
 
 
-            loadArticles();
+alert(
+"修改成功"
+);
 
 
-        });
 
+cancelEdit();
 
 
-    }
+
+loadArticles();
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+// 新建
+
+
+else{
+
+
+
+db.collection("articles")
+
+.add(data)
+
+
+.then(()=>{
+
+
+alert(
+"发布成功"
+);
+
+
+
+clearEditor();
+
+
+
+loadArticles();
+
+
+
+});
+
+
+
+}
 
 
 
@@ -769,107 +1042,162 @@ function saveArticle(){
 
 
 
-// ===============================
-// 加载文章列表
-// ===============================
+
+// ========================
+// 加载文章
+// ========================
 
 
 function loadArticles(){
 
 
 
-    db.collection("articles")
-    .orderBy("time","desc")
-    .get()
+db.collection("articles")
+
+.orderBy(
+"time",
+"desc"
+)
+
+.get()
 
 
-    .then(snapshot=>{
+.then(snapshot=>{
 
 
 
-        let html="";
-
-
-
-        snapshot.forEach(doc=>{
-
-
-            let data=
-            doc.data();
+let html="";
 
 
 
 
-            html+=`
+if(snapshot.empty){
 
 
-            <div class="article-card">
+html="暂无文章";
 
 
-            ${
-                data.cover
-                ?
-                `<img src="${data.cover}">`
-                :
-                ""
-            }
+}
 
 
 
-            <h3>
 
-            ${data.title}
 
-            </h3>
+snapshot.forEach(doc=>{
 
 
 
-            <p>
-
-            ${data.time}
-
-            </p>
+let data=
+doc.data();
 
 
 
-            <button onclick="editArticle('${doc.id}')">
 
-            编辑
+html+=`
 
-            </button>
-
+<div class="article-card">
 
 
-            <button 
-            style="background:#d32f2f"
-            onclick="deleteArticle('${doc.id}')">
+${
 
-            删除
+data.cover
 
-            </button>
+?
 
+`
 
+<img src="${data.cover}">
 
-            </div>
+`
 
+:
 
-            `;
+""
 
-
-
-        });
+}
 
 
 
-        document.getElementById("articleList")
-        .innerHTML=
-        html
-        ||
-        "暂无文章";
+<h3>
+
+${data.title}
+
+</h3>
 
 
 
-    });
+<p>
+
+${data.time}
+
+</p>
+
+
+
+<button
+
+class="edit"
+
+onclick="editArticle('${doc.id}')">
+
+编辑
+
+</button>
+
+
+
+
+<button
+
+class="delete"
+
+onclick="deleteArticle('${doc.id}')">
+
+删除
+
+</button>
+
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+
+
+
+
+document.getElementById(
+"articleList"
+)
+.innerHTML=html;
+
+
+
+})
+
+
+.catch(error=>{
+
+
+document.getElementById(
+"articleList"
+)
+.innerHTML=
+
+"读取失败："
+
++error.message;
+
+
+
+});
 
 
 
@@ -881,80 +1209,80 @@ function loadArticles(){
 
 
 
-
-// ===============================
+// ========================
 // 编辑文章
-// ===============================
+// ========================
 
 
 function editArticle(id){
 
 
 
-    db.collection("articles")
-    .doc(id)
-    .get()
+db.collection("articles")
+
+.doc(id)
+
+.get()
 
 
-    .then(doc=>{
-
-
-        if(!doc.exists){
-
-            return;
-
-        }
+.then(doc=>{
 
 
 
-        let data=
-        doc.data();
+let data =
+doc.data();
 
 
 
-        editId=id;
+editId=id;
 
 
 
-        document.getElementById("title")
-        .value=data.title;
+document.getElementById(
+"title"
+)
+.value=data.title;
 
 
 
-        quill.root.innerHTML=
-        data.content;
-
-
-
-        uploadImages=
-        data.images || [];
+document.getElementById(
+"editor"
+)
+.innerHTML=data.content;
 
 
 
 
-        document.querySelector(
-            "button[onclick='saveArticle()']"
-        )
-        .innerHTML=
-        "保存修改";
+images=data.images || [];
 
 
 
-        document.getElementById(
-            "cancelEditBtn"
-        )
-        .style.display="inline-block";
+document.querySelector(
+"button[onclick='saveArticle()']"
+)
+.innerHTML=
+
+"保存修改";
 
 
 
-        window.scrollTo(
-            0,
-            0
-        );
+document.getElementById(
+"cancelBtn"
+)
+.style.display=
+
+"inline-block";
 
 
 
-    });
+window.scrollTo(
+0,
+0
+);
+
+
+
+});
 
 
 
@@ -966,39 +1294,157 @@ function editArticle(id){
 
 
 
-// ===============================
+// ========================
+// 删除文章
+// ========================
+
+
+async function deleteArticle(id){
+
+
+
+if(!confirm(
+"确定删除文章？"
+)){
+
+
+return;
+
+
+}
+
+
+
+
+
+let doc =
+
+await db.collection("articles")
+
+.doc(id)
+
+.get();
+
+
+
+
+
+let data =
+doc.data();
+
+
+
+
+
+
+if(data.images){
+
+
+
+for(let url of data.images){
+
+
+
+try{
+
+
+await storage
+.refFromURL(url)
+.delete();
+
+
+
+}
+
+catch(e){
+
+
+
+console.log(
+"图片删除失败"
+);
+
+
+}
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+await db.collection("articles")
+
+.doc(id)
+
+.delete();
+
+
+
+
+
+alert(
+"删除成功"
+);
+
+
+
+loadArticles();
+
+
+
+}
+
+
+
+
+
+
+
+
+// ========================
 // 取消编辑
-// ===============================
+// ========================
 
 
 function cancelEdit(){
 
 
-    editId=null;
 
-
-    clearEditor();
-
-
-
-    document.querySelector(
-        "button[onclick='saveArticle()']"
-    )
-    .innerHTML=
-    "发布文章";
+editId=null;
 
 
 
-    document.getElementById(
-        "cancelEditBtn"
-    )
-    .style.display="none";
+clearEditor();
+
+
+
+document.querySelector(
+"button[onclick='saveArticle()']"
+)
+.innerHTML=
+
+"发布文章";
+
+
+
+document.getElementById(
+"cancelBtn"
+)
+.style.display=
+
+"none";
 
 
 
 }
-
-
 
 
 
@@ -1008,118 +1454,22 @@ function cancelEdit(){
 function clearEditor(){
 
 
-    document.getElementById("title")
-    .value="";
 
+document.getElementById(
+"title"
+)
+.value="";
 
-    quill.setContents([]);
 
 
-    uploadImages=[];
+document.getElementById(
+"editor"
+)
+.innerHTML="";
 
 
-}
 
-
-
-
-
-
-
-// ===============================
-// 删除文章+删除图片
-// ===============================
-
-
-async function deleteArticle(id){
-
-
-
-    if(
-        !confirm(
-            "确定删除这篇文章吗？"
-        )
-    ){
-
-        return;
-
-    }
-
-
-
-
-
-    let docRef=
-    db.collection("articles")
-    .doc(id);
-
-
-
-    let doc=
-    await docRef.get();
-
-
-
-    let data=
-    doc.data();
-
-
-
-
-
-    // 删除 Storage 图片
-
-
-    if(data.images){
-
-
-        for(
-            let img of data.images
-        ){
-
-
-            try{
-
-
-                let ref=
-                storage.refFromURL(img);
-
-
-                await ref.delete();
-
-
-
-            }
-            catch(e){
-
-
-                console.log(
-                    "图片删除失败",
-                    e
-                );
-
-
-            }
-
-
-        }
-
-
-    }
-
-
-
-
-
-    await docRef.delete();
-
-
-
-
-    alert("删除完成");
-
-
-    loadArticles();
+images=[];
 
 
 
@@ -1131,26 +1481,34 @@ async function deleteArticle(id){
 
 
 
-
-// ===============================
+// ========================
 // 退出登录
-// ===============================
+// ========================
 
 
 function logout(){
 
 
-    auth.signOut()
-    .then(()=>{
+
+auth.signOut()
+
+.then(()=>{
 
 
-        location.href=
-        "admin-login.html";
+window.location.href=
+
+"admin-login.html";
 
 
-    });
-
+});
 
 
 }
 
+
+</script>
+
+
+</body>
+
+</html>
