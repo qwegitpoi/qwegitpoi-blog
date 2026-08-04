@@ -5,14 +5,11 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 <title>
-Markdown文章编辑
+文章编辑
 </title>
-
-
-<link rel="stylesheet" href="css/style.css">
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -24,12 +21,17 @@ Markdown文章编辑
 
 <style>
 
+
 body{
 
 background:#f5f6fa;
 
 font-family:
-"Microsoft YaHei";
+
+"Microsoft YaHei",
+Arial;
+
+margin:0;
 
 }
 
@@ -51,15 +53,29 @@ border-radius:10px;
 
 
 
+h1{
+
+margin-top:0;
+
+}
+
+
+
 input{
 
 width:100%;
 
 padding:12px;
 
-font-size:20px;
+font-size:18px;
 
-margin-bottom:20px;
+box-sizing:border-box;
+
+margin-bottom:15px;
+
+border:1px solid #ddd;
+
+border-radius:5px;
 
 }
 
@@ -67,17 +83,18 @@ margin-bottom:20px;
 
 textarea{
 
+
 width:100%;
 
-height:450px;
+height:500px;
+
+box-sizing:border-box;
 
 padding:20px;
 
 font-size:16px;
 
 line-height:1.8;
-
-box-sizing:border-box;
 
 resize:vertical;
 
@@ -86,15 +103,83 @@ font-family:
 Consolas,
 "Microsoft YaHei";
 
+border:1px solid #ddd;
+
+border-radius:5px;
+
 }
 
 
 
-button{
 
-padding:10px 20px;
 
-margin-right:10px;
+.toolbar{
+
+background:#f5f5f5;
+
+padding:12px;
+
+margin-bottom:10px;
+
+border-radius:5px;
+
+}
+
+
+
+.toolbar button{
+
+
+padding:8px 14px;
+
+margin:4px;
+
+cursor:pointer;
+
+border:1px solid #ccc;
+
+background:white;
+
+border-radius:4px;
+
+}
+
+
+
+.toolbar button:hover{
+
+background:#eee;
+
+}
+
+
+
+.tags-tip{
+
+font-size:14px;
+
+color:#777;
+
+margin-bottom:10px;
+
+}
+
+
+
+.action{
+
+margin-top:20px;
+
+}
+
+
+
+.action button{
+
+
+padding:12px 25px;
+
+margin-right:15px;
 
 cursor:pointer;
 
@@ -102,19 +187,53 @@ cursor:pointer;
 
 
 
-.info{
+.save{
 
-color:#666;
+
+background:#666;
+
+color:white;
+
+}
+
+
+
+.publish{
+
+
+background:#1677ff;
+
+color:white;
+
+}
+
+
+
+.back{
+
+
+background:#eee;
+
+}
+
+
+
+#message{
+
 
 margin-top:20px;
 
+color:#1677ff;
+
 }
+
 
 
 </style>
 
 
 </head>
+
 
 
 
@@ -125,9 +244,10 @@ margin-top:20px;
 <div class="container">
 
 
+
 <h1>
 
-文章编辑
+Markdown文章编辑
 
 </h1>
 
@@ -135,16 +255,26 @@ margin-top:20px;
 
 <a href="admin.html">
 
-<button type="button">
+<button class="back">
 
-返回管理后台
+返回后台
 
 </button>
 
 </a>
 
 
+
 <hr>
+
+
+
+
+<label>
+
+文章标题
+
+</label>
 
 
 
@@ -154,58 +284,106 @@ placeholder="请输入文章标题">
 
 
 
+
+
+
+
+<label>
+
+文章标签
+
+</label>
+
+
+<input id="tags"
+
+placeholder="例如：AI,教学,旅行">
+
+
+<div class="tags-tip">
+
+多个标签请使用英文逗号 , 分隔
+
+</div>
+
+
+
+
+
+
 <h3>
 
-Markdown正文
+正文编辑
 
 </h3>
 
 
 
-<textarea id="content"
-
-placeholder="
-
-# 标题
 
 
-正文内容
+<div class="toolbar">
 
 
-**加粗文字**
+<button onclick="insertText('# ')">
 
-
-- 列表
-
-">
-
-</textarea>
-
-
-
-
-
-<br><br>
-
-
-
-<button onclick="saveArticle('draft')">
-
-保存草稿
+一级标题
 
 </button>
 
 
-<button onclick="saveArticle('published')">
+<button onclick="insertText('## ')">
 
-发布文章
+二级标题
 
 </button>
 
 
 
+<button onclick="wrapText('**','**')">
 
-<p id="message"></p>
+加粗
+
+</button>
+
+
+
+<button onclick="wrapText('*','*')">
+
+斜体
+
+</button>
+
+
+
+<button onclick="insertText('<div align=&quot;center&quot;>\n\n')">
+
+居中开始
+
+</button>
+
+
+
+<button onclick="insertText('\n\n</div>')">
+
+居中结束
+
+</button>
+
+
+
+<button onclick="wrapText('[','](https://)')">
+
+链接
+
+</button>
+
+
+
+<button onclick="insertText('- ')">
+
+列表
+
+</button>
 
 
 </div>
@@ -215,14 +393,78 @@ placeholder="
 
 
 
+<textarea id="content"
+
+placeholder="
+
+Markdown示例：
+
+# 我的文章
+
+这是正文
+
+**重点内容**
+
+- 项目1
+- 项目2
+
+
+<div align=&quot;center&quot;>
+
+居中文字
+
+</div>
+
+">
+
+</textarea>
 
 
 
+
+
+
+
+
+<div class="action">
+
+
+<button class="save"
+
+onclick="saveArticle('draft')">
+
+保存草稿
+
+</button>
+
+
+
+
+<button class="publish"
+
+onclick="saveArticle('published')">
+
+发布文章
+
+</button>
+
+
+
+</div>
+
+
+
+
+
+<div id="message"></div>
+
+
+
+</div>
 <script>
 
 
-// Firebase配置
-
+// Firebase 配置
 
 const firebaseConfig = {
 
@@ -268,7 +510,7 @@ firebase.firestore();
 
 
 
-let editId=null;
+let editId = null;
 
 
 
@@ -277,8 +519,7 @@ let editId=null;
 
 
 
-// 登录检查
-
+// 检查登录
 
 auth.onAuthStateChanged(user=>{
 
@@ -290,7 +531,6 @@ location.href="admin-login.html";
 
 
 }
-
 else{
 
 
@@ -309,7 +549,8 @@ checkEdit();
 
 
 
-// 判断编辑模式
+
+// 判断是否编辑已有文章
 
 
 function checkEdit(){
@@ -348,6 +589,7 @@ loadArticle();
 
 
 
+
 // 加载文章
 
 
@@ -364,6 +606,7 @@ db.collection("articles")
 
 
 .then(doc=>{
+
 
 
 if(!doc.exists){
@@ -404,7 +647,25 @@ data.content || "";
 
 
 
+
+
+if(data.tags){
+
+
+document.getElementById(
+"tags"
+).value =
+
+data.tags.join(",");
+
+
+}
+
+
+
 })
+
+
 
 .catch(error=>{
 
@@ -438,7 +699,9 @@ function saveArticle(status){
 let title =
 document.getElementById(
 "title"
-).value.trim();
+)
+.value
+.trim();
 
 
 
@@ -447,7 +710,26 @@ document.getElementById(
 let content =
 document.getElementById(
 "content"
-).value.trim();
+)
+.value
+.trim();
+
+
+
+
+
+let tags =
+document.getElementById(
+"tags"
+)
+.value
+
+.split(",")
+
+.map(t=>t.trim())
+
+.filter(t=>t);
+
 
 
 
@@ -458,7 +740,7 @@ if(!title){
 
 
 alert(
-"请输入标题"
+"请输入文章标题"
 );
 
 
@@ -473,7 +755,7 @@ if(!content){
 
 
 alert(
-"请输入正文"
+"请输入文章内容"
 );
 
 
@@ -486,7 +768,9 @@ return;
 
 
 
+
 let now =
+
 new Date()
 
 .toLocaleString(
@@ -518,6 +802,7 @@ db.collection("articles")
 .then(doc=>{
 
 
+
 let data =
 doc.data();
 
@@ -542,13 +827,21 @@ return db.collection("articles")
 .update({
 
 
+
 title:title,
+
 
 
 content:content,
 
 
+
+tags:tags,
+
+
+
 status:status,
+
 
 
 updateTime:history
@@ -561,19 +854,29 @@ updateTime:history
 
 })
 
+
+
 .then(()=>{
 
 
-alert(
+showMessage(
 "保存成功"
 );
 
 
-location.href=
-"admin.html";
+setTimeout(()=>{
+
+
+location.href="admin.html";
+
+
+},1000);
+
 
 
 })
+
+
 
 .catch(error=>{
 
@@ -595,7 +898,8 @@ alert(
 
 
 
-// 新文章
+
+// 新建文章
 
 
 else{
@@ -607,21 +911,32 @@ db.collection("articles")
 .add({
 
 
+
 title:title,
+
 
 
 content:content,
 
 
+
+tags:tags,
+
+
+
 status:status,
+
 
 
 author:"管理员",
 
 
 
+
 createTime:
+
 firebase.firestore.FieldValue.serverTimestamp(),
+
 
 
 
@@ -636,7 +951,9 @@ updateTime:[now]
 .then(()=>{
 
 
-alert(
+
+showMessage(
+
 status==="published"
 
 ?
@@ -651,11 +968,20 @@ status==="published"
 
 
 
-location.href=
-"admin.html";
+
+setTimeout(()=>{
+
+
+location.href="admin.html";
+
+
+},1000);
+
 
 
 })
+
+
 
 .catch(error=>{
 
@@ -677,10 +1003,190 @@ alert(
 
 
 
+
+
+
+
+
+
+// 显示提示
+
+
+function showMessage(text){
+
+
+document.getElementById(
+"message"
+)
+
+.innerHTML=text;
+
+
+}
+
+
+
+
+
+
+
+
+
+// 插入文字
+
+
+function insertText(text){
+
+
+
+let textarea =
+document.getElementById(
+"content"
+);
+
+
+
+let start =
+textarea.selectionStart;
+
+
+
+let end =
+textarea.selectionEnd;
+
+
+
+
+let value =
+textarea.value;
+
+
+
+
+
+textarea.value =
+
+value.substring(0,start)
+
++
+
+text
+
++
+
+value.substring(end);
+
+
+
+
+
+textarea.focus();
+
+
+
+textarea.selectionStart =
+
+textarea.selectionEnd =
+
+start + text.length;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 包裹文字
+
+
+function wrapText(before,after){
+
+
+
+let textarea =
+document.getElementById(
+"content"
+);
+
+
+
+let start =
+textarea.selectionStart;
+
+
+
+let end =
+textarea.selectionEnd;
+
+
+
+let selected =
+
+textarea.value.substring(
+start,
+end
+);
+
+
+
+if(!selected){
+
+
+selected="文字";
+
+
+}
+
+
+
+
+
+
+let insert =
+
+before +
+
+selected +
+
+after;
+
+
+
+
+
+textarea.setRangeText(
+
+insert,
+
+start,
+
+end,
+
+"end"
+
+);
+
+
+
+textarea.focus();
+
+
+
+}
+
+
+
+
+
 </script>
 
 
 </body>
-
 
 </html>
