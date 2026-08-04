@@ -13,6 +13,8 @@
 </title>
 
 
+<!-- Firebase -->
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -34,6 +36,7 @@ box-sizing:border-box;
 }
 
 
+
 body{
 
 margin:0;
@@ -50,10 +53,10 @@ color:#333;
 }
 
 
-
-/* 阅读进度 */
+/* 阅读进度条 */
 
 .progress{
+
 
 position:fixed;
 
@@ -76,6 +79,9 @@ z-index:100;
 
 
 
+/* 顶部导航 */
+
+
 .header{
 
 
@@ -95,26 +101,28 @@ top:0;
 
 z-index:20;
 
-box-shadow:0 2px 8px rgba(0,0,0,.08);
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.08);
 
 
 }
 
 
 
+.header a{
 
-
-.back{
-
-
-color:#1677ff;
 
 text-decoration:none;
+
+color:#1677ff;
 
 font-size:15px;
 
 
 }
+
+
 
 
 
@@ -129,6 +137,7 @@ padding:15px;
 
 
 
+
 .article{
 
 
@@ -136,7 +145,7 @@ background:white;
 
 padding:20px;
 
-border-radius:12px;
+border-radius:14px;
 
 
 }
@@ -145,17 +154,20 @@ border-radius:12px;
 
 
 
-h1{
+.article-title{
 
 
 font-size:25px;
 
 line-height:1.5;
 
-margin-top:0;
+font-weight:bold;
+
+margin:0 0 15px;
 
 
 }
+
 
 
 
@@ -175,6 +187,10 @@ line-height:2;
 
 
 
+
+/* 标签 */
+
+
 .tags{
 
 
@@ -182,7 +198,6 @@ margin:15px 0;
 
 
 }
-
 
 
 
@@ -210,6 +225,8 @@ font-size:13px;
 
 
 
+/* 自动目录 */
+
 
 .toc{
 
@@ -218,7 +235,7 @@ background:#f8f8f8;
 
 padding:15px;
 
-border-radius:10px;
+border-radius:12px;
 
 margin:20px 0;
 
@@ -232,6 +249,8 @@ margin:20px 0;
 
 font-weight:bold;
 
+font-size:16px;
+
 margin-bottom:10px;
 
 
@@ -244,13 +263,13 @@ margin-bottom:10px;
 
 display:block;
 
-font-size:14px;
+padding:6px 0;
 
-color:#555;
+font-size:14px;
 
 text-decoration:none;
 
-padding:5px 0;
+color:#555;
 
 
 }
@@ -258,6 +277,8 @@ padding:5px 0;
 
 
 
+
+/* 正文 */
 
 
 .content{
@@ -272,14 +293,12 @@ line-height:1.9;
 
 
 
-
 .content h1,
 .content h2,
 .content h3{
 
 
-margin-top:30px;
-
+margin-top:35px;
 
 }
 
@@ -292,40 +311,75 @@ margin-top:30px;
 
 max-width:100%;
 
+
 }
 
 
 
+
+
+/* ===================== */
+/* 上一篇 下一篇 卡片 */
+/* ===================== */
 
 
 .nav{
 
 
-display:flex;
+margin-top:45px;
 
-justify-content:space-between;
-
-margin-top:30px;
+padding-bottom:30px;
 
 
 }
+
+
+
+
+.nav div{
+
+
+margin-bottom:15px;
+
+
+}
+
+
 
 
 
 .nav a{
 
 
-background:white;
+display:block;
 
-padding:15px;
+background:#fff;
 
-border-radius:10px;
+border-radius:14px;
+
+padding:18px;
 
 text-decoration:none;
 
 color:#333;
 
-font-size:14px;
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.06);
+
+
+}
+
+
+
+.nav-label{
+
+
+font-size:13px;
+
+color:#1677ff;
+
+margin-bottom:8px;
 
 
 }
@@ -333,12 +387,90 @@ font-size:14px;
 
 
 
+
+.nav-title{
+
+
+font-size:16px;
+
+font-weight:bold;
+
+line-height:1.6;
+
+overflow:hidden;
+
+display:-webkit-box;
+
+-webkit-line-clamp:2;
+
+-webkit-box-orient:vertical;
+
+
+}
+
+
+
+
+
+.nav a:active{
+
+
+background:#f5f5f5;
+
+
+}
+
+
+
+
+
+/* 手机优化 */
+
+
+@media(max-width:600px){
+
+
+
+.article{
+
+
+padding:18px;
+
+
+}
+
+
+
+.article-title{
+
+
+font-size:23px;
+
+
+}
+
+
+
+
+.content{
+
+
+font-size:16px;
+
+
+}
+
+
+}
+
+
+
+
+
 </style>
 
+
 </head>
-
-
-
 
 
 
@@ -348,9 +480,11 @@ font-size:14px;
 
 
 
-<div class="progress"
+<!-- 阅读进度 -->
 
-id="progress">
+<div id="progress"
+
+class="progress">
 
 </div>
 
@@ -359,12 +493,14 @@ id="progress">
 
 
 
+
+
+<!-- 顶部 -->
+
 <div class="header">
 
 
-<a class="back"
-
-href="index.html">
+<a href="index.html">
 
 ← 返回首页
 
@@ -392,15 +528,15 @@ href="index.html">
 
 
 
-
-
 <div class="article">
 
 
 
 
 
-<h1 id="title">
+<h1 id="title"
+
+class="article-title">
 
 加载中...
 
@@ -411,19 +547,9 @@ href="index.html">
 
 
 
-<div class="meta"
+<div id="meta"
 
-id="meta">
-
-</div>
-
-
-
-
-
-<div class="tags"
-
-id="tags">
+class="meta">
 
 </div>
 
@@ -433,9 +559,35 @@ id="tags">
 
 
 
-<div class="toc"
+<div id="tags"
 
-id="toc">
+class="tags">
+
+</div>
+
+
+
+
+
+
+
+<div id="toc"
+
+class="toc">
+
+</div>
+
+
+
+
+
+
+
+<div id="content"
+
+class="content">
+
+加载中...
 
 </div>
 
@@ -446,16 +598,8 @@ id="toc">
 
 
 
-<div class="content"
 
-id="content">
-
-</div>
-
-
-
-
-
+<!-- 上一篇 下一篇 -->
 
 
 <div class="nav">
@@ -472,19 +616,20 @@ id="content">
 </div>
 
 
-</div>
-
-
-
-
-
-
 
 </div>
 
 
+
+
+
+
+
+
 </div>
 
+
+</div>
 
 
 
@@ -518,6 +663,7 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
 
 
@@ -532,34 +678,19 @@ const db =
 firebase.firestore();
 
 
+let articleId = "";
+
+let articles = [];
+
+let currentIndex = -1;
 
 
 
-let id="";
+// 获取URL文章ID
 
+const params = new URLSearchParams(location.search);
 
-let articles=[];
-
-
-let currentIndex=0;
-
-
-
-
-
-
-
-let params=
-
-new URLSearchParams(
-location.search
-);
-
-
-
-id=params.get("id");
-
-
+articleId = params.get("id");
 
 
 
@@ -568,9 +699,7 @@ id=params.get("id");
 
 // 加载文章
 
-
-function load(){
-
+function loadArticle(){
 
 
 db.collection("articles")
@@ -578,27 +707,30 @@ db.collection("articles")
 .get()
 
 
-
 .then(snapshot=>{
+
+
+articles=[];
+
 
 
 snapshot.forEach(doc=>{
 
 
-let a={
+let data=doc.data();
+
+
+
+if(data.status==="published"){
+
+
+articles.push({
 
 id:doc.id,
 
-...doc.data()
+...data
 
-};
-
-
-
-if(a.status==="published"){
-
-
-articles.push(a);
+});
 
 
 }
@@ -610,13 +742,14 @@ articles.push(a);
 
 
 
+// 按发布时间排序
 
 articles.sort((a,b)=>{
 
 
 return (
 
-b.createTime?.seconds||0
+b.createTime?.seconds || 0
 
 )
 
@@ -624,7 +757,7 @@ b.createTime?.seconds||0
 
 (
 
-a.createTime?.seconds||0
+a.createTime?.seconds || 0
 
 );
 
@@ -636,14 +769,30 @@ a.createTime?.seconds||0
 
 
 
-currentIndex=
+currentIndex = articles.findIndex(
 
-articles.findIndex(
-
-a=>a.id===id
+item=>item.id===articleId
 
 );
 
+
+
+
+
+if(currentIndex===-1){
+
+
+document.getElementById("content")
+
+.innerHTML=
+
+"文章不存在";
+
+
+return;
+
+
+}
 
 
 
@@ -657,25 +806,20 @@ articles[currentIndex]
 
 
 
-showNav();
+showNavigation();
 
 
 
 })
 
+.catch(error=>{
 
 
-.catch(e=>{
-
-
-document.getElementById(
-"content"
-)
+document.getElementById("content")
 
 .innerHTML=
 
-"加载失败："+e.message;
-
+"加载失败："+error.message;
 
 
 });
@@ -692,36 +836,33 @@ document.getElementById(
 
 
 
-function showArticle(a){
+// 显示文章
+
+
+function showArticle(article){
 
 
 
-if(!a)return;
-
-
-
-
-document.title=a.title;
-
-
-
-
-
-document.getElementById(
-"title"
-)
-
-.innerHTML=a.title;
+document.title = article.title;
 
 
 
 
 
 
+document.getElementById("title")
 
-document.getElementById(
-"meta"
-)
+.innerHTML =
+
+article.title;
+
+
+
+
+
+
+
+document.getElementById("meta")
 
 .innerHTML=
 
@@ -729,13 +870,13 @@ document.getElementById(
 
 发布时间：
 
-${format(a.createTime)}
+${formatTime(article.createTime)}
 
 <br>
 
 作者：
 
-${a.author||"管理员"}
+${article.author || "管理员"}
 
 `;
 
@@ -746,23 +887,26 @@ ${a.author||"管理员"}
 
 
 
-let tagHtml="";
+
+// 标签
+
+
+let tagHTML="";
 
 
 
+(article.tags || [])
+
+.forEach(tag=>{
 
 
-(a.tags||[])
+tagHTML +=
 
-.forEach(t=>{
-
-
-
-tagHtml+=`
+`
 
 <span class="tag">
 
-${t}
+${tag}
 
 </span>
 
@@ -776,14 +920,31 @@ ${t}
 
 
 
+document.getElementById("tags")
 
-document.getElementById(
-"tags"
-)
+.innerHTML=tagHTML;
+
+
+
+
+
+
+
+
+
+
+// Markdown解析
+
+
+document.getElementById("content")
 
 .innerHTML=
 
-tagHtml;
+marked.parse(
+
+article.content || ""
+
+);
 
 
 
@@ -791,21 +952,7 @@ tagHtml;
 
 
 
-document.getElementById(
-"content"
-)
-
-.innerHTML=
-
-marked.parse(a.content);
-
-
-
-
-
-
-
-createToc();
+createTOC();
 
 
 
@@ -819,28 +966,29 @@ createToc();
 
 
 
+
+
 // 自动目录
 
 
-function createToc(){
+function createTOC(){
 
 
 
-let content=
+let content =
 
-document.getElementById(
-"content"
-);
+document.getElementById("content");
 
 
 
-
-
-let headings=
+let headings =
 
 content.querySelectorAll(
+
 "h1,h2,h3"
+
 );
+
 
 
 
@@ -849,8 +997,7 @@ let html="";
 
 
 
-
-if(headings.length){
+if(headings.length>0){
 
 
 
@@ -868,14 +1015,12 @@ html+=`
 
 
 
-
-headings.forEach((h,i)=>{
-
+headings.forEach((h,index)=>{
 
 
 let id=
 
-"heading-"+i;
+"heading-"+index;
 
 
 
@@ -899,26 +1044,13 @@ ${h.innerText}
 
 
 
-
-
-}
-
-else{
-
-
-html="";
-
-
 }
 
 
 
 
 
-
-document.getElementById(
-"toc"
-)
+document.getElementById("toc")
 
 .innerHTML=html;
 
@@ -934,35 +1066,75 @@ document.getElementById(
 
 
 
-// 上下一篇
 
 
-function showNav(){
+// 上一篇 下一篇卡片
+
+
+function showNavigation(){
 
 
 
-if(currentIndex>0){
+let prev =
+
+document.getElementById("prev");
 
 
-let p=
+
+let next =
+
+document.getElementById("next");
+
+
+
+
+
+
+
+prev.innerHTML="";
+
+next.innerHTML="";
+
+
+
+
+
+
+
+
+// 上一篇
+
+
+if(currentIndex > 0){
+
+
+
+let article =
 
 articles[currentIndex-1];
 
 
 
-document.getElementById(
-"prev"
-)
-
-.innerHTML=
+prev.innerHTML=
 
 `
 
-<a href="article.html?id=${p.id}">
+<a href="article.html?id=${article.id}">
 
-上一篇<br>
 
-${p.title}
+<div class="nav-label">
+
+← 上一篇
+
+</div>
+
+
+<div class="nav-title">
+
+${article.title}
+
+</div>
+
 
 </a>
 
@@ -978,31 +1150,48 @@ ${p.title}
 
 
 
-if(currentIndex<articles.length-1){
+
+
+// 下一篇
+
+
+if(
+
+currentIndex < articles.length-1
+
+){
 
 
 
-let n=
+let article =
 
 articles[currentIndex+1];
 
 
 
-document.getElementById(
-"next"
-)
-
-.innerHTML=
+next.innerHTML=
 
 `
 
-<a href="article.html?id=${n.id}">
+<a href="article.html?id=${article.id}">
 
-下一篇<br>
 
-${n.title}
+<div class="nav-label">
+
+下一篇 →
+
+</div>
+
+
+<div class="nav-title">
+
+${article.title}
+
+</div>
+
 
 </a>
+
 
 `;
 
@@ -1021,21 +1210,32 @@ ${n.title}
 
 
 
-function format(t){
 
 
 
-if(t&&t.toDate){
+
+// 时间格式化
 
 
-return t.toDate()
+function formatTime(time){
+
+
+
+if(time && time.toDate){
+
+
+return time.toDate()
 
 .toLocaleString(
+
 "zh-CN"
+
 );
 
 
+
 }
+
 
 
 return "";
@@ -1052,33 +1252,56 @@ return "";
 
 
 
-// 阅读进度
+
+
+// 阅读进度条
 
 
 window.addEventListener(
+
 "scroll",
 
 ()=>{
 
 
-let h=
+let scrollTop =
 
-document.documentElement;
+document.documentElement.scrollTop
 
-
-let percent=
-
-h.scrollTop/
-
-(h.scrollHeight-h.clientHeight)
-
-*100;
+|| document.body.scrollTop;
 
 
 
-document.getElementById(
-"progress"
-)
+let height =
+
+document.documentElement.scrollHeight
+
+-
+
+document.documentElement.clientHeight;
+
+
+
+
+
+let percent =
+
+height
+
+?
+
+(scrollTop / height) * 100
+
+:
+
+0;
+
+
+
+
+
+
+document.getElementById("progress")
 
 .style.width=
 
@@ -1096,14 +1319,9 @@ percent+"%";
 
 
 
-load();
 
 
-
-</script>
-
+// 启动
 
 
-</body>
-
-</html>
+loadArticle();
