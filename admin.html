@@ -7,15 +7,12 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-
 <title>
 博客管理后台
 </title>
 
 
-
 <link rel="stylesheet" href="css/style.css">
-
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -25,34 +22,141 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
+<style>
+
+.admin-container{
+
+max-width:1100px;
+
+margin:30px auto;
+
+background:white;
+
+padding:30px;
+
+border-radius:10px;
+
+}
+
+
+.top-bar{
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+margin-bottom:30px;
+
+}
+
+
+.action-bar{
+
+margin-bottom:30px;
+
+}
+
+
+.article-item{
+
+border:1px solid #ddd;
+
+padding:20px;
+
+margin:15px 0;
+
+border-radius:8px;
+
+}
+
+
+
+.article-item h3{
+
+margin-top:0;
+
+}
+
+
+
+.meta{
+
+color:#777;
+
+font-size:14px;
+
+line-height:1.8;
+
+}
+
+
+button{
+
+cursor:pointer;
+
+}
+
+
+.edit-btn{
+
+background:#1976d2;
+
+}
+
+
+
+.delete-btn{
+
+background:#d32f2f;
+
+}
+
+
+.draft-title{
+
+color:#d68910;
+
+}
+
+
+</style>
+
+
 </head>
+
 
 
 <body>
 
 
-<header class="header">
+
+<div class="admin-container">
 
 
-<div class="logo">
 
+<div class="top-bar">
+
+
+<h1>
 博客管理后台
-
-</div>
+</h1>
 
 
 
 <div>
 
 
-<a href="index.html"
+<a href="index.html">
 
-class="nav-btn">
+<button>
 
 返回首页
 
-</a>
+</button>
 
+</a>
 
 
 <button onclick="logout()">
@@ -65,126 +169,27 @@ class="nav-btn">
 </div>
 
 
-</header>
+
+</div>
 
 
 
 
 
+<div class="action-bar">
 
 
-<div class="admin-container">
+<a href="admin-edit.html">
 
 
+<button>
 
-<h1 class="admin-title">
-
-文章编辑
-
-</h1>
-
-
-
-
-
-<input id="title"
-
-placeholder="文章标题">
-
-
-
-
-
-
-
-<div class="editor-toolbar">
-
-
-<button onclick="format('bold')">
-
-加粗
+＋ 发布新文章
 
 </button>
 
 
-
-<button onclick="format('italic')">
-
-斜体
-
-</button>
-
-
-
-
-<button onclick="format('justifyLeft')">
-
-左对齐
-
-</button>
-
-
-
-<button onclick="format('justifyCenter')">
-
-居中
-
-</button>
-
-
-
-<button onclick="format('justifyRight')">
-
-右对齐
-
-</button>
-
-
-
-
-<select onchange="fontSize(this.value)">
-
-
-<option value="">
-
-字体大小
-
-</option>
-
-
-<option value="3">
-
-正常
-
-</option>
-
-
-<option value="5">
-
-大
-
-</option>
-
-
-
-<option value="7">
-
-超大
-
-</option>
-
-
-
-</select>
-
-
-
-
-<button onclick="insertLink()">
-
-链接
-
-</button>
+</a>
 
 
 
@@ -193,82 +198,6 @@ placeholder="文章标题">
 
 
 
-
-
-<div id="editor"
-
-class="editor"
-
-contenteditable="true">
-
-
-请输入文章内容...
-
-
-
-</div>
-
-
-
-
-
-<br>
-
-
-
-<button onclick="saveDraft()"
-
-class="btn-gray">
-
-
-暂存草稿
-
-
-</button>
-
-
-
-
-
-<button onclick="publishArticle()">
-
-发布文章
-
-
-</button>
-
-
-
-
-
-<button id="cancelBtn"
-
-onclick="cancelEdit()"
-
-class="btn-gray"
-
-style="display:none">
-
-
-取消编辑
-
-
-</button>
-
-
-
-
-
-
-<p id="message"></p>
-
-
-
-
-
-
-
-<hr>
 
 
 
@@ -293,6 +222,9 @@ style="display:none">
 
 
 <hr>
+
+
+
 
 
 
@@ -323,14 +255,14 @@ style="display:none">
 
 
 
+
+
 <script>
 
 
-
-
-// =======================
+// ========================
 // Firebase配置
-// =======================
+// ========================
 
 
 const firebaseConfig = {
@@ -359,11 +291,7 @@ appId:
 
 
 
-
-
-
 firebase.initializeApp(firebaseConfig);
-
 
 
 
@@ -379,20 +307,9 @@ firebase.firestore();
 
 
 
-let editId=null;
 
 
-
-let editMode="";
-
-
-
-
-
-
-// =======================
 // 登录检测
-// =======================
 
 
 auth.onAuthStateChanged(user=>{
@@ -423,399 +340,32 @@ loadArticles();
 
 
 
-// =======================
-// 编辑器
-// =======================
 
 
-function format(cmd){
 
 
-document.execCommand(
-cmd,
-false,
-null
-);
-
-
-}
-
-
-
-
-function fontSize(size){
-
-
-if(size){
-
-
-document.execCommand(
-"fontSize",
-false,
-size
-);
-
-
-}
-
-
-}
-
-
-
-
-function insertLink(){
-
-
-let url =
-prompt(
-"输入网址"
-);
-
-
-
-if(url){
-
-
-document.execCommand(
-"createLink",
-false,
-url
-);
-
-
-}
-
-
-}
-// =======================
-// 保存草稿
-// =======================
-
-
-function saveDraft(){
-
-
-saveArticle("draft");
-
-
-}
-
-
-
-
-
-
-// =======================
-// 发布文章
-// =======================
-
-
-function publishArticle(){
-
-
-saveArticle("published");
-
-
-}
-
-
-
-
-
-
-
-
-// =======================
-// 保存文章核心函数
-// =======================
-
-
-function saveArticle(status){
-
-
-
-let title =
-document.getElementById(
-"title"
-).value.trim();
-
-
-
-
-let content =
-document.getElementById(
-"editor"
-).innerHTML;
-
-
-
-
-
-if(!title){
-
-
-showMessage(
-"请输入文章标题"
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-if(!content){
-
-
-showMessage(
-"请输入文章内容"
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-
-let now =
-new Date()
-.toLocaleString(
-"zh-CN"
-);
-
-
-
-
-
-
-
-
-// 编辑模式
-
-
-if(editId){
-
-
-
-let oldUpdate=[];
-
-
-
-
-db.collection("articles")
-.doc(editId)
-.get()
-
-.then(doc=>{
-
-
-let data =
-doc.data();
-
-
-
-oldUpdate =
-data.updateTime || [];
-
-
-
-oldUpdate.push(now);
-
-
-
-
-
-
-return db.collection("articles")
-
-.doc(editId)
-
-.update({
-
-
-title:title,
-
-
-content:content,
-
-
-status:status,
-
-
-updateTime:oldUpdate
-
-
-
-});
-
-
-
-})
-
-
-
-.then(()=>{
-
-
-showMessage(
-"修改成功"
-);
-
-
-clearEditor();
-
-
-loadArticles();
-
-
-
-});
-
-
-
-
-
-
-}
-
-
-
-
-
-
-// 新文章
-
-
-else{
-
-
-db.collection("articles")
-
-.add({
-
-
-title:title,
-
-
-content:content,
-
-
-status:status,
-
-
-author:"管理员",
-
-
-createTime:
-firebase.firestore.FieldValue.serverTimestamp(),
-
-
-updateTime:[now]
-
-
-
-})
-
-
-
-.then(()=>{
-
-
-showMessage(
-status=="draft"
-?
-"草稿保存成功"
-:
-"文章发布成功"
-);
-
-
-
-clearEditor();
-
-
-loadArticles();
-
-
-
-});
-
-
-
-}
-
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// =======================
-// 加载文章
-// =======================
+// ========================
+// 加载全部文章
+// ========================
 
 
 function loadArticles(){
 
 
 
-// 已发布
-
-
 db.collection("articles")
 
-
-.where(
-"status",
-"==",
-"published"
-)
-
-
-.orderBy(
-"createTime",
-"desc"
-)
-
-
 .get()
-
 
 
 .then(snapshot=>{
 
 
 
-let html="";
+let published=[];
 
 
-
-
-
-if(snapshot.empty){
-
-
-html="暂无发布文章";
-
-
-}
+let draft=[];
 
 
 
@@ -826,62 +376,187 @@ snapshot.forEach(doc=>{
 
 
 
-let data =
-doc.data();
+let data=doc.data();
 
+
+let article={
+
+
+id:doc.id,
+
+
+...data
+
+
+};
+
+
+
+
+
+if(data.status==="published"){
+
+
+published.push(article);
+
+
+}
+
+
+
+if(data.status==="draft"){
+
+
+draft.push(article);
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+// 前端排序
+
+
+published.sort(sortTime);
+
+
+draft.sort(sortTime);
+
+
+
+
+
+
+
+showPublished(
+published
+);
+
+
+
+showDraft(
+draft
+);
+
+
+
+})
+
+
+
+.catch(error=>{
+
+
+document.getElementById(
+"publishedList"
+)
+.innerHTML=
+
+"加载失败："+error.message;
+
+
+
+document.getElementById(
+"draftList"
+)
+.innerHTML=
+
+"加载失败："+error.message;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// ========================
+// 已发布文章显示
+// ========================
+
+
+function showPublished(list){
+
+
+
+let html="";
+
+
+
+
+
+if(list.length===0){
+
+
+html="暂无已发布文章";
+
+
+}
+
+
+
+list.forEach(article=>{
 
 
 html += `
 
 
 
-<div class="manage-item">
+<div class="article-item">
 
 
 <h3>
 
-${data.title}
+${article.title}
 
 </h3>
 
 
 
-<p>
+<div class="meta">
+
 
 发布时间：
 
-${formatTime(data.createTime)}
-
-</p>
+${formatTime(article.createTime)}
 
 
+<br>
 
-<p>
 
 最后编辑：
 
-${getLastUpdate(data.updateTime)}
-
-</p>
+${lastUpdate(article.updateTime)}
 
 
 
-<span class="status publish">
-
-已发布
-
-</span>
+</div>
 
 
 
-
-<br><br>
-
+<br>
 
 
-<button class="btn-green"
+<button class="edit-btn"
 
-onclick="editArticle('${doc.id}')">
+onclick="editArticle('${article.id}')">
 
 编辑
 
@@ -889,9 +564,9 @@ onclick="editArticle('${doc.id}')">
 
 
 
-<button class="btn-red"
+<button class="delete-btn"
 
-onclick="deleteArticle('${doc.id}')">
+onclick="deleteArticle('${article.id}')">
 
 删除
 
@@ -900,6 +575,7 @@ onclick="deleteArticle('${doc.id}')">
 
 
 </div>
+
 
 
 `;
@@ -919,9 +595,7 @@ document.getElementById(
 
 
 
-
-});
-
+}
 
 
 
@@ -930,37 +604,22 @@ document.getElementById(
 
 
 
-// 草稿
 
 
-db.collection("articles")
+// ========================
+// 草稿显示
+// ========================
 
 
-.where(
-"status",
-"==",
-"draft"
-)
+function showDraft(list){
 
-
-.orderBy(
-"createTime",
-"desc"
-)
-
-
-.get()
-
-
-
-.then(snapshot=>{
 
 
 let html="";
 
 
 
-if(snapshot.empty){
+if(list.length===0){
 
 
 html="暂无草稿";
@@ -970,58 +629,44 @@ html="暂无草稿";
 
 
 
-
-snapshot.forEach(doc=>{
-
-
-
-let data =
-doc.data();
-
-
-
+list.forEach(article=>{
 
 
 html += `
 
 
 
-<div class="manage-item">
+<div class="article-item">
 
 
-<h3>
+<h3 class="draft-title">
 
-${data.title}
+
+${article.title}
 
 </h3>
 
 
 
-<p>
+
+<div class="meta">
+
 
 保存时间：
 
-${getLastUpdate(data.updateTime)}
-
-</p>
+${lastUpdate(article.updateTime)}
 
 
-
-<span class="status draft">
-
-草稿
-
-</span>
+</div>
 
 
 
-<br><br>
+<br>
 
 
+<button class="edit-btn"
 
-<button class="btn-green"
-
-onclick="editArticle('${doc.id}')">
+onclick="editArticle('${article.id}')">
 
 继续编辑
 
@@ -1029,10 +674,9 @@ onclick="editArticle('${doc.id}')">
 
 
 
+<button class="delete-btn"
 
-<button class="btn-red"
-
-onclick="deleteArticle('${doc.id}')">
+onclick="deleteArticle('${article.id}')">
 
 删除
 
@@ -1043,13 +687,12 @@ onclick="deleteArticle('${doc.id}')">
 </div>
 
 
-
 `;
 
 
 
-
 });
+
 
 
 
@@ -1061,12 +704,6 @@ document.getElementById(
 
 
 
-
-});
-
-
-
-
 }
 
 
@@ -1077,77 +714,17 @@ document.getElementById(
 
 
 
-
-// =======================
-// 编辑文章
-// =======================
+// ========================
+// 编辑
+// ========================
 
 
 function editArticle(id){
 
 
+window.location.href=
 
-db.collection("articles")
-
-.doc(id)
-
-.get()
-
-
-
-.then(doc=>{
-
-
-
-let data =
-doc.data();
-
-
-
-
-
-document.getElementById(
-"title"
-).value =
-data.title;
-
-
-
-
-
-document.getElementById(
-"editor"
-).innerHTML =
-data.content;
-
-
-
-
-
-
-editId=id;
-
-
-
-document.getElementById(
-"cancelBtn"
-)
-.style.display=
-"inline-block";
-
-
-
-
-
-window.scrollTo(
-0,
-0
-);
-
-
-
-});
-
+"admin-edit.html?id="+id;
 
 
 }
@@ -1160,28 +737,24 @@ window.scrollTo(
 
 
 
-// =======================
-// 删除文章
-// =======================
+// ========================
+// 删除
+// ========================
 
 
 function deleteArticle(id){
 
 
 
-if(
-!confirm(
+if(!confirm(
 "确定删除这篇文章吗？"
-)
-
-){
+)){
 
 
 return;
 
 
 }
-
 
 
 
@@ -1194,18 +767,26 @@ db.collection("articles")
 .delete()
 
 
-
 .then(()=>{
 
 
-showMessage(
+alert(
 "删除成功"
 );
 
 
-
 loadArticles();
 
+
+})
+
+
+.catch(error=>{
+
+
+alert(
+"删除失败："+error.message
+);
 
 
 });
@@ -1222,94 +803,31 @@ loadArticles();
 
 
 
-// =======================
-// 取消编辑
-// =======================
+// ========================
+// 排序
+// ========================
 
 
-function cancelEdit(){
-
-
-clearEditor();
-
-
-}
+function sortTime(a,b){
 
 
 
+let ta =
+a.createTime?.seconds || 0;
 
 
 
-
-
-function clearEditor(){
-
-
-
-editId=null;
+let tb =
+b.createTime?.seconds || 0;
 
 
 
-document.getElementById(
-"title"
-).value="";
-
-
-
-document.getElementById(
-"editor"
-).innerHTML="";
-
-
-
-document.getElementById(
-"cancelBtn"
-)
-.style.display=
-"none";
+return tb-ta;
 
 
 
 }
 
-
-
-
-
-
-
-
-
-// =======================
-// 工具函数
-// =======================
-
-
-function showMessage(text){
-
-
-
-document.getElementById(
-"message"
-)
-.innerHTML=text;
-
-
-
-setTimeout(()=>{
-
-
-document.getElementById(
-"message"
-)
-.innerHTML="";
-
-
-},3000);
-
-
-
-}
 
 
 
@@ -1322,10 +840,7 @@ function formatTime(time){
 
 
 
-if(
-time &&
-time.toDate
-){
+if(time && time.toDate){
 
 
 return time.toDate()
@@ -1349,15 +864,16 @@ return "";
 
 
 
-function getLastUpdate(list){
+
+
+function lastUpdate(list){
 
 
 
 if(
 list &&
-list.length
+list.length>0
 ){
-
 
 
 return list[list.length-1];
@@ -1367,7 +883,7 @@ return list[list.length-1];
 
 
 
-return "";
+return "暂无";
 
 
 
@@ -1380,9 +896,10 @@ return "";
 
 
 
-// =======================
-// 退出登录
-// =======================
+
+// ========================
+// 退出
+// ========================
 
 
 function logout(){
@@ -1395,23 +912,21 @@ auth.signOut()
 
 
 window.location.href=
+
 "admin-login.html";
 
 
 });
 
 
-
 }
-
-
 
 
 
 </script>
 
 
-</body>
 
+</body>
 
 </html>
