@@ -7,21 +7,162 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <title>
-qwe博客
+我的个人博客
 </title>
 
 
 <link rel="stylesheet" href="css/style.css">
 
 
-
-<!-- Firebase -->
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+<style>
+
+
+body{
+
+margin:0;
+
+background:#f5f6fa;
+
+font-family:
+
+"Microsoft YaHei",
+Arial;
+
+}
+
+
+
+.header{
+
+
+height:70px;
+
+background:white;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+padding:0 40px;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+
+.logo{
+
+font-size:24px;
+
+font-weight:bold;
+
+}
+
+
+
+.nav a{
+
+text-decoration:none;
+
+margin-left:20px;
+
+}
+
+
+
+.container{
+
+
+max-width:1000px;
+
+margin:40px auto;
+
+}
+
+
+
+
+.article-card{
+
+
+background:white;
+
+padding:25px;
+
+margin-bottom:20px;
+
+border-radius:10px;
+
+}
+
+
+
+.article-card h2{
+
+
+margin-top:0;
+
+
+}
+
+
+
+.article-card a{
+
+
+color:#333;
+
+text-decoration:none;
+
+
+}
+
+
+
+.time{
+
+
+color:#888;
+
+font-size:14px;
+
+}
+
+
+
+.more{
+
+
+text-align:center;
+
+margin:30px;
+
+
+}
+
+
+button{
+
+
+padding:10px 20px;
+
+cursor:pointer;
+
+
+}
+
+
+
+</style>
 
 
 </head>
@@ -32,26 +173,44 @@ qwe博客
 
 
 
-<!-- 顶部导航 -->
-
 <header class="header">
+
 
 
 <div class="logo">
 
-qwe博客
+我的个人博客
 
 </div>
 
 
 
-<a href="admin-login.html"
 
-class="nav-btn">
+<div class="nav">
+
+
+<a href="index.html">
+
+首页
+
+</a>
+
+
+<a href="archive.html">
+
+文章列表
+
+</a>
+
+
+<a href="admin-login.html">
 
 管理员登录
 
 </a>
+
+
+</div>
 
 
 
@@ -62,11 +221,12 @@ class="nav-btn">
 
 
 
+
 <div class="container">
 
 
 
-<h1 class="page-title">
+<h1>
 
 最新文章
 
@@ -74,30 +234,33 @@ class="nav-btn">
 
 
 
-
-
-<div id="articleList"
-
-class="article-list">
+<div id="articleList">
 
 
 加载中...
-
 
 </div>
 
 
 
 
+<div class="more">
 
-<a href="archive.html"
 
-class="more-btn">
+<a href="archive.html">
+
+
+<button>
 
 查看更多文章
 
+</button>
+
+
 </a>
 
+
+</div>
 
 
 
@@ -114,9 +277,9 @@ class="more-btn">
 <script>
 
 
-// ========================
+
+
 // Firebase配置
-// ========================
 
 
 const firebaseConfig = {
@@ -147,6 +310,8 @@ appId:
 
 
 
+
+
 firebase.initializeApp(firebaseConfig);
 
 
@@ -159,17 +324,16 @@ firebase.firestore();
 
 
 
-// ========================
-// 加载首页文章
-// ========================
 
 
-function loadHomeArticles(){
+// 加载文章
+
+
+function loadArticles(){
 
 
 
 db.collection("articles")
-
 
 .where(
 "status",
@@ -177,15 +341,7 @@ db.collection("articles")
 "published"
 )
 
-
-.orderBy(
-"createTime",
-"desc"
-)
-
-
-.limit(6)
-
+.limit(20)
 
 .get()
 
@@ -195,36 +351,78 @@ db.collection("articles")
 
 
 
+let articles=[];
+
+
+
+snapshot.forEach(doc=>{
+
+
+articles.push({
+
+id:doc.id,
+
+...doc.data()
+
+});
+
+
+});
+
+
+
+
+
+
+// 前端排序
+
+
+articles.sort((a,b)=>{
+
+
+let ta =
+a.createTime?.seconds || 0;
+
+
+
+let tb =
+b.createTime?.seconds || 0;
+
+
+
+return tb-ta;
+
+
+});
+
+
+
+
+
+// 首页最多6篇
+
+
+articles =
+articles.slice(0,6);
+
+
+
+
+
+
+
 let html="";
 
 
 
 
 
-if(snapshot.empty){
+if(articles.length===0){
 
 
 html=
 
-`
-
-<div class="article-card">
-
-暂无文章
-
-</div>
-
-`;
-
-
-
-document.getElementById(
-"articleList"
-)
-.innerHTML=html;
-
-
-return;
+"<p>暂无文章</p>";
 
 
 }
@@ -234,73 +432,60 @@ return;
 
 
 
-snapshot.forEach(doc=>{
 
-
-let data =
-doc.data();
-
-
-
-
-let summary =
-removeHTML(
-data.content || ""
-)
-.substring(
-0,
-120
-);
-
-
+articles.forEach(article=>{
 
 
 
 html += `
 
 
-
 <div class="article-card">
-
 
 
 <h2>
 
-<a href="article.html?id=${doc.id}">
 
-${data.title}
+<a href="article.html?id=${article.id}">
+
+
+${article.title}
+
 
 </a>
+
 
 </h2>
 
 
 
-<div class="article-meta">
+<p class="time">
+
 
 发布时间：
 
-${formatTime(data.createTime)}
+${formatTime(article.createTime)}
+
+
+</p>
+
+
+
+
+<p>
+
+
+${getSummary(article.content)}
+
+
+</p>
+
+
 
 </div>
-
-
-
-
-<div class="article-summary">
-
-${summary}...
-
-</div>
-
-
-
-</div>
-
 
 
 `;
-
 
 
 
@@ -310,11 +495,12 @@ ${summary}...
 
 
 
+
+
 document.getElementById(
 "articleList"
 )
 .innerHTML=html;
-
 
 
 
@@ -325,22 +511,14 @@ document.getElementById(
 .catch(error=>{
 
 
+
 document.getElementById(
 "articleList"
 )
+
 .innerHTML=
 
-`
-
-<div class="article-card">
-
-文章加载失败：
-
-${error.message}
-
-</div>
-
-`;
+"文章加载失败："+error.message;
 
 
 
@@ -358,18 +536,31 @@ ${error.message}
 
 
 
-// ========================
-// 去除HTML标签
-// ========================
+// 时间格式
 
 
-function removeHTML(str){
+function formatTime(time){
 
 
-return str.replace(
-/<[^>]*>/g,
-""
+
+if(time && time.toDate){
+
+
+
+return time.toDate()
+
+.toLocaleDateString(
+"zh-CN"
 );
+
+
+
+}
+
+
+
+return "";
+
 
 
 }
@@ -380,17 +571,14 @@ return str.replace(
 
 
 
-
-// ========================
-// 时间格式化
-// ========================
+// 内容摘要
 
 
-function formatTime(time){
+function getSummary(content){
 
 
 
-if(!time){
+if(!content){
 
 return "";
 
@@ -398,21 +586,25 @@ return "";
 
 
 
-
-if(time.toDate){
-
-
-return time.toDate()
-.toLocaleString(
-"zh-CN"
+let text =
+content.replace(
+/<[^>]+>/g,
+""
 );
 
 
+
+if(text.length>120){
+
+
+return text.substring(0,120)+"...";
+
+
 }
 
 
 
-return time;
+return text;
 
 
 
@@ -424,7 +616,8 @@ return time;
 
 
 
-loadHomeArticles();
+
+loadArticles();
 
 
 

@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
-
 <head>
-
 
 <meta charset="UTF-8">
 
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 
 <title>
 文章列表
@@ -19,10 +15,121 @@
 <link rel="stylesheet" href="css/style.css">
 
 
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+
+<style>
+
+
+body{
+
+background:#f5f6fa;
+
+font-family:
+"Microsoft YaHei",
+Arial;
+
+}
+
+
+
+.container{
+
+max-width:1000px;
+
+margin:40px auto;
+
+}
+
+
+
+.header{
+
+background:white;
+
+padding:20px;
+
+display:flex;
+
+justify-content:space-between;
+
+}
+
+
+
+.group{
+
+background:white;
+
+padding:25px;
+
+margin:25px 0;
+
+border-radius:10px;
+
+}
+
+
+
+.article{
+
+border-bottom:1px solid #ddd;
+
+padding:15px 0;
+
+}
+
+
+
+.article:last-child{
+
+border:none;
+
+}
+
+
+
+.article h3{
+
+margin:5px 0;
+
+}
+
+
+
+.article a{
+
+text-decoration:none;
+
+color:#333;
+
+}
+
+
+
+.time{
+
+color:#888;
+
+font-size:14px;
+
+}
+
+
+
+button{
+
+padding:10px 20px;
+
+cursor:pointer;
+
+}
+
+
+</style>
 
 
 
@@ -34,27 +141,28 @@
 
 
 
-<header class="header">
+<div class="header">
 
 
-<div class="logo">
+<h1>
 
-qwe博客
+文章列表
 
-</div>
+</h1>
 
 
-<a href="index.html"
+<a href="index.html">
 
-class="nav-btn">
+<button>
 
 返回首页
+
+</button>
 
 </a>
 
 
-</header>
-
+</div>
 
 
 
@@ -64,40 +172,14 @@ class="nav-btn">
 <div class="container">
 
 
-
-<a href="index.html"
-
-class="back-home">
-
-← 返回首页
-
-</a>
-
-
-
-
-<h1 class="page-title">
-
-全部文章
-
-</h1>
-
-
-
-
-<div id="archiveList">
+<div id="archive">
 
 加载中...
 
 </div>
 
 
-
-
-
 </div>
-
-
 
 
 
@@ -106,11 +188,6 @@ class="back-home">
 
 
 <script>
-
-
-// =====================
-// Firebase配置
-// =====================
 
 
 const firebaseConfig = {
@@ -155,38 +232,18 @@ firebase.firestore();
 
 
 
-// 保存文章结构
 
-
-let articles=[];
-
-
-
-
-
-
-
-
-
-function loadArticles(){
+function loadArchive(){
 
 
 
 db.collection("articles")
-
 
 .where(
 "status",
 "==",
 "published"
 )
-
-
-.orderBy(
-"createTime",
-"desc"
-)
-
 
 .get()
 
@@ -196,85 +253,57 @@ db.collection("articles")
 
 
 
-articles=[];
-
+let articles=[];
 
 
 
 snapshot.forEach(doc=>{
 
 
-let data =
-doc.data();
-
-
-
 articles.push({
 
 id:doc.id,
 
-...data
+...doc.data()
+
+});
 
 
 });
 
 
 
-});
 
 
 
 
-showArchive();
+// 按时间排序
+
+
+articles.sort((a,b)=>{
+
+
+let ta =
+a.createTime?.seconds || 0;
+
+
+let tb =
+b.createTime?.seconds || 0;
 
 
 
-})
-
-
-
-.catch(error=>{
-
-
-document.getElementById(
-"archiveList"
-)
-.innerHTML=
-
-`
-
-<div class="article-card">
-
-加载失败：
-
-${error.message}
-
-</div>
-
-`;
-
+return tb-ta;
 
 
 });
 
 
 
-}
 
 
 
 
-
-
-
-
-// =====================
-// 分类显示
-// =====================
-
-
-function showArchive(){
-
+// 年月分类
 
 
 let groups={};
@@ -283,8 +312,8 @@ let groups={};
 
 
 
-articles.forEach(article=>{
 
+articles.forEach(article=>{
 
 
 let date =
@@ -292,43 +321,31 @@ getDate(article.createTime);
 
 
 
-let year =
-date.year;
-
-
-
-let month =
-date.month;
+let key =
+date.year+"年"+date.month+"月";
 
 
 
 
-if(!groups[year]){
+
+if(!groups[key]){
 
 
-groups[year]={};
+groups[key]=[];
 
 
 }
 
 
 
-if(!groups[year][month]){
-
-
-groups[year][month]=[];
-
-
-}
-
-
-
-groups[year][month]
-.push(article);
+groups[key].push(article);
 
 
 
 });
+
+
+
 
 
 
@@ -341,54 +358,38 @@ let html="";
 
 
 
+if(articles.length===0){
+
+
+html="<p>暂无文章</p>";
+
+
+}
+
+
+
+
+
+
+
+
 Object.keys(groups)
-
-.sort(
-(a,b)=>b-a
-)
-
-.forEach(year=>{
-
-
-
-
-
-html += `
-
-
-<div class="year-title">
-
-${year}年
-
-</div>
-
-
-`;
-
-
-
-
-
-Object.keys(groups[year])
-
-.sort(
-(a,b)=>b-a
-)
 
 .forEach(month=>{
 
 
 
+html+=`
+
+<div class="group">
 
 
-html += `
+<h2>
 
+${month}
 
-<div class="month-title">
+</h2>
 
-${month}月
-
-</div>
 
 
 `;
@@ -397,56 +398,64 @@ ${month}月
 
 
 
-
-groups[year][month]
-
-.forEach(article=>{
+groups[month].forEach(article=>{
 
 
 
+html+=`
 
 
-html += `
-
-
-<div class="archive-item">
+<div class="article">
 
 
 <h3>
 
+
 <a href="article.html?id=${article.id}">
+
 
 ${article.title}
 
+
 </a>
+
 
 </h3>
 
 
 
-<div class="article-meta">
+<div class="time">
+
+
+发布时间：
 
 ${formatTime(article.createTime)}
 
+
 </div>
 
 
+
 </div>
+
 
 
 `;
 
 
 
-
-
 });
 
 
 
 
 
-});
+
+html+=`
+
+</div>
+
+`;
 
 
 
@@ -461,9 +470,29 @@ ${formatTime(article.createTime)}
 
 
 document.getElementById(
-"archiveList"
+"archive"
 )
 .innerHTML=html;
+
+
+
+})
+
+
+
+.catch(error=>{
+
+
+document.getElementById(
+"archive"
+)
+
+.innerHTML=
+
+"加载失败："+error.message;
+
+
+});
 
 
 
@@ -475,51 +504,41 @@ document.getElementById(
 
 
 
-
-// =====================
-// 日期处理
-// =====================
 
 
 function getDate(time){
 
 
 
-let d;
-
-
-
 if(time && time.toDate){
 
 
-d=time.toDate();
 
-
-}
-
-else{
-
-
-d=new Date(time);
-
-
-}
-
-
+let d=time.toDate();
 
 
 
 return {
 
-
 year:d.getFullYear(),
-
 
 month:d.getMonth()+1
 
 
 };
 
+
+}
+
+
+
+return {
+
+year:"",
+
+month:""
+
+};
 
 
 }
@@ -540,7 +559,8 @@ if(time && time.toDate){
 
 
 return time.toDate()
-.toLocaleString(
+
+.toLocaleDateString(
 "zh-CN"
 );
 
@@ -549,7 +569,7 @@ return time.toDate()
 
 
 
-return time || "";
+return "";
 
 
 
@@ -561,14 +581,11 @@ return time || "";
 
 
 
-loadArticles();
+loadArchive();
 
 
 
 </script>
-
-
-
 
 
 </body>

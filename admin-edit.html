@@ -5,11 +5,9 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>
-文章编辑
-</title>
+<title>文章编辑</title>
 
 
 <link rel="stylesheet" href="css/style.css">
@@ -41,7 +39,6 @@ border-radius:10px;
 }
 
 
-
 input{
 
 width:100%;
@@ -58,7 +55,9 @@ margin-bottom:20px;
 
 .toolbar{
 
-background:#f0f0f0;
+background:#f5f5f5;
+
+border:1px solid #ddd;
 
 padding:10px;
 
@@ -70,12 +69,13 @@ padding:10px;
 
 margin:3px;
 
+padding:8px 12px;
+
 }
 
 
 
 .editor{
-
 
 min-height:350px;
 
@@ -86,6 +86,8 @@ padding:20px;
 font-size:18px;
 
 line-height:2;
+
+outline:none;
 
 }
 
@@ -98,12 +100,19 @@ margin-top:20px;
 }
 
 
+.buttons button{
+
+margin-right:10px;
+
+padding:10px 20px;
+
+}
+
 
 </style>
 
 
 </head>
-
 
 
 
@@ -114,11 +123,8 @@ margin-top:20px;
 <div class="edit-container">
 
 
-
 <h1>
-
 文章编辑
-
 </h1>
 
 
@@ -128,7 +134,7 @@ margin-top:20px;
 
 <a href="admin.html">
 
-<button>
+<button type="button">
 
 返回管理后台
 
@@ -158,7 +164,26 @@ placeholder="请输入文章标题">
 <div class="toolbar">
 
 
-<button onclick="command('bold')">
+<button type="button"
+onclick="editorCommand('undo')">
+
+撤销
+
+</button>
+
+
+
+<button type="button"
+onclick="editorCommand('redo')">
+
+恢复
+
+</button>
+
+
+
+<button type="button"
+onclick="editorCommand('bold')">
 
 加粗
 
@@ -166,7 +191,9 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="command('italic')">
+
+<button type="button"
+onclick="editorCommand('italic')">
 
 斜体
 
@@ -174,7 +201,9 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="command('underline')">
+
+<button type="button"
+onclick="editorCommand('underline')">
 
 下划线
 
@@ -183,7 +212,8 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="command('justifyLeft')">
+<button type="button"
+onclick="editorCommand('justifyLeft')">
 
 左对齐
 
@@ -191,7 +221,8 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="command('justifyCenter')">
+<button type="button"
+onclick="editorCommand('justifyCenter')">
 
 居中
 
@@ -199,7 +230,8 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="command('justifyRight')">
+<button type="button"
+onclick="editorCommand('justifyRight')">
 
 右对齐
 
@@ -208,7 +240,35 @@ placeholder="请输入文章标题">
 
 
 
-<button onclick="createLink()">
+<select onchange="fontSize(this.value)">
+
+
+<option value="">
+字体大小
+</option>
+
+
+<option value="3">
+正常
+</option>
+
+
+<option value="5">
+大
+</option>
+
+
+<option value="7">
+超大
+</option>
+
+
+</select>
+
+
+
+<button type="button"
+onclick="createLink()">
 
 插入链接
 
@@ -216,42 +276,8 @@ placeholder="请输入文章标题">
 
 
 
-<select onchange="fontSize(this.value)">
-
-
-<option value="">
-
-字体大小
-
-</option>
-
-
-<option value="3">
-
-正常
-
-</option>
-
-
-<option value="5">
-
-大
-
-</option>
-
-
-<option value="7">
-
-特大
-
-</option>
-
-
-
-</select>
-
-
 </div>
+
 
 
 
@@ -264,8 +290,6 @@ class="editor"
 
 contenteditable="true">
 
-请输入正文...
-
 </div>
 
 
@@ -276,7 +300,8 @@ contenteditable="true">
 <div class="buttons">
 
 
-<button onclick="saveArticle('draft')">
+<button type="button"
+onclick="saveArticle('draft')">
 
 保存草稿
 
@@ -284,7 +309,8 @@ contenteditable="true">
 
 
 
-<button onclick="saveArticle('published')">
+<button type="button"
+onclick="saveArticle('published')">
 
 发布文章
 
@@ -296,10 +322,7 @@ contenteditable="true">
 
 
 
-
-
 <p id="message"></p>
-
 
 
 
@@ -317,7 +340,6 @@ contenteditable="true">
 
 
 
-// Firebase配置
 
 
 const firebaseConfig = {
@@ -347,14 +369,18 @@ appId:
 
 
 
+
 firebase.initializeApp(firebaseConfig);
 
 
 
-const auth=firebase.auth();
+const auth =
+firebase.auth();
 
 
-const db=firebase.firestore();
+
+const db =
+firebase.firestore();
 
 
 
@@ -370,7 +396,8 @@ let editId=null;
 
 
 
-// 登录检查
+
+// 登录检测
 
 
 auth.onAuthStateChanged(user=>{
@@ -393,7 +420,6 @@ checkEdit();
 }
 
 
-
 });
 
 
@@ -404,11 +430,12 @@ checkEdit();
 
 
 
-// 判断是否编辑文章
+
+
+// 判断新建还是编辑
 
 
 function checkEdit(){
-
 
 
 let params =
@@ -428,7 +455,6 @@ params.get("id");
 if(editId){
 
 
-
 loadArticle();
 
 
@@ -437,6 +463,7 @@ loadArticle();
 
 
 }
+
 
 
 
@@ -486,20 +513,32 @@ doc.data();
 
 
 
+
 document.getElementById(
 "title"
-).value=data.title;
+).value=data.title || "";
+
+
 
 
 
 document.getElementById(
 "editor"
-).innerHTML=data.content;
+).innerHTML=data.content || "";
 
+
+
+})
+
+.catch(error=>{
+
+
+alert(
+"读取失败："+error.message
+);
 
 
 });
-
 
 
 }
@@ -512,11 +551,14 @@ document.getElementById(
 
 
 
-// 富文本操作
 
 
-function command(cmd){
+// =======================
+// 富文本
+// =======================
 
+
+function editorCommand(cmd){
 
 
 document.execCommand(
@@ -526,7 +568,6 @@ null
 );
 
 
-
 }
 
 
@@ -534,7 +575,6 @@ null
 
 
 function fontSize(size){
-
 
 
 if(size){
@@ -557,8 +597,8 @@ size
 
 
 
-function createLink(){
 
+function createLink(){
 
 
 let url =
@@ -578,12 +618,13 @@ url
 );
 
 
+}
+
 
 }
 
 
 
-}
 
 
 
@@ -592,8 +633,9 @@ url
 
 
 
-
+// =======================
 // 保存文章
+// =======================
 
 
 function saveArticle(status){
@@ -604,7 +646,6 @@ let title =
 document.getElementById(
 "title"
 ).value.trim();
-
 
 
 
@@ -621,7 +662,7 @@ if(!title){
 
 
 alert(
-"请输入标题"
+"请输入文章标题"
 );
 
 
@@ -630,6 +671,21 @@ return;
 
 }
 
+
+
+
+if(!content){
+
+
+alert(
+"请输入正文"
+);
+
+
+return;
+
+
+}
 
 
 
@@ -666,18 +722,17 @@ db.collection("articles")
 .then(doc=>{
 
 
+let data =
+doc.data();
 
-let data=doc.data();
 
 
-
-let updates =
+let history =
 data.updateTime || [];
 
 
 
-updates.push(now);
-
+history.push(now);
 
 
 
@@ -699,12 +754,11 @@ content:content,
 status:status,
 
 
-updateTime:updates
+updateTime:history
 
 
 
 });
-
 
 
 })
@@ -719,11 +773,24 @@ alert(
 );
 
 
-location.href=
-"admin.html";
+location.href="admin.html";
+
+
+})
+
+
+
+.catch(error=>{
+
+
+alert(
+"保存失败："+error.message
+);
 
 
 });
+
+
 
 
 
@@ -735,7 +802,7 @@ location.href=
 
 
 
-// 新文章
+// 新建文章
 
 
 else{
@@ -745,7 +812,6 @@ else{
 db.collection("articles")
 
 .add({
-
 
 
 title:title,
@@ -760,10 +826,8 @@ status:status,
 author:"管理员",
 
 
-
 createTime:
 firebase.firestore.FieldValue.serverTimestamp(),
-
 
 
 updateTime:[now]
@@ -773,18 +837,32 @@ updateTime:[now]
 })
 
 
-
 .then(()=>{
 
 
 alert(
-"发布成功"
+status==="draft"
+?
+"草稿保存成功"
+:
+"文章发布成功"
 );
 
 
 
-location.href=
-"admin.html";
+location.href="admin.html";
+
+
+})
+
+
+
+.catch(error=>{
+
+
+alert(
+"保存失败："+error.message
+);
 
 
 });
@@ -802,9 +880,8 @@ location.href=
 
 
 
+
 </script>
-
-
 
 
 </body>
