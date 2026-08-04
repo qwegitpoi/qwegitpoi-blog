@@ -20,6 +20,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
+
 <style>
 
 
@@ -30,7 +31,6 @@ margin:0;
 background:#f5f6fa;
 
 font-family:
-
 "Microsoft YaHei",
 Arial;
 
@@ -40,16 +40,15 @@ Arial;
 
 .header{
 
+background:white;
 
 height:70px;
 
-background:white;
-
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
+
+justify-content:space-between;
 
 padding:0 40px;
 
@@ -71,16 +70,15 @@ font-weight:bold;
 
 .nav a{
 
-text-decoration:none;
-
 margin-left:20px;
+
+text-decoration:none;
 
 }
 
 
 
 .container{
-
 
 max-width:1000px;
 
@@ -90,9 +88,7 @@ margin:40px auto;
 
 
 
-
 .article-card{
-
 
 background:white;
 
@@ -108,9 +104,7 @@ border-radius:10px;
 
 .article-card h2{
 
-
 margin-top:0;
-
 
 }
 
@@ -118,11 +112,19 @@ margin-top:0;
 
 .article-card a{
 
-
 color:#333;
 
 text-decoration:none;
 
+}
+
+
+
+.summary{
+
+color:#555;
+
+line-height:1.8;
 
 }
 
@@ -130,33 +132,19 @@ text-decoration:none;
 
 .time{
 
+font-size:14px;
 
 color:#888;
 
-font-size:14px;
-
 }
 
-
-
-.more{
-
-
-text-align:center;
-
-margin:30px;
-
-
-}
 
 
 button{
 
-
 padding:10px 20px;
 
 cursor:pointer;
-
 
 }
 
@@ -176,13 +164,11 @@ cursor:pointer;
 <header class="header">
 
 
-
 <div class="logo">
 
 我的个人博客
 
 </div>
-
 
 
 
@@ -225,7 +211,6 @@ cursor:pointer;
 <div class="container">
 
 
-
 <h1>
 
 最新文章
@@ -236,7 +221,6 @@ cursor:pointer;
 
 <div id="articleList">
 
-
 加载中...
 
 </div>
@@ -244,7 +228,7 @@ cursor:pointer;
 
 
 
-<div class="more">
+<div style="text-align:center;margin:30px;">
 
 
 <a href="archive.html">
@@ -277,11 +261,6 @@ cursor:pointer;
 <script>
 
 
-
-
-// Firebase配置
-
-
 const firebaseConfig = {
 
 
@@ -310,8 +289,6 @@ appId:
 
 
 
-
-
 firebase.initializeApp(firebaseConfig);
 
 
@@ -325,23 +302,11 @@ firebase.firestore();
 
 
 
-
-// 加载文章
-
-
 function loadArticles(){
 
 
 
 db.collection("articles")
-
-.where(
-"status",
-"==",
-"published"
-)
-
-.limit(20)
 
 .get()
 
@@ -355,26 +320,38 @@ let articles=[];
 
 
 
+
+
+
 snapshot.forEach(doc=>{
+
+
+let data=doc.data();
+
+
+
+if(data.status==="published"){
 
 
 articles.push({
 
 id:doc.id,
 
-...doc.data()
+...data
 
 });
 
 
+}
+
+
+
 });
 
 
 
 
 
-
-// 前端排序
 
 
 articles.sort((a,b)=>{
@@ -393,18 +370,17 @@ b.createTime?.seconds || 0;
 return tb-ta;
 
 
+
 });
 
 
 
 
 
-// 首页最多6篇
 
 
 articles =
 articles.slice(0,6);
-
 
 
 
@@ -417,16 +393,14 @@ let html="";
 
 
 
+
 if(articles.length===0){
 
 
-html=
-
-"<p>暂无文章</p>";
+html="<p>暂无文章</p>";
 
 
 }
-
 
 
 
@@ -438,6 +412,7 @@ articles.forEach(article=>{
 
 
 html += `
+
 
 
 <div class="article-card">
@@ -459,7 +434,7 @@ ${article.title}
 
 
 
-<p class="time">
+<div class="time">
 
 
 发布时间：
@@ -467,12 +442,11 @@ ${article.title}
 ${formatTime(article.createTime)}
 
 
-</p>
+</div>
 
 
 
-
-<p>
+<p class="summary">
 
 
 ${getSummary(article.content)}
@@ -497,9 +471,11 @@ ${getSummary(article.content)}
 
 
 
+
 document.getElementById(
 "articleList"
 )
+
 .innerHTML=html;
 
 
@@ -509,7 +485,6 @@ document.getElementById(
 
 
 .catch(error=>{
-
 
 
 document.getElementById(
@@ -536,49 +511,14 @@ document.getElementById(
 
 
 
-// 时间格式
+// Markdown摘要处理
 
 
-function formatTime(time){
-
-
-
-if(time && time.toDate){
+function getSummary(md){
 
 
 
-return time.toDate()
-
-.toLocaleDateString(
-"zh-CN"
-);
-
-
-
-}
-
-
-
-return "";
-
-
-
-}
-
-
-
-
-
-
-
-// 内容摘要
-
-
-function getSummary(content){
-
-
-
-if(!content){
+if(!md){
 
 return "";
 
@@ -586,11 +526,59 @@ return "";
 
 
 
-let text =
-content.replace(
-/<[^>]+>/g,
+let text=md;
+
+
+
+// 去标题符号
+
+
+text=text.replace(
+/#{1,6}\s/g,
 ""
 );
+
+
+
+// 去粗体
+
+
+text=text.replace(
+/\*\*/g,
+""
+);
+
+
+
+// 去斜体
+
+
+text=text.replace(
+/\*/g,
+""
+);
+
+
+
+// 去链接格式
+
+
+text=text.replace(
+/\[([^\]]+)\]\([^)]+\)/g,
+"$1"
+);
+
+
+
+// 去多余换行
+
+
+text=text.replace(
+/\n+/g,
+" "
+);
+
+
 
 
 
@@ -610,6 +598,35 @@ return text;
 
 }
 
+
+
+
+
+
+
+
+function formatTime(time){
+
+
+if(time && time.toDate){
+
+
+return time.toDate()
+
+.toLocaleDateString(
+"zh-CN"
+);
+
+
+}
+
+
+
+return "";
+
+
+
+}
 
 
 

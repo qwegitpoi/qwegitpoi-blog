@@ -7,7 +7,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>文章编辑</title>
+<title>
+Markdown文章编辑
+</title>
 
 
 <link rel="stylesheet" href="css/style.css">
@@ -20,11 +22,20 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
-
 <style>
 
+body{
 
-.edit-container{
+background:#f5f6fa;
+
+font-family:
+"Microsoft YaHei";
+
+}
+
+
+
+.container{
 
 max-width:1000px;
 
@@ -37,6 +48,7 @@ padding:30px;
 border-radius:10px;
 
 }
+
 
 
 input{
@@ -53,58 +65,48 @@ margin-bottom:20px;
 
 
 
-.toolbar{
+textarea{
 
-background:#f5f5f5;
+width:100%;
 
-border:1px solid #ddd;
-
-padding:10px;
-
-}
-
-
-
-.toolbar button{
-
-margin:3px;
-
-padding:8px 12px;
-
-}
-
-
-
-.editor{
-
-min-height:350px;
-
-border:1px solid #ccc;
+height:450px;
 
 padding:20px;
 
-font-size:18px;
+font-size:16px;
 
-line-height:2;
+line-height:1.8;
 
-outline:none;
+box-sizing:border-box;
+
+resize:vertical;
+
+font-family:
+
+Consolas,
+"Microsoft YaHei";
 
 }
 
 
 
-.buttons{
+button{
 
-margin-top:20px;
-
-}
-
-
-.buttons button{
+padding:10px 20px;
 
 margin-right:10px;
 
-padding:10px 20px;
+cursor:pointer;
+
+}
+
+
+
+.info{
+
+color:#666;
+
+margin-top:20px;
 
 }
 
@@ -120,16 +122,15 @@ padding:10px 20px;
 
 
 
-<div class="edit-container">
+<div class="container">
 
 
 <h1>
+
 文章编辑
+
 </h1>
 
-
-
-<div>
 
 
 <a href="admin.html">
@@ -143,12 +144,7 @@ padding:10px 20px;
 </a>
 
 
-</div>
-
-
-
-<br>
-
+<hr>
 
 
 
@@ -158,159 +154,49 @@ placeholder="请输入文章标题">
 
 
 
+<h3>
 
+Markdown正文
 
+</h3>
 
-<div class="toolbar">
 
 
-<button type="button"
-onclick="editorCommand('undo')">
+<textarea id="content"
 
-撤销
+placeholder="
 
-</button>
+# 标题
 
 
+正文内容
 
-<button type="button"
-onclick="editorCommand('redo')">
 
-恢复
+**加粗文字**
 
-</button>
 
+- 列表
 
+">
 
-<button type="button"
-onclick="editorCommand('bold')">
+</textarea>
 
-加粗
 
-</button>
 
 
 
+<br><br>
 
-<button type="button"
-onclick="editorCommand('italic')">
 
-斜体
 
-</button>
-
-
-
-
-<button type="button"
-onclick="editorCommand('underline')">
-
-下划线
-
-</button>
-
-
-
-
-<button type="button"
-onclick="editorCommand('justifyLeft')">
-
-左对齐
-
-</button>
-
-
-
-<button type="button"
-onclick="editorCommand('justifyCenter')">
-
-居中
-
-</button>
-
-
-
-<button type="button"
-onclick="editorCommand('justifyRight')">
-
-右对齐
-
-</button>
-
-
-
-
-<select onchange="fontSize(this.value)">
-
-
-<option value="">
-字体大小
-</option>
-
-
-<option value="3">
-正常
-</option>
-
-
-<option value="5">
-大
-</option>
-
-
-<option value="7">
-超大
-</option>
-
-
-</select>
-
-
-
-<button type="button"
-onclick="createLink()">
-
-插入链接
-
-</button>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div id="editor"
-
-class="editor"
-
-contenteditable="true">
-
-</div>
-
-
-
-
-
-
-<div class="buttons">
-
-
-<button type="button"
-onclick="saveArticle('draft')">
+<button onclick="saveArticle('draft')">
 
 保存草稿
 
 </button>
 
 
-
-<button type="button"
-onclick="saveArticle('published')">
+<button onclick="saveArticle('published')">
 
 发布文章
 
@@ -318,12 +204,8 @@ onclick="saveArticle('published')">
 
 
 
-</div>
-
-
 
 <p id="message"></p>
-
 
 
 </div>
@@ -339,7 +221,7 @@ onclick="saveArticle('published')">
 <script>
 
 
-
+// Firebase配置
 
 
 const firebaseConfig = {
@@ -395,9 +277,7 @@ let editId=null;
 
 
 
-
-
-// 登录检测
+// 登录检查
 
 
 auth.onAuthStateChanged(user=>{
@@ -429,10 +309,7 @@ checkEdit();
 
 
 
-
-
-
-// 判断新建还是编辑
+// 判断编辑模式
 
 
 function checkEdit(){
@@ -471,8 +348,6 @@ loadArticle();
 
 
 
-
-
 // 加载文章
 
 
@@ -489,7 +364,6 @@ db.collection("articles")
 
 
 .then(doc=>{
-
 
 
 if(!doc.exists){
@@ -516,15 +390,17 @@ doc.data();
 
 document.getElementById(
 "title"
-).value=data.title || "";
+).value =
+data.title || "";
 
 
 
 
 
 document.getElementById(
-"editor"
-).innerHTML=data.content || "";
+"content"
+).value =
+data.content || "";
 
 
 
@@ -541,85 +417,6 @@ alert(
 });
 
 
-}
-
-
-
-
-
-
-
-
-
-
-
-// =======================
-// 富文本
-// =======================
-
-
-function editorCommand(cmd){
-
-
-document.execCommand(
-cmd,
-false,
-null
-);
-
-
-}
-
-
-
-
-
-function fontSize(size){
-
-
-if(size){
-
-
-document.execCommand(
-"fontSize",
-false,
-size
-);
-
-
-}
-
-
-}
-
-
-
-
-
-
-
-function createLink(){
-
-
-let url =
-prompt(
-"请输入链接地址"
-);
-
-
-
-if(url){
-
-
-document.execCommand(
-"createLink",
-false,
-url
-);
-
-
-}
-
 
 }
 
@@ -631,11 +428,7 @@ url
 
 
 
-
-
-// =======================
 // 保存文章
-// =======================
 
 
 function saveArticle(status){
@@ -649,10 +442,13 @@ document.getElementById(
 
 
 
+
+
 let content =
 document.getElementById(
-"editor"
-).innerHTML;
+"content"
+).value.trim();
+
 
 
 
@@ -662,7 +458,7 @@ if(!title){
 
 
 alert(
-"请输入文章标题"
+"请输入标题"
 );
 
 
@@ -670,7 +466,6 @@ return;
 
 
 }
-
 
 
 
@@ -693,6 +488,7 @@ return;
 
 let now =
 new Date()
+
 .toLocaleString(
 "zh-CN"
 );
@@ -738,6 +534,7 @@ history.push(now);
 
 
 
+
 return db.collection("articles")
 
 .doc(editId)
@@ -761,9 +558,8 @@ updateTime:history
 });
 
 
+
 })
-
-
 
 .then(()=>{
 
@@ -773,12 +569,11 @@ alert(
 );
 
 
-location.href="admin.html";
+location.href=
+"admin.html";
 
 
 })
-
-
 
 .catch(error=>{
 
@@ -792,8 +587,6 @@ alert(
 
 
 
-
-
 }
 
 
@@ -802,7 +595,7 @@ alert(
 
 
 
-// 新建文章
+// 新文章
 
 
 else{
@@ -826,8 +619,10 @@ status:status,
 author:"管理员",
 
 
+
 createTime:
 firebase.firestore.FieldValue.serverTimestamp(),
+
 
 
 updateTime:[now]
@@ -837,25 +632,30 @@ updateTime:[now]
 })
 
 
+
 .then(()=>{
 
 
 alert(
-status==="draft"
+status==="published"
+
 ?
-"草稿保存成功"
+
+"发布成功"
+
 :
-"文章发布成功"
+
+"草稿保存成功"
+
 );
 
 
 
-location.href="admin.html";
+location.href=
+"admin.html";
 
 
 })
-
-
 
 .catch(error=>{
 
@@ -877,13 +677,10 @@ alert(
 
 
 
-
-
-
-
 </script>
 
 
 </body>
+
 
 </html>

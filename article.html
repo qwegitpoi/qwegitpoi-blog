@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
-
 <head>
-
 
 <meta charset="UTF-8">
 
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 
 <title>
 文章阅读
@@ -57,7 +53,7 @@ border-radius:10px;
 
 
 
-.top{
+.nav{
 
 display:flex;
 
@@ -87,11 +83,11 @@ color:#777;
 
 font-size:14px;
 
-line-height:2;
-
 border-bottom:1px solid #eee;
 
 padding-bottom:20px;
+
+line-height:2;
 
 }
 
@@ -99,20 +95,80 @@ padding-bottom:20px;
 
 .content{
 
+margin-top:30px;
 
 font-size:18px;
 
 line-height:2;
 
-margin-top:30px;
+}
+
+
+
+.content h1{
+
+font-size:32px;
 
 }
 
 
 
-.content img{
+.content h2{
 
-max-width:100%;
+font-size:26px;
+
+}
+
+
+
+.content strong{
+
+font-weight:bold;
+
+}
+
+
+
+.content blockquote{
+
+border-left:5px solid #ddd;
+
+padding-left:15px;
+
+color:#666;
+
+}
+
+
+
+.content code{
+
+background:#eee;
+
+padding:3px 6px;
+
+}
+
+
+
+.content pre{
+
+background:#222;
+
+color:white;
+
+padding:15px;
+
+overflow:auto;
+
+}
+
+
+
+
+.content a{
+
+color:#1677ff;
 
 }
 
@@ -122,7 +178,7 @@ max-width:100%;
 
 margin-top:40px;
 
-background:#f8f8f8;
+background:#f7f7f7;
 
 padding:20px;
 
@@ -145,7 +201,6 @@ cursor:pointer;
 </style>
 
 
-
 </head>
 
 
@@ -154,18 +209,13 @@ cursor:pointer;
 
 
 
-
 <div class="container">
 
 
-
-
-
-<div class="top">
+<div class="nav">
 
 
 <a href="index.html">
-
 
 <button>
 
@@ -173,13 +223,11 @@ cursor:pointer;
 
 </button>
 
-
 </a>
 
 
 
 <a href="archive.html">
-
 
 <button>
 
@@ -187,13 +235,10 @@ cursor:pointer;
 
 </button>
 
-
 </a>
 
 
-
 </div>
-
 
 
 
@@ -201,13 +246,9 @@ cursor:pointer;
 
 <div id="article">
 
-
 加载中...
 
 </div>
-
-
-
 
 
 
@@ -264,9 +305,6 @@ firebase.firestore();
 
 
 
-// 获取文章ID
-
-
 let params =
 new URLSearchParams(
 location.search
@@ -274,7 +312,7 @@ location.search
 
 
 
-let articleId =
+let id =
 params.get("id");
 
 
@@ -282,22 +320,7 @@ params.get("id");
 
 
 
-
-
-if(!articleId){
-
-
-document.getElementById(
-"article"
-)
-.innerHTML=
-
-"文章不存在";
-
-
-}
-
-else{
+if(id){
 
 
 loadArticle();
@@ -305,6 +328,19 @@ loadArticle();
 
 }
 
+else{
+
+
+document.getElementById(
+"article"
+)
+
+.innerHTML=
+
+"文章不存在";
+
+
+}
 
 
 
@@ -319,7 +355,7 @@ function loadArticle(){
 
 db.collection("articles")
 
-.doc(articleId)
+.doc(id)
 
 .get()
 
@@ -348,12 +384,8 @@ return;
 
 
 
-
-
 let data =
 doc.data();
-
-
 
 
 
@@ -393,7 +425,7 @@ ${data.author || "管理员"}
 
 最后编辑：
 
-${lastUpdate(data.updateTime)}
+${lastEdit(data.updateTime)}
 
 
 
@@ -406,12 +438,10 @@ ${lastUpdate(data.updateTime)}
 <div class="content">
 
 
-${data.content}
+${markdownToHtml(data.content)}
 
 
 </div>
-
-
 
 
 
@@ -424,15 +454,11 @@ ${data.content}
 
 
 
-if(
-data.updateTime &&
-data.updateTime.length>1
-){
+if(data.updateTime && data.updateTime.length>1){
 
 
 
 html+=`
-
 
 <div class="history">
 
@@ -445,7 +471,6 @@ html+=`
 
 
 <ul>
-
 
 `;
 
@@ -478,9 +503,7 @@ html+=`
 
 </ul>
 
-
 </div>
-
 
 `;
 
@@ -532,6 +555,240 @@ document.getElementById(
 
 
 
+// 简单Markdown解析
+
+
+function markdownToHtml(md){
+
+
+
+if(!md){
+
+return "";
+
+}
+
+
+
+
+
+let html =
+md;
+
+
+
+// 转义
+
+
+html =
+html.replace(
+/&/g,
+"&amp;"
+);
+
+
+html =
+html.replace(
+/</g,
+"&lt;"
+);
+
+
+html =
+html.replace(
+/>/g,
+"&gt;"
+);
+
+
+
+
+
+
+
+// 代码块
+
+
+html =
+html.replace(
+
+/```([\s\S]*?)```/g,
+
+"<pre>$1</pre>"
+
+);
+
+
+
+
+
+
+
+// 标题
+
+
+html =
+html.replace(
+/^### (.*)$/gm,
+
+"<h3>$1</h3>"
+
+);
+
+
+
+html =
+html.replace(
+/^## (.*)$/gm,
+
+"<h2>$1</h2>"
+
+);
+
+
+
+html =
+html.replace(
+/^# (.*)$/gm,
+
+"<h1>$1</h1>"
+
+);
+
+
+
+
+
+
+
+// 加粗
+
+
+html =
+html.replace(
+
+/\*\*(.*?)\*\*/g,
+
+"<strong>$1</strong>"
+
+);
+
+
+
+
+
+// 斜体
+
+
+html =
+html.replace(
+
+/\*(.*?)\*/g,
+
+"<em>$1</em>"
+
+);
+
+
+
+
+
+
+// 链接
+
+
+html =
+html.replace(
+
+/\[(.*?)\]\((.*?)\)/g,
+
+'<a href="$2" target="_blank">$1</a>'
+
+);
+
+
+
+
+
+
+
+// 引用
+
+
+html =
+html.replace(
+
+/^> (.*)$/gm,
+
+"<blockquote>$1</blockquote>"
+
+);
+
+
+
+
+
+
+
+// 无序列表
+
+
+html =
+html.replace(
+
+/^- (.*)$/gm,
+
+"<li>$1</li>"
+
+);
+
+
+
+html =
+html.replace(
+
+/(<li>.*<\/li>)/gs,
+
+"<ul>$1</ul>"
+
+);
+
+
+
+
+
+
+
+// 换行
+
+
+html =
+html.replace(
+
+/\n/g,
+
+"<br>"
+
+);
+
+
+
+
+
+return html;
+
+
+
+}
+
+
+
+
+
+
+
+
+
 function formatTime(time){
 
 
@@ -548,7 +805,6 @@ return time.toDate()
 }
 
 
-
 return "";
 
 
@@ -560,23 +816,16 @@ return "";
 
 
 
+function lastEdit(list){
 
 
-function lastUpdate(list){
-
-
-
-if(
-list &&
-list.length>0
-){
+if(list && list.length){
 
 
 return list[list.length-1];
 
 
 }
-
 
 
 return "暂无";
@@ -590,8 +839,6 @@ return "暂无";
 </script>
 
 
-
 </body>
-
 
 </html>

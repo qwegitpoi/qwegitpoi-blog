@@ -22,9 +22,22 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
+
 <style>
 
-.admin-container{
+
+body{
+
+background:#f5f6fa;
+
+font-family:
+"Microsoft YaHei";
+
+}
+
+
+
+.container{
 
 max-width:1100px;
 
@@ -39,7 +52,8 @@ border-radius:10px;
 }
 
 
-.top-bar{
+
+.top{
 
 display:flex;
 
@@ -47,19 +61,31 @@ justify-content:space-between;
 
 align-items:center;
 
-margin-bottom:30px;
+}
+
+
+
+button{
+
+padding:10px 18px;
+
+cursor:pointer;
+
+margin-left:8px;
 
 }
 
 
-.action-bar{
 
-margin-bottom:30px;
+.section{
+
+margin-top:40px;
 
 }
 
 
-.article-item{
+
+.article-card{
 
 border:1px solid #ddd;
 
@@ -73,7 +99,7 @@ border-radius:8px;
 
 
 
-.article-item h3{
+.article-card h3{
 
 margin-top:0;
 
@@ -92,33 +118,43 @@ line-height:1.8;
 }
 
 
-button{
 
-cursor:pointer;
+.summary{
+
+margin-top:10px;
+
+color:#555;
 
 }
 
 
-.edit-btn{
+
+.draft{
+
+background:#fff8e1;
+
+}
+
+
+
+.delete{
+
+background:#e53935;
+
+color:white;
+
+}
+
+
+
+.edit{
 
 background:#1976d2;
 
-}
-
-
-
-.delete-btn{
-
-background:#d32f2f;
+color:white;
 
 }
 
-
-.draft-title{
-
-color:#d68910;
-
-}
 
 
 </style>
@@ -132,11 +168,11 @@ color:#d68910;
 
 
 
-<div class="admin-container">
+<div class="container">
 
 
 
-<div class="top-bar">
+<div class="top">
 
 
 <h1>
@@ -159,6 +195,19 @@ color:#d68910;
 </a>
 
 
+
+<a href="admin-edit.html">
+
+<button>
+
+发布文章
+
+</button>
+
+</a>
+
+
+
 <button onclick="logout()">
 
 退出登录
@@ -169,36 +218,14 @@ color:#d68910;
 </div>
 
 
-
 </div>
 
 
 
 
 
-<div class="action-bar">
 
-
-<a href="admin-edit.html">
-
-
-<button>
-
-＋ 发布新文章
-
-</button>
-
-
-</a>
-
-
-
-</div>
-
-
-
-
-
+<div class="section">
 
 
 <h2>
@@ -209,9 +236,12 @@ color:#d68910;
 
 
 
-<div id="publishedList">
+<div id="published">
 
 加载中...
+
+</div>
+
 
 </div>
 
@@ -221,11 +251,8 @@ color:#d68910;
 
 
 
-<hr>
 
-
-
-
+<div class="section">
 
 
 <h2>
@@ -235,11 +262,12 @@ color:#d68910;
 </h2>
 
 
-
-
-<div id="draftList">
+<div id="draft">
 
 加载中...
+
+</div>
+
 
 </div>
 
@@ -258,11 +286,6 @@ color:#d68910;
 
 
 <script>
-
-
-// ========================
-// Firebase配置
-// ========================
 
 
 const firebaseConfig = {
@@ -291,13 +314,14 @@ appId:
 
 
 
+
+
 firebase.initializeApp(firebaseConfig);
 
 
 
 const auth =
 firebase.auth();
-
 
 
 const db =
@@ -309,17 +333,13 @@ firebase.firestore();
 
 
 
-// 登录检测
-
-
 auth.onAuthStateChanged(user=>{
 
 
 if(!user){
 
 
-window.location.href=
-"admin-login.html";
+location.href="admin-login.html";
 
 
 }
@@ -333,7 +353,6 @@ loadArticles();
 }
 
 
-
 });
 
 
@@ -342,11 +361,6 @@ loadArticles();
 
 
 
-
-
-// ========================
-// 加载全部文章
-// ========================
 
 
 function loadArticles(){
@@ -358,15 +372,14 @@ db.collection("articles")
 .get()
 
 
+
 .then(snapshot=>{
 
 
 
 let published=[];
 
-
 let draft=[];
-
 
 
 
@@ -375,8 +388,8 @@ let draft=[];
 snapshot.forEach(doc=>{
 
 
-
 let data=doc.data();
+
 
 
 let article={
@@ -394,6 +407,7 @@ id:doc.id,
 
 
 
+
 if(data.status==="published"){
 
 
@@ -404,7 +418,7 @@ published.push(article);
 
 
 
-if(data.status==="draft"){
+else if(data.status==="draft"){
 
 
 draft.push(article);
@@ -414,15 +428,13 @@ draft.push(article);
 
 
 
+
 });
 
 
 
 
 
-
-
-// 前端排序
 
 
 published.sort(sortTime);
@@ -436,41 +448,25 @@ draft.sort(sortTime);
 
 
 
-showPublished(
-published
-);
+showPublished(published);
 
 
-
-showDraft(
-draft
-);
+showDraft(draft);
 
 
 
 })
 
-
-
 .catch(error=>{
 
 
 document.getElementById(
-"publishedList"
+"published"
 )
+
 .innerHTML=
 
 "加载失败："+error.message;
-
-
-
-document.getElementById(
-"draftList"
-)
-.innerHTML=
-
-"加载失败："+error.message;
-
 
 
 });
@@ -487,11 +483,6 @@ document.getElementById(
 
 
 
-// ========================
-// 已发布文章显示
-// ========================
-
-
 function showPublished(list){
 
 
@@ -500,26 +491,109 @@ let html="";
 
 
 
-
-
 if(list.length===0){
 
 
-html="暂无已发布文章";
+html="<p>暂无已发布文章</p>";
 
 
 }
 
 
 
+
+
 list.forEach(article=>{
 
 
-html += `
+
+html+=createCard(article,false);
 
 
 
-<div class="article-item">
+});
+
+
+
+
+
+document.getElementById(
+"published"
+)
+
+.innerHTML=html;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function showDraft(list){
+
+
+
+let html="";
+
+
+
+if(list.length===0){
+
+
+html="<p>暂无草稿</p>";
+
+
+}
+
+
+
+
+
+list.forEach(article=>{
+
+
+
+html+=createCard(article,true);
+
+
+
+});
+
+
+
+
+document.getElementById(
+"draft"
+)
+
+.innerHTML=html;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function createCard(article,isDraft){
+
+
+
+return `
+
+
+<div class="article-card ${isDraft?'draft':''}">
 
 
 <h3>
@@ -543,9 +617,17 @@ ${formatTime(article.createTime)}
 
 最后编辑：
 
-${lastUpdate(article.updateTime)}
+${lastEdit(article.updateTime)}
 
 
+</div>
+
+
+
+<div class="summary">
+
+
+${getSummary(article.content)}
 
 </div>
 
@@ -554,127 +636,18 @@ ${lastUpdate(article.updateTime)}
 <br>
 
 
-<button class="edit-btn"
+
+<button class="edit"
 
 onclick="editArticle('${article.id}')">
 
-编辑
+${isDraft?'继续编辑':'编辑'}
 
 </button>
 
 
 
-<button class="delete-btn"
-
-onclick="deleteArticle('${article.id}')">
-
-删除
-
-</button>
-
-
-
-</div>
-
-
-
-`;
-
-
-
-});
-
-
-
-
-
-document.getElementById(
-"publishedList"
-)
-.innerHTML=html;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-
-// ========================
-// 草稿显示
-// ========================
-
-
-function showDraft(list){
-
-
-
-let html="";
-
-
-
-if(list.length===0){
-
-
-html="暂无草稿";
-
-
-}
-
-
-
-list.forEach(article=>{
-
-
-html += `
-
-
-
-<div class="article-item">
-
-
-<h3 class="draft-title">
-
-
-${article.title}
-
-</h3>
-
-
-
-
-<div class="meta">
-
-
-保存时间：
-
-${lastUpdate(article.updateTime)}
-
-
-</div>
-
-
-
-<br>
-
-
-<button class="edit-btn"
-
-onclick="editArticle('${article.id}')">
-
-继续编辑
-
-</button>
-
-
-
-<button class="delete-btn"
+<button class="delete"
 
 onclick="deleteArticle('${article.id}')">
 
@@ -691,19 +664,6 @@ onclick="deleteArticle('${article.id}')">
 
 
 
-});
-
-
-
-
-
-document.getElementById(
-"draftList"
-)
-.innerHTML=html;
-
-
-
 }
 
 
@@ -712,17 +672,12 @@ document.getElementById(
 
 
 
-
-
-// ========================
-// 编辑
-// ========================
 
 
 function editArticle(id){
 
 
-window.location.href=
+location.href=
 
 "admin-edit.html?id="+id;
 
@@ -737,17 +692,12 @@ window.location.href=
 
 
 
-// ========================
-// 删除
-// ========================
-
-
 function deleteArticle(id){
 
 
 
 if(!confirm(
-"确定删除这篇文章吗？"
+"确定删除文章？"
 )){
 
 
@@ -758,13 +708,12 @@ return;
 
 
 
-
-
 db.collection("articles")
 
 .doc(id)
 
 .delete()
+
 
 
 .then(()=>{
@@ -803,9 +752,72 @@ alert(
 
 
 
-// ========================
-// 排序
-// ========================
+function getSummary(md){
+
+
+
+if(!md){
+
+return "";
+
+}
+
+
+
+let text=md;
+
+
+
+text=text.replace(
+/#{1,6}\s/g,
+""
+);
+
+
+
+text=text.replace(
+/\*\*/g,
+""
+);
+
+
+
+text=text.replace(
+/\*/g,
+""
+);
+
+
+
+text=text.replace(
+/\n+/g,
+" "
+);
+
+
+
+
+
+return text.length>100
+
+?
+
+text.substring(0,100)+"..."
+
+:
+
+text;
+
+
+
+}
+
+
+
+
+
+
+
 
 
 function sortTime(a,b){
@@ -854,7 +866,7 @@ return time.toDate()
 
 
 
-return "";
+return "暂无";
 
 
 
@@ -866,14 +878,12 @@ return "";
 
 
 
-function lastUpdate(list){
+
+function lastEdit(list){
 
 
 
-if(
-list &&
-list.length>0
-){
+if(list && list.length){
 
 
 return list[list.length-1];
@@ -897,13 +907,7 @@ return "暂无";
 
 
 
-// ========================
-// 退出
-// ========================
-
-
 function logout(){
-
 
 
 auth.signOut()
@@ -911,9 +915,7 @@ auth.signOut()
 .then(()=>{
 
 
-window.location.href=
-
-"admin-login.html";
+location.href="admin-login.html";
 
 
 });
