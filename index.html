@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>曾永个人博客</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+<div class="logo">
+曾永个人博客
+</div>
+
+
+<a class="admin-btn" href="admin-login.html">
+管理员登录
+</a>
+
+
+</header>
+
+
+
+<section class="banner">
+
+<h1>
+分享教育、AIGC与技术实践
+</h1>
+
+<p>
+记录教学研究、项目开发与个人思考
+</p>
+
+</section>
+
+
+
+
+<main class="container">
+
+
+<h2>
+最新文章
+</h2>
+
+
+<div id="articleList">
+
+正在加载文章...
+
+</div>
+
+
+
+</main>
+
+
+
+
+
+<script>
+
+
+// Firebase配置
+
+const firebaseConfig = {
+
+
+apiKey:
+"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+
+
+authDomain:
+"qwegitpoi-blog.firebaseapp.com",
+
+
+projectId:
+"qwegitpoi-blog",
+
+
+storageBucket:
+"qwegitpoi-blog.firebasestorage.app",
+
+
+messagingSenderId:
+"313324557146",
+
+
+appId:
+"1:313324557146:web:4a93868894c9329006d963"
+
+};
+
+
+
+// 初始化
+
+firebase.initializeApp(firebaseConfig);
+
+
+const db =
+firebase.firestore();
+
+
+
+
+//读取文章
+
+
+db.collection("articles")
+.orderBy("time","desc")
+.get()
+
+.then(snapshot=>{
+
+
+let html="";
+
+
+if(snapshot.empty){
+
+
+html=
+"<p>暂无文章</p>";
+
+
+}
+
+
+
+snapshot.forEach(doc=>{
+
+
+let article =
+doc.data();
+
+
+
+html += `
+
+
+<div class="article-card">
+
+
+<h3>
+
+${article.title}
+
+</h3>
+
+
+<p>
+
+${article.content.substring(0,120)}
+
+...
+
+</p>
+
+
+<div class="time">
+
+${article.time}
+
+</div>
+
+
+
+<a href="article.html?id=${doc.id}">
+
+阅读全文
+
+</a>
+
+
+</div>
+
+
+`;
+
+
+});
+
+
+
+document.getElementById("articleList")
+.innerHTML=html;
+
+
+
+})
+
+
+.catch(error=>{
+
+
+document.getElementById("articleList")
+.innerHTML=
+
+"文章加载失败："+error.message;
+
+
+});
+
+
+
+</script>
+
+
+
+</body>
+
+</html>
