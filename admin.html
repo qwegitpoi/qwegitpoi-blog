@@ -7,12 +7,10 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+
 <title>
 博客管理后台
 </title>
-
-
-<link rel="stylesheet" href="css/style.css">
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -26,7 +24,14 @@
 <style>
 
 
+*{
+box-sizing:border-box;
+}
+
+
 body{
+
+margin:0;
 
 background:#f5f6fa;
 
@@ -37,23 +42,29 @@ font-family:
 
 
 
-.container{
 
-max-width:1100px;
+.header{
 
-margin:30px auto;
 
 background:white;
 
-padding:30px;
+padding:15px;
 
-border-radius:10px;
+position:sticky;
+
+top:0;
+
+z-index:10;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
 
 }
 
 
 
-.top{
+.header-top{
+
 
 display:flex;
 
@@ -61,47 +72,159 @@ justify-content:space-between;
 
 align-items:center;
 
+
+}
+
+
+
+.header h1{
+
+
+font-size:21px;
+
+margin:0;
+
+
 }
 
 
 
 button{
 
-padding:10px 18px;
+
+padding:9px 14px;
+
+border:0;
+
+border-radius:20px;
 
 cursor:pointer;
 
-margin-left:8px;
+}
+
+
+
+
+.blue{
+
+background:#1677ff;
+
+color:white;
 
 }
 
 
 
-.section{
+.gray{
 
-margin-top:40px;
+background:#eee;
 
 }
 
 
 
-.article-card{
 
-border:1px solid #ddd;
+.container{
 
-padding:20px;
+
+padding:15px;
+
+
+}
+
+
+
+
+
+.search{
+
+
+background:white;
+
+padding:15px;
+
+border-radius:12px;
 
 margin:15px 0;
 
-border-radius:8px;
 
 }
 
 
 
-.article-card h3{
 
-margin-top:0;
+input{
+
+
+width:100%;
+
+padding:13px;
+
+border:1px solid #ddd;
+
+border-radius:25px;
+
+font-size:16px;
+
+
+}
+
+
+
+
+
+.section-title{
+
+
+font-size:20px;
+
+font-weight:bold;
+
+margin:25px 0 15px;
+
+
+}
+
+
+
+
+
+.card{
+
+
+background:white;
+
+padding:18px;
+
+border-radius:12px;
+
+margin-bottom:15px;
+
+
+}
+
+
+
+
+.title{
+
+
+font-size:18px;
+
+font-weight:bold;
+
+
+}
+
+
+
+.title a{
+
+
+text-decoration:none;
+
+color:#222;
+
 
 }
 
@@ -109,11 +232,27 @@ margin-top:0;
 
 .meta{
 
-color:#777;
+
+font-size:13px;
+
+color:#888;
+
+line-height:1.8;
+
+margin-top:10px;
+
+
+}
+
+
+
+.tags{
+
+
+color:#1677ff;
 
 font-size:14px;
 
-line-height:1.8;
 
 }
 
@@ -121,17 +260,39 @@ line-height:1.8;
 
 .summary{
 
-margin-top:10px;
+
+font-size:14px;
 
 color:#555;
+
+line-height:1.7;
+
+margin:10px 0;
+
 
 }
 
 
 
-.draft{
 
-background:#fff8e1;
+
+.actions button{
+
+
+margin-right:8px;
+
+}
+
+
+
+
+
+.edit{
+
+
+background:#1677ff;
+
+color:white;
 
 }
 
@@ -139,19 +300,38 @@ background:#fff8e1;
 
 .delete{
 
+
 background:#e53935;
 
 color:white;
+
 
 }
 
 
 
-.edit{
+.draft{
 
-background:#1976d2;
 
-color:white;
+border-left:4px solid #ff9800;
+
+
+}
+
+
+
+.empty{
+
+
+background:white;
+
+padding:25px;
+
+text-align:center;
+
+color:#888;
+
+border-radius:10px;
 
 }
 
@@ -159,8 +339,11 @@ color:white;
 
 </style>
 
-
 </head>
+
+
+
+
 
 
 
@@ -168,15 +351,16 @@ color:white;
 
 
 
-<div class="container">
+<div class="header">
 
 
-
-<div class="top">
+<div class="header-top">
 
 
 <h1>
-博客管理后台
+
+博客管理
+
 </h1>
 
 
@@ -186,11 +370,13 @@ color:white;
 
 <a href="index.html">
 
-<button>
 
-返回首页
+<button class="gray">
+
+首页
 
 </button>
+
 
 </a>
 
@@ -198,21 +384,35 @@ color:white;
 
 <a href="admin-edit.html">
 
-<button>
 
-发布文章
+<button class="blue">
+
+发布
 
 </button>
+
 
 </a>
 
 
+</div>
 
-<button onclick="logout()">
 
-退出登录
+</div>
 
-</button>
+
+
+
+
+
+<div class="search">
+
+
+<input id="search"
+
+placeholder="搜索标题或正文..."
+
+oninput="searchArticle()">
 
 
 </div>
@@ -225,15 +425,18 @@ color:white;
 
 
 
-<div class="section">
 
 
-<h2>
+
+<div class="container">
+
+
+
+<div class="section-title">
 
 已发布文章
 
-</h2>
-
+</div>
 
 
 <div id="published">
@@ -243,23 +446,17 @@ color:white;
 </div>
 
 
-</div>
 
 
 
 
 
-
-
-
-<div class="section">
-
-
-<h2>
+<div class="section-title">
 
 草稿箱
 
-</h2>
+</div>
+
 
 
 <div id="draft">
@@ -267,11 +464,6 @@ color:white;
 加载中...
 
 </div>
-
-
-</div>
-
-
 
 
 
@@ -310,6 +502,7 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
 
 
@@ -324,12 +517,15 @@ const auth =
 firebase.auth();
 
 
+
 const db =
 firebase.firestore();
 
 
 
 
+
+let allArticles=[];
 
 
 
@@ -338,9 +534,7 @@ auth.onAuthStateChanged(user=>{
 
 if(!user){
 
-
 location.href="admin-login.html";
-
 
 }
 
@@ -376,61 +570,151 @@ db.collection("articles")
 .then(snapshot=>{
 
 
-
-let published=[];
-
-let draft=[];
-
-
+allArticles=[];
 
 
 
 snapshot.forEach(doc=>{
 
 
-let data=doc.data();
-
-
-
-let article={
-
+allArticles.push({
 
 id:doc.id,
 
+...doc.data()
 
-...data
-
-
-};
+});
 
 
-
+});
 
 
 
-if(data.status==="published"){
 
 
-published.push(article);
+render();
+
+
+
+})
+
+.catch(e=>{
+
+
+alert(
+"加载失败："+e.message
+);
+
+
+});
+
 
 
 }
 
 
 
-else if(data.status==="draft"){
 
 
-draft.push(article);
+
+
+
+
+function searchArticle(){
+
+
+
+render();
+
 
 
 }
 
+
+
+
+
+
+
+
+
+function render(){
+
+
+
+let key=
+
+document.getElementById(
+"search"
+)
+
+.value
+
+.toLowerCase();
+
+
+
+
+
+let list=allArticles.filter(a=>{
+
+
+
+if(!key)
+
+return true;
+
+
+
+
+
+return (
+
+a.title||""
+
+).toLowerCase()
+
+.includes(key)
+
+
+
+||
+
+(
+
+a.content||""
+
+).toLowerCase()
+
+.includes(key);
 
 
 
 });
 
+
+
+
+
+
+
+let published=
+
+list.filter(a=>
+
+a.status==="published"
+
+);
+
+
+
+let drafts=
+
+list.filter(a=>
+
+a.status==="draft"
+
+);
 
 
 
@@ -439,25 +723,10 @@ draft.push(article);
 
 published.sort(sortTime);
 
-
-draft.sort(sortTime);
-
+drafts.sort(sortTime);
 
 
 
-
-
-
-showPublished(published);
-
-
-showDraft(draft);
-
-
-
-})
-
-.catch(error=>{
 
 
 document.getElementById(
@@ -466,104 +735,17 @@ document.getElementById(
 
 .innerHTML=
 
-"加载失败："+error.message;
+published.length
 
+?
 
-});
+published.map(createPublished).join("")
 
+:
 
+"<div class='empty'>暂无文章</div>";
 
-}
 
-
-
-
-
-
-
-
-
-function showPublished(list){
-
-
-
-let html="";
-
-
-
-if(list.length===0){
-
-
-html="<p>暂无已发布文章</p>";
-
-
-}
-
-
-
-
-
-list.forEach(article=>{
-
-
-
-html+=createCard(article,false);
-
-
-
-});
-
-
-
-
-
-document.getElementById(
-"published"
-)
-
-.innerHTML=html;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function showDraft(list){
-
-
-
-let html="";
-
-
-
-if(list.length===0){
-
-
-html="<p>暂无草稿</p>";
-
-
-}
-
-
-
-
-
-list.forEach(article=>{
-
-
-
-html+=createCard(article,true);
-
-
-
-});
 
 
 
@@ -572,7 +754,17 @@ document.getElementById(
 "draft"
 )
 
-.innerHTML=html;
+.innerHTML=
+
+drafts.length
+
+?
+
+drafts.map(createDraft).join("")
+
+:
+
+"<div class='empty'>暂无草稿</div>";
 
 
 
@@ -586,39 +778,54 @@ document.getElementById(
 
 
 
-function createCard(article,isDraft){
+function createPublished(a){
 
 
 
 return `
 
 
-<div class="article-card ${isDraft?'draft':''}">
+<div class="card">
 
 
-<h3>
+<div class="title">
 
-${article.title}
 
-</h3>
+<a href="article.html?id=${a.id}">
+
+
+${a.title}
+
+</a>
+
+
+</div>
+
 
 
 
 <div class="meta">
 
-
 发布时间：
 
-${formatTime(article.createTime)}
-
+${format(a.createTime)}
 
 <br>
 
-
 最后编辑：
 
-${lastEdit(article.updateTime)}
+${lastEdit(a.updateTime)}
 
+</div>
+
+
+
+
+<div class="tags">
+
+标签：
+
+${(a.tags||[]).join(" , ")}
 
 </div>
 
@@ -626,34 +833,35 @@ ${lastEdit(article.updateTime)}
 
 <div class="summary">
 
-
-${getSummary(article.content)}
+${summary(a.content)}
 
 </div>
 
 
 
-<br>
 
+<div class="actions">
 
 
 <button class="edit"
 
-onclick="editArticle('${article.id}')">
+onclick="edit('${a.id}')">
 
-${isDraft?'继续编辑':'编辑'}
+编辑
 
 </button>
-
 
 
 <button class="delete"
 
-onclick="deleteArticle('${article.id}')">
+onclick="del('${a.id}')">
 
 删除
 
 </button>
+
+
+</div>
 
 
 
@@ -674,7 +882,81 @@ onclick="deleteArticle('${article.id}')">
 
 
 
-function editArticle(id){
+function createDraft(a){
+
+
+
+return `
+
+
+<div class="card draft">
+
+
+<div class="title">
+
+
+${a.title}
+
+
+</div>
+
+
+
+<div class="meta">
+
+保存：
+
+${lastEdit(a.updateTime)}
+
+</div>
+
+
+
+<div class="actions">
+
+
+<button class="edit"
+
+onclick="edit('${a.id}')">
+
+继续编辑
+
+</button>
+
+
+
+<button class="delete"
+
+onclick="del('${a.id}')">
+
+删除
+
+</button>
+
+
+
+</div>
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function edit(id){
 
 
 location.href=
@@ -691,20 +973,12 @@ location.href=
 
 
 
-
-function deleteArticle(id){
-
+function del(id){
 
 
-if(!confirm(
-"确定删除文章？"
-)){
-
+if(!confirm("确定删除？"))
 
 return;
-
-
-}
 
 
 
@@ -714,32 +988,7 @@ db.collection("articles")
 
 .delete()
 
-
-
-.then(()=>{
-
-
-alert(
-"删除成功"
-);
-
-
-loadArticles();
-
-
-})
-
-
-.catch(error=>{
-
-
-alert(
-"删除失败："+error.message
-);
-
-
-});
-
+.then(loadArticles);
 
 
 }
@@ -752,67 +1001,32 @@ alert(
 
 
 
-function getSummary(md){
+function summary(md){
+
+
+if(!md)return "";
 
 
 
-if(!md){
+return md
 
-return "";
+.replace(/#{1,6}\s/g,"")
 
-}
+.replace(/\*\*/g,"")
 
+.replace(/\*/g,"")
 
+.replace(/<[^>]+>/g,"")
 
-let text=md;
+.replace(/\n+/g," ")
 
+.substring(0,100)
 
-
-text=text.replace(
-/#{1,6}\s/g,
-""
-);
-
-
-
-text=text.replace(
-/\*\*/g,
-""
-);
-
-
-
-text=text.replace(
-/\*/g,
-""
-);
-
-
-
-text=text.replace(
-/\n+/g,
-" "
-);
-
-
-
-
-
-return text.length>100
-
-?
-
-text.substring(0,100)+"..."
-
-:
-
-text;
++"...";
 
 
 
 }
-
-
 
 
 
@@ -823,42 +1037,18 @@ text;
 function sortTime(a,b){
 
 
+return (
 
-let ta =
-a.createTime?.seconds || 0;
+b.createTime?.seconds||0
 
+)
 
+-
 
-let tb =
-b.createTime?.seconds || 0;
+(
 
+a.createTime?.seconds||0
 
-
-return tb-ta;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function formatTime(time){
-
-
-
-if(time && time.toDate){
-
-
-return time.toDate()
-
-.toLocaleString(
-"zh-CN"
 );
 
 
@@ -866,9 +1056,26 @@ return time.toDate()
 
 
 
-return "暂无";
 
 
+
+
+
+function format(t){
+
+
+if(t&&t.toDate){
+
+
+return t.toDate()
+
+.toLocaleString("zh-CN");
+
+
+}
+
+
+return "";
 
 }
 
@@ -879,47 +1086,15 @@ return "暂无";
 
 
 
-function lastEdit(list){
+function lastEdit(arr){
 
 
+if(arr&&arr.length)
 
-if(list && list.length){
-
-
-return list[list.length-1];
+return arr[arr.length-1];
 
 
-}
-
-
-
-return "暂无";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function logout(){
-
-
-auth.signOut()
-
-.then(()=>{
-
-
-location.href="admin-login.html";
-
-
-});
-
+return "";
 
 }
 
