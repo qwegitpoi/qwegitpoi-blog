@@ -5,14 +5,12 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
 
 <title>
 文章阅读
 </title>
-
-
-<link rel="stylesheet" href="css/style.css">
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -20,11 +18,25 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
+<!-- Markdown解析 -->
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+
 
 <style>
 
 
+*{
+
+box-sizing:border-box;
+
+}
+
+
 body{
+
+margin:0;
 
 background:#f5f6fa;
 
@@ -33,175 +45,302 @@ font-family:
 "Microsoft YaHei",
 Arial;
 
+color:#333;
+
+}
+
+
+
+/* 阅读进度 */
+
+.progress{
+
+position:fixed;
+
+top:0;
+
+left:0;
+
+height:4px;
+
+background:#1677ff;
+
+width:0%;
+
+z-index:100;
+
+
+}
+
+
+
+
+
+.header{
+
+
+background:white;
+
+padding:15px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+position:sticky;
+
+top:0;
+
+z-index:20;
+
+box-shadow:0 2px 8px rgba(0,0,0,.08);
+
+
+}
+
+
+
+
+
+.back{
+
+
+color:#1677ff;
+
+text-decoration:none;
+
+font-size:15px;
+
+
 }
 
 
 
 .container{
 
-max-width:900px;
 
-margin:40px auto;
+padding:15px;
+
+
+}
+
+
+
+
+.article{
+
 
 background:white;
 
-padding:40px;
+padding:20px;
 
-border-radius:10px;
+border-radius:12px;
+
 
 }
 
 
 
-.nav{
 
-display:flex;
 
-justify-content:space-between;
+h1{
 
-margin-bottom:30px;
+
+font-size:25px;
+
+line-height:1.5;
+
+margin-top:0;
+
 
 }
 
 
 
-.title{
 
-font-size:36px;
+.meta{
 
-font-weight:bold;
-
-margin-bottom:20px;
-
-}
-
-
-
-.info{
-
-color:#777;
 
 font-size:14px;
 
-border-bottom:1px solid #eee;
-
-padding-bottom:20px;
+color:#888;
 
 line-height:2;
 
+
 }
+
+
+
+
+.tags{
+
+
+margin:15px 0;
+
+
+}
+
+
+
+
+.tag{
+
+
+display:inline-block;
+
+background:#eef5ff;
+
+color:#1677ff;
+
+padding:6px 12px;
+
+border-radius:20px;
+
+margin:4px;
+
+font-size:13px;
+
+
+}
+
+
+
+
+
+
+.toc{
+
+
+background:#f8f8f8;
+
+padding:15px;
+
+border-radius:10px;
+
+margin:20px 0;
+
+
+}
+
+
+
+.toc-title{
+
+
+font-weight:bold;
+
+margin-bottom:10px;
+
+
+}
+
+
+
+.toc a{
+
+
+display:block;
+
+font-size:14px;
+
+color:#555;
+
+text-decoration:none;
+
+padding:5px 0;
+
+
+}
+
+
+
 
 
 
 .content{
 
+
+font-size:17px;
+
+line-height:1.9;
+
+
+}
+
+
+
+
+.content h1,
+.content h2,
+.content h3{
+
+
 margin-top:30px;
 
-font-size:18px;
-
-line-height:2;
 
 }
 
 
 
-.content h1{
-
-font-size:32px;
-
-}
 
 
+.content img{
 
-.content h2{
 
-font-size:26px;
+max-width:100%;
 
 }
 
 
 
-.content strong{
 
-font-weight:bold;
+
+.nav{
+
+
+display:flex;
+
+justify-content:space-between;
+
+margin-top:30px;
+
 
 }
 
 
 
-.content blockquote{
-
-border-left:5px solid #ddd;
-
-padding-left:15px;
-
-color:#666;
-
-}
+.nav a{
 
 
-
-.content code{
-
-background:#eee;
-
-padding:3px 6px;
-
-}
-
-
-
-.content pre{
-
-background:#222;
-
-color:white;
+background:white;
 
 padding:15px;
 
-overflow:auto;
+border-radius:10px;
+
+text-decoration:none;
+
+color:#333;
+
+font-size:14px;
+
 
 }
 
-
-
-
-.content a{
-
-color:#1677ff;
-
-}
-
-
-
-.history{
-
-margin-top:40px;
-
-background:#f7f7f7;
-
-padding:20px;
-
-border-radius:8px;
-
-}
-
-
-
-button{
-
-padding:10px 18px;
-
-cursor:pointer;
-
-}
 
 
 
 </style>
 
-
 </head>
+
+
+
+
+
 
 
 
@@ -209,19 +348,25 @@ cursor:pointer;
 
 
 
-<div class="container">
+<div class="progress"
+
+id="progress">
+
+</div>
 
 
-<div class="nav">
 
 
-<a href="index.html">
 
-<button>
 
-返回首页
+<div class="header">
 
-</button>
+
+<a class="back"
+
+href="index.html">
+
+← 返回首页
 
 </a>
 
@@ -229,11 +374,7 @@ cursor:pointer;
 
 <a href="archive.html">
 
-<button>
-
-文章列表
-
-</button>
+文章归档
 
 </a>
 
@@ -244,12 +385,102 @@ cursor:pointer;
 
 
 
-<div id="article">
+
+
+
+<div class="container">
+
+
+
+
+
+<div class="article">
+
+
+
+
+
+<h1 id="title">
 
 加载中...
 
+</h1>
+
+
+
+
+
+
+<div class="meta"
+
+id="meta">
+
 </div>
 
+
+
+
+
+<div class="tags"
+
+id="tags">
+
+</div>
+
+
+
+
+
+
+
+<div class="toc"
+
+id="toc">
+
+</div>
+
+
+
+
+
+
+
+
+<div class="content"
+
+id="content">
+
+</div>
+
+
+
+
+
+
+
+<div class="nav">
+
+
+<div id="prev">
+
+</div>
+
+
+
+<div id="next">
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+</div>
 
 
 </div>
@@ -304,43 +535,29 @@ firebase.firestore();
 
 
 
+let id="";
 
-let params =
+
+let articles=[];
+
+
+let currentIndex=0;
+
+
+
+
+
+
+
+let params=
+
 new URLSearchParams(
 location.search
 );
 
 
 
-let id =
-params.get("id");
-
-
-
-
-
-
-if(id){
-
-
-loadArticle();
-
-
-}
-
-else{
-
-
-document.getElementById(
-"article"
-)
-
-.innerHTML=
-
-"文章不存在";
-
-
-}
+id=params.get("id");
 
 
 
@@ -349,148 +566,42 @@ document.getElementById(
 
 
 
-function loadArticle(){
+// 加载文章
+
+
+function load(){
 
 
 
 db.collection("articles")
 
-.doc(id)
-
 .get()
 
 
 
-.then(doc=>{
+.then(snapshot=>{
+
+
+snapshot.forEach(doc=>{
+
+
+let a={
+
+id:doc.id,
+
+...doc.data()
+
+};
 
 
 
-if(!doc.exists){
+if(a.status==="published"){
 
 
-document.getElementById(
-"article"
-)
-
-.innerHTML=
-
-"文章不存在";
-
-
-return;
+articles.push(a);
 
 
 }
-
-
-
-let data =
-doc.data();
-
-
-
-
-
-
-let html=`
-
-
-<div class="title">
-
-${data.title}
-
-</div>
-
-
-
-<div class="info">
-
-
-发布时间：
-
-${formatTime(data.createTime)}
-
-
-<br>
-
-
-作者：
-
-${data.author || "管理员"}
-
-
-
-<br>
-
-
-最后编辑：
-
-${lastEdit(data.updateTime)}
-
-
-
-</div>
-
-
-
-
-
-<div class="content">
-
-
-${markdownToHtml(data.content)}
-
-
-</div>
-
-
-
-`;
-
-
-
-
-
-
-
-
-if(data.updateTime && data.updateTime.length>1){
-
-
-
-html+=`
-
-<div class="history">
-
-
-<h3>
-
-编辑记录
-
-</h3>
-
-
-<ul>
-
-`;
-
-
-
-
-
-data.updateTime.forEach(t=>{
-
-
-html+=`
-
-<li>
-
-${t}
-
-</li>
-
-`;
-
 
 
 });
@@ -499,28 +610,54 @@ ${t}
 
 
 
-html+=`
 
-</ul>
-
-</div>
-
-`;
+articles.sort((a,b)=>{
 
 
+return (
 
-}
+b.createTime?.seconds||0
 
-
-
-
-
-
-document.getElementById(
-"article"
 )
 
-.innerHTML=html;
+-
+
+(
+
+a.createTime?.seconds||0
+
+);
+
+
+});
+
+
+
+
+
+
+currentIndex=
+
+articles.findIndex(
+
+a=>a.id===id
+
+);
+
+
+
+
+
+
+showArticle(
+
+articles[currentIndex]
+
+);
+
+
+
+showNav();
 
 
 
@@ -528,16 +665,16 @@ document.getElementById(
 
 
 
-.catch(error=>{
+.catch(e=>{
 
 
 document.getElementById(
-"article"
+"content"
 )
 
 .innerHTML=
 
-"加载失败："+error.message;
+"加载失败："+e.message;
 
 
 
@@ -555,227 +692,120 @@ document.getElementById(
 
 
 
-// 简单Markdown解析
+function showArticle(a){
 
 
-function markdownToHtml(md){
 
+if(!a)return;
 
 
-if(!md){
 
-return "";
 
-}
+document.title=a.title;
 
 
 
 
 
-let html =
-md;
+document.getElementById(
+"title"
+)
 
+.innerHTML=a.title;
 
 
-// 转义
 
 
-html =
-html.replace(
-/&/g,
-"&amp;"
-);
 
 
-html =
-html.replace(
-/</g,
-"&lt;"
-);
 
+document.getElementById(
+"meta"
+)
 
-html =
-html.replace(
-/>/g,
-"&gt;"
-);
+.innerHTML=
 
+`
 
+发布时间：
 
+${format(a.createTime)}
 
+<br>
 
+作者：
 
+${a.author||"管理员"}
 
-// 代码块
+`;
 
 
-html =
-html.replace(
 
-/```([\s\S]*?)```/g,
 
-"<pre>$1</pre>"
 
-);
 
 
 
+let tagHtml="";
 
 
 
 
-// 标题
 
+(a.tags||[])
 
-html =
-html.replace(
-/^### (.*)$/gm,
+.forEach(t=>{
 
-"<h3>$1</h3>"
 
-);
 
+tagHtml+=`
 
+<span class="tag">
 
-html =
-html.replace(
-/^## (.*)$/gm,
+${t}
 
-"<h2>$1</h2>"
+</span>
 
-);
+`;
 
 
 
-html =
-html.replace(
-/^# (.*)$/gm,
+});
 
-"<h1>$1</h1>"
 
-);
 
 
 
 
+document.getElementById(
+"tags"
+)
 
+.innerHTML=
 
+tagHtml;
 
-// 加粗
 
 
-html =
-html.replace(
 
-/\*\*(.*?)\*\*/g,
 
-"<strong>$1</strong>"
 
-);
 
+document.getElementById(
+"content"
+)
 
+.innerHTML=
 
+marked.parse(a.content);
 
 
-// 斜体
 
 
-html =
-html.replace(
 
-/\*(.*?)\*/g,
 
-"<em>$1</em>"
 
-);
-
-
-
-
-
-
-// 链接
-
-
-html =
-html.replace(
-
-/\[(.*?)\]\((.*?)\)/g,
-
-'<a href="$2" target="_blank">$1</a>'
-
-);
-
-
-
-
-
-
-
-// 引用
-
-
-html =
-html.replace(
-
-/^> (.*)$/gm,
-
-"<blockquote>$1</blockquote>"
-
-);
-
-
-
-
-
-
-
-// 无序列表
-
-
-html =
-html.replace(
-
-/^- (.*)$/gm,
-
-"<li>$1</li>"
-
-);
-
-
-
-html =
-html.replace(
-
-/(<li>.*<\/li>)/gs,
-
-"<ul>$1</ul>"
-
-);
-
-
-
-
-
-
-
-// 换行
-
-
-html =
-html.replace(
-
-/\n/g,
-
-"<br>"
-
-);
-
-
-
-
-
-return html;
+createToc();
 
 
 
@@ -789,13 +819,216 @@ return html;
 
 
 
-function formatTime(time){
+// 自动目录
 
 
-if(time && time.toDate){
+function createToc(){
 
 
-return time.toDate()
+
+let content=
+
+document.getElementById(
+"content"
+);
+
+
+
+
+
+let headings=
+
+content.querySelectorAll(
+"h1,h2,h3"
+);
+
+
+
+let html="";
+
+
+
+
+
+if(headings.length){
+
+
+
+html+=`
+
+<div class="toc-title">
+
+文章目录
+
+</div>
+
+`;
+
+
+
+
+
+
+headings.forEach((h,i)=>{
+
+
+
+let id=
+
+"heading-"+i;
+
+
+
+h.id=id;
+
+
+
+html+=`
+
+<a href="#${id}">
+
+${h.innerText}
+
+</a>
+
+`;
+
+
+
+});
+
+
+
+
+
+}
+
+else{
+
+
+html="";
+
+
+}
+
+
+
+
+
+
+document.getElementById(
+"toc"
+)
+
+.innerHTML=html;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 上下一篇
+
+
+function showNav(){
+
+
+
+if(currentIndex>0){
+
+
+let p=
+
+articles[currentIndex-1];
+
+
+
+document.getElementById(
+"prev"
+)
+
+.innerHTML=
+
+`
+
+<a href="article.html?id=${p.id}">
+
+上一篇<br>
+
+${p.title}
+
+</a>
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+if(currentIndex<articles.length-1){
+
+
+
+let n=
+
+articles[currentIndex+1];
+
+
+
+document.getElementById(
+"next"
+)
+
+.innerHTML=
+
+`
+
+<a href="article.html?id=${n.id}">
+
+下一篇<br>
+
+${n.title}
+
+</a>
+
+`;
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+
+function format(t){
+
+
+
+if(t&&t.toDate){
+
+
+return t.toDate()
 
 .toLocaleString(
 "zh-CN"
@@ -816,27 +1049,59 @@ return "";
 
 
 
-function lastEdit(list){
 
 
-if(list && list.length){
+
+// 阅读进度
 
 
-return list[list.length-1];
+window.addEventListener(
+"scroll",
+
+()=>{
+
+
+let h=
+
+document.documentElement;
+
+
+let percent=
+
+h.scrollTop/
+
+(h.scrollHeight-h.clientHeight)
+
+*100;
+
+
+
+document.getElementById(
+"progress"
+)
+
+.style.width=
+
+percent+"%";
+
 
 
 }
 
-
-return "暂无";
-
+);
 
 
-}
+
+
+
+
+
+load();
 
 
 
 </script>
+
 
 
 </body>
