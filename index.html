@@ -13,6 +13,9 @@ qwe博客
 </title>
 
 
+<link rel="stylesheet" href="css/style.css">
+
+
 
 <!-- Firebase -->
 
@@ -21,305 +24,15 @@ qwe博客
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
-
-<style>
-
-
-*{
-
-box-sizing:border-box;
-
-}
-
-
-
-body{
-
-margin:0;
-
-background:#f5f6fa;
-
-font-family:
-
-"Microsoft YaHei",
-Arial,
-sans-serif;
-
-}
-
-
-
-
-.header{
-
-height:70px;
-
-background:#222;
-
-color:white;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 40px;
-
-
-}
-
-
-
-.logo{
-
-font-size:26px;
-
-font-weight:bold;
-
-}
-
-
-
-
-.admin-btn{
-
-
-background:#1976d2;
-
-color:white;
-
-text-decoration:none;
-
-padding:8px 18px;
-
-border-radius:5px;
-
-
-}
-
-
-
-
-.container{
-
-max-width:1100px;
-
-margin:40px auto;
-
-padding:0 20px;
-
-
-}
-
-
-
-
-.title{
-
-font-size:32px;
-
-margin-bottom:30px;
-
-
-}
-
-
-
-
-
-.article-list{
-
-
-display:grid;
-
-grid-template-columns:
-
-repeat(auto-fit,minmax(300px,1fr));
-
-gap:25px;
-
-
-}
-
-
-
-
-
-
-
-.article-card{
-
-
-background:white;
-
-border-radius:12px;
-
-overflow:hidden;
-
-box-shadow:
-
-0 3px 12px rgba(0,0,0,.1);
-
-
-}
-
-
-
-
-.article-card img{
-
-
-width:100%;
-
-height:220px;
-
-object-fit:cover;
-
-
-}
-
-
-
-
-
-.content{
-
-
-padding:20px;
-
-
-}
-
-
-
-.content h2{
-
-
-margin-top:0;
-
-font-size:24px;
-
-
-}
-
-
-
-
-.time{
-
-
-font-size:14px;
-
-color:#888;
-
-margin-bottom:15px;
-
-
-}
-
-
-
-
-
-.summary{
-
-
-color:#555;
-
-line-height:1.8;
-
-height:70px;
-
-overflow:hidden;
-
-
-}
-
-
-
-
-
-.read{
-
-
-display:inline-block;
-
-margin-top:15px;
-
-background:#1976d2;
-
-color:white;
-
-text-decoration:none;
-
-padding:8px 18px;
-
-border-radius:5px;
-
-
-}
-
-
-
-
-
-.empty{
-
-
-text-align:center;
-
-color:#777;
-
-font-size:18px;
-
-}
-
-
-
-
-@media(max-width:700px){
-
-
-
-.header{
-
-padding:0 15px;
-
-}
-
-
-
-.logo{
-
-font-size:20px;
-
-}
-
-
-.container{
-
-margin-top:20px;
-
-}
-
-
-}
-
-
-
-</style>
-
-
 </head>
-
-
 
 
 
 <body>
 
 
+
+<!-- 顶部导航 -->
 
 <header class="header">
 
@@ -334,7 +47,7 @@ qwe博客
 
 <a href="admin-login.html"
 
-class="admin-btn">
+class="nav-btn">
 
 管理员登录
 
@@ -352,7 +65,8 @@ class="admin-btn">
 <div class="container">
 
 
-<h1 class="title">
+
+<h1 class="page-title">
 
 最新文章
 
@@ -360,17 +74,36 @@ class="admin-btn">
 
 
 
+
+
 <div id="articleList"
 
 class="article-list">
 
+
 加载中...
 
+
+</div>
+
+
+
+
+
+<a href="archive.html"
+
+class="more-btn">
+
+查看更多文章
+
+</a>
+
+
+
+
 </div>
 
 
-
-</div>
 
 
 
@@ -381,9 +114,9 @@ class="article-list">
 <script>
 
 
-// =====================
+// ========================
 // Firebase配置
-// =====================
+// ========================
 
 
 const firebaseConfig = {
@@ -401,17 +134,12 @@ projectId:
 "qwegitpoi-blog",
 
 
-storageBucket:
-"qwegitpoi-blog.firebasestorage.app",
-
-
 messagingSenderId:
 "313324557146",
 
 
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
-
 
 };
 
@@ -423,9 +151,7 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-
 const db =
-
 firebase.firestore();
 
 
@@ -433,18 +159,32 @@ firebase.firestore();
 
 
 
+// ========================
+// 加载首页文章
+// ========================
 
-function loadArticles(){
+
+function loadHomeArticles(){
 
 
 
 db.collection("articles")
 
 
+.where(
+"status",
+"==",
+"published"
+)
+
+
 .orderBy(
-"time",
+"createTime",
 "desc"
 )
+
+
+.limit(6)
 
 
 .get()
@@ -464,20 +204,25 @@ let html="";
 if(snapshot.empty){
 
 
-document.getElementById(
-"articleList"
-)
-.innerHTML=
+html=
 
 `
 
-<div class="empty">
+<div class="article-card">
 
 暂无文章
 
 </div>
 
 `;
+
+
+
+document.getElementById(
+"articleList"
+)
+.innerHTML=html;
+
 
 return;
 
@@ -492,35 +237,20 @@ return;
 snapshot.forEach(doc=>{
 
 
-
 let data =
 doc.data();
 
 
 
 
-
-// 去除HTML生成摘要
-
-
-let text =
-
-data.content
-
-.replace(
-/<[^>]*>/g,
-""
-);
-
-
-
 let summary =
-
-text.substring(
+removeHTML(
+data.content || ""
+)
+.substring(
 0,
 120
 );
-
 
 
 
@@ -534,74 +264,34 @@ html += `
 
 
 
-
-
-${
-
-data.cover
-
-?
-
-`
-
-<img src="${data.cover}">
-
-`
-
-:
-
-""
-
-}
-
-
-
-
-<div class="content">
-
-
-
 <h2>
 
+<a href="article.html?id=${doc.id}">
+
 ${data.title}
+
+</a>
 
 </h2>
 
 
 
-<div class="time">
+<div class="article-meta">
 
-${data.time || ""}
+发布时间：
 
-</div>
-
-
-
-
-<div class="summary">
-
-${summary}
-
-...
+${formatTime(data.createTime)}
 
 </div>
 
 
 
 
-<a class="read"
+<div class="article-summary">
 
-href="article.html?id=${doc.id}">
-
-阅读全文
-
-</a>
-
-
-
+${summary}...
 
 </div>
-
 
 
 
@@ -613,8 +303,8 @@ href="article.html?id=${doc.id}">
 
 
 
-});
 
+});
 
 
 
@@ -624,6 +314,7 @@ document.getElementById(
 "articleList"
 )
 .innerHTML=html;
+
 
 
 
@@ -637,12 +328,11 @@ document.getElementById(
 document.getElementById(
 "articleList"
 )
-
 .innerHTML=
 
 `
 
-<div class="empty">
+<div class="article-card">
 
 文章加载失败：
 
@@ -664,7 +354,77 @@ ${error.message}
 
 
 
-loadArticles();
+
+
+
+
+// ========================
+// 去除HTML标签
+// ========================
+
+
+function removeHTML(str){
+
+
+return str.replace(
+/<[^>]*>/g,
+""
+);
+
+
+}
+
+
+
+
+
+
+
+
+// ========================
+// 时间格式化
+// ========================
+
+
+function formatTime(time){
+
+
+
+if(!time){
+
+return "";
+
+}
+
+
+
+
+if(time.toDate){
+
+
+return time.toDate()
+.toLocaleString(
+"zh-CN"
+);
+
+
+}
+
+
+
+return time;
+
+
+
+}
+
+
+
+
+
+
+
+loadHomeArticles();
 
 
 
@@ -673,5 +433,6 @@ loadArticles();
 
 
 </body>
+
 
 </html>

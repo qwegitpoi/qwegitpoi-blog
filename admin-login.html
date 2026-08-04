@@ -1,94 +1,273 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 
+
 <head>
+
 
 <meta charset="UTF-8">
 
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>管理员登录 - 曾永个人博客</title>
+
+<title>
+管理员登录
+</title>
+
+
 
 <link rel="stylesheet" href="css/style.css">
 
 
-<!-- Firebase SDK -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
 
+
+<style>
+
+
+.login-box{
+
+
+max-width:420px;
+
+margin:100px auto;
+
+background:white;
+
+padding:40px;
+
+border-radius:10px;
+
+box-shadow:
+
+0 3px 15px rgba(0,0,0,.1);
+
+
+}
+
+
+
+.login-box h1{
+
+
+text-align:center;
+
+margin-bottom:30px;
+
+
+}
+
+
+
+.login-box button{
+
+
+width:100%;
+
+margin-top:20px;
+
+font-size:16px;
+
+
+}
+
+
+
+.error{
+
+
+color:#d32f2f;
+
+margin-top:15px;
+
+text-align:center;
+
+
+}
+
+
+
+.back{
+
+
+display:block;
+
+text-align:center;
+
+margin-top:20px;
+
+
+}
+
+
+
+</style>
+
+
+
 </head>
+
+
 
 
 <body>
 
 
+
+
+<header class="header">
+
+
+<div class="logo">
+
+qwe博客
+
+</div>
+
+
+
+<a href="index.html"
+
+class="nav-btn">
+
+返回首页
+
+</a>
+
+
+
+</header>
+
+
+
+
+
+
+
+
 <div class="login-box">
 
 
-<h2>
+<h1>
+
 管理员登录
-</h2>
+
+</h1>
+
+
 
 
 <input
+
 id="email"
+
 type="email"
-placeholder="管理员邮箱"
+
+placeholder="邮箱"
+
 value="flashzeng@gmail.com"
-/>
+
+>
+
+
+
+
+<br><br>
+
+
 
 
 <input
+
 id="password"
+
 type="password"
-placeholder="登录密码"
-/>
+
+placeholder="密码"
+
+value="12345678"
+
+>
+
+
+
 
 
 <button onclick="login()">
+
 登录
+
 </button>
 
 
-<p id="message"></p>
 
 
-<br>
+
+<div id="error"
+
+class="error">
+
+</div>
 
 
-<a href="index.html">
+
+
+<a href="index.html"
+
+class="back">
+
 返回首页
+
 </a>
+
 
 
 </div>
 
 
 
+
+
+
+
+
+
+
 <script>
 
 
-// Firebase 配置
+
+
+
+// ========================
+// Firebase配置
+// ========================
+
+
 
 const firebaseConfig = {
+
 
 apiKey:
 "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
 
+
 authDomain:
 "qwegitpoi-blog.firebaseapp.com",
+
 
 projectId:
 "qwegitpoi-blog",
 
-storageBucket:
-"qwegitpoi-blog.firebasestorage.app",
 
 messagingSenderId:
 "313324557146",
+
 
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
@@ -97,9 +276,10 @@ appId:
 
 
 
-// 初始化 Firebase
+
 
 firebase.initializeApp(firebaseConfig);
+
 
 
 
@@ -109,70 +289,124 @@ const auth = firebase.auth();
 
 
 
-function login(){
-
-
-const email =
-document.getElementById("email").value;
-
-
-const password =
-document.getElementById("password").value;
 
 
 
-const message =
-document.getElementById("message");
+// ========================
+// 登录检测
+// ========================
 
 
 
-if(!email || !password){
+auth.onAuthStateChanged(user=>{
 
 
-message.innerHTML =
-"请输入邮箱和密码";
+if(user){
 
 
-return;
+
+// 已登录
+
+
+console.log(
+"当前用户:",
+user.email
+);
+
+
 
 }
 
 
 
-auth.signInWithEmailAndPassword(
-email,
-password
+});
+
+
+
+
+
+
+
+
+
+// ========================
+// 登录函数
+// ========================
+
+
+function login(){
+
+
+
+let email =
+
+document.getElementById(
+"email"
 )
+.value;
+
+
+
+let password =
+
+document.getElementById(
+"password"
+)
+.value;
+
+
+
+
+
+
+document.getElementById(
+"error"
+)
+.innerHTML="登录中...";
+
+
+
+
+
+
+auth.signInWithEmailAndPassword(
+
+email,
+
+password
+
+)
+
+
 
 .then(()=>{
 
 
-message.innerHTML =
-"登录成功，正在进入后台...";
 
+window.location.href=
 
-
-setTimeout(()=>{
-
-
-window.location.href="admin.html";
-
-
-},1000);
+"admin.html";
 
 
 
 })
 
 
+
 .catch(error=>{
 
 
-console.error(error);
 
+document.getElementById(
+"error"
+)
+.innerHTML=
 
-message.innerHTML =
-"登录失败：" + error.message;
+"登录失败："
+
++
+
+error.message;
 
 
 
@@ -184,9 +418,15 @@ message.innerHTML =
 
 
 
+
+
 </script>
 
 
+
+
+
 </body>
+
 
 </html>
