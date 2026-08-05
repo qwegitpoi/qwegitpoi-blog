@@ -249,7 +249,6 @@
             font-size: 0.9375rem;
             line-height: 1.6;
             margin-bottom: 1.25rem;
-            /* Clamp summary text strictly to 3 lines */
             display: -webkit-box;
             -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
@@ -435,6 +434,24 @@
                 .trim();
         }
 
+        // Helper: Robust Date Parsing for Various Firestore Formats
+        function parseArticleDate(data) {
+            const rawDate = data.createdAt || data.date || data.time || data.updatedAt;
+            if (!rawDate) return new Date();
+
+            // Handle Firestore Timestamp object
+            if (rawDate && typeof rawDate.toDate === 'function') {
+                return rawDate.toDate();
+            }
+            // Handle Unix Timestamp (seconds or milliseconds)
+            if (typeof rawDate === 'number') {
+                return new Date(rawDate < 1e11 ? rawDate * 1000 : rawDate);
+            }
+            // Handle ISO string or date format strings
+            const parsed = new Date(rawDate);
+            return isNaN(parsed.getTime()) ? new Date() : parsed;
+        }
+
         // Load visible articles from Firestore
         async function loadAllArticles() {
             const container = document.getElementById('articlesContainer');
@@ -444,14 +461,17 @@
                 
                 snapshot.forEach(doc => {
                     const data = doc.data();
-                    // Filter: Only load non-hidden articles (hide !== true)
-                    if (data.hide !== true) {
+                    
+                    // Dual Filter Protection: Exclude articles marked as hidden in any format
+                    const isExplicitlyHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
+
+                    if (!isExplicitlyHidden) {
                         articles.push({
                             id: doc.id,
                             title: data.title || "无标题文章",
                             content: data.content || "",
                             tag: data.tag || "随笔",
-                            createdAt: data.createdAt ? data.createdAt.toDate() : new Date(0)
+                            createdAt: parseArticleDate(data)
                         });
                     }
                 });
@@ -554,7 +574,6 @@
         // Switch Page Function
         function changePage(page) {
             renderPage(page);
-            // Smoothly scroll back to the top of page header
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
