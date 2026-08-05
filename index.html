@@ -143,13 +143,27 @@
             padding: 0 1.5rem;
         }
 
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
         .section-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1.5rem;
+        }
+
+        .article-count {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            background: #edf2f7;
+            padding: 2px 10px;
+            border-radius: 12px;
         }
 
         .article-card {
@@ -216,6 +230,7 @@
             padding: 3rem 0;
             color: var(--text-muted);
         }
+
         .error {
             color: #ef4444;
         }
@@ -247,9 +262,12 @@
     </div>
 
     <div class="container">
-        <div class="section-title">最新文章</div>
+        <div class="section-header">
+            <div class="section-title">全部文章</div>
+            <div id="article-count" class="article-count">加载中...</div>
+        </div>
         <div id="article-list">
-            <div class="loading">正在加载文章列表...</div>
+            <div class="loading">正在加载所有公开文章...</div>
         </div>
     </div>
 
@@ -258,7 +276,7 @@
     </footer>
 
     <script>
-        // 已填入你的真实 Firebase 配置参数
+        // 1. Firebase 配置 (已填入你的真实 Firebase 密钥)
         const firebaseConfig = {
             apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
             authDomain: "qwegitpoi-blog.firebaseapp.com",
@@ -270,12 +288,7 @@
             measurementId: "G-M01JQCZ0WX"
         };
 
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        // 摘要解析工具函数
+        // 摘要生成函数
         function getSummary(content) {
             if (!content) return "暂无摘要...";
             let plainText = content
@@ -286,10 +299,24 @@
             return plainText.length > 120 ? plainText.substring(0, 120) + "..." : plainText;
         }
 
-        // 加载文章列表逻辑
-        function loadArticles() {
-            const listContainer = document.getElementById('article-list');
+        // 统一在页面 DOM 及 SDK 加载完成后执行逻辑，防止引用错误
+        window.addEventListener('DOMContentLoaded', () => {
+            // 安全初始化 Firebase
+            if (typeof firebase === 'undefined') {
+                document.getElementById('article-list').innerHTML = 
+                    '<div class="error">Firebase SDK 加载失败，请检查网络连接或刷新页面重试。</div>';
+                return;
+            }
 
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            const db = firebase.firestore();
+
+            const listContainer = document.getElementById('article-list');
+            const countContainer = document.getElementById('article-count');
+
+            // 从 Firestore 读取全部文章
             db.collection("articles")
                 .get()
                 .then((querySnapshot) => {
@@ -298,16 +325,21 @@
                     const publicArticles = [];
                     querySnapshot.forEach((doc) => {
                         const data = doc.data();
+                        // 过滤未隐藏的所有文章
                         if (data.hide !== true) {
                             publicArticles.push({ id: doc.id, ...data });
                         }
                     });
+
+                    // 更新数量标记
+                    countContainer.innerText = `共 ${publicArticles.length} 篇`;
 
                     if (publicArticles.length === 0) {
                         listContainer.innerHTML = '<div class="empty">博主还没有发布任何文章哦 ~</div>';
                         return;
                     }
 
+                    // 渲染所有可显示的文章
                     publicArticles.forEach((article) => {
                         const title = article.title || "无标题";
                         const date = article.date || "未知时间";
@@ -329,11 +361,10 @@
                 })
                 .catch((error) => {
                     console.error("加载文章失败: ", error);
-                    listContainer.innerHTML = `<div class="error">加载文章列表失败：${error.message}</div>`;
+                    countContainer.innerText = "加载失败";
+                    listContainer.innerHTML = `<div class="error">加载文章列表失败：${error.message}<br><small>请检查 Firebase Firestore 权限 Rules 是否设为公开只读 (allow read: if true;)</small></div>`;
                 });
-        }
-
-        document.addEventListener("DOMContentLoaded", loadArticles);
+        });
     </script>
 </body>
 </html>
