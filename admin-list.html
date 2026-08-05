@@ -2,838 +2,314 @@
 <html lang="zh-CN">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-<title>文章管理</title>
-
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-
-<style>
-
-*{
-box-sizing:border-box;
-}
-
-
-body{
-
-margin:0;
-
-background:#f5f5f5;
-
-font-family:"Microsoft YaHei",Arial;
-
-color:#333;
-
-}
-
-
-
-.header{
-
-height:55px;
-
-background:white;
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-padding:0 15px;
-
-box-shadow:0 2px 6px #ddd;
-
-}
-
-
-.header a{
-
-text-decoration:none;
-
-color:#1677ff;
-
-font-size:14px;
-
-}
-
-
-.title{
-
-font-size:18px;
-
-font-weight:bold;
-
-}
-
-
-
-.container{
-
-padding:12px;
-
-}
-
-
-
-.article{
-
-
-background:white;
-
-border-radius:8px;
-
-padding:12px;
-
-margin-bottom:10px;
-
-
-}
-
-
-
-.article-title{
-
-font-size:16px;
-
-font-weight:bold;
-
-}
-
-
-
-.article-title a{
-
-color:#333;
-
-text-decoration:none;
-
-}
-
-
-
-.summary{
-
-font-size:14px;
-
-color:#666;
-
-margin-top:8px;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
-
-}
-
-
-
-.info{
-
-font-size:12px;
-
-color:#888;
-
-line-height:1.8;
-
-margin-top:8px;
-
-}
-
-
-
-.buttons{
-
-margin-top:10px;
-
-text-align:right;
-
-}
-
-
-
-button{
-
-
-border:0;
-
-border-radius:5px;
-
-padding:6px 10px;
-
-margin-left:5px;
-
-font-size:13px;
-
-}
-
-
-
-.edit{
-
-background:#1677ff;
-
-color:white;
-
-}
-
-
-.hide{
-
-background:#666;
-
-color:white;
-
-}
-
-
-.delete{
-
-background:#e53935;
-
-color:white;
-
-}
-
-
-
-.page{
-
-text-align:center;
-
-padding:15px;
-
-}
-
-
-
-.page button{
-
-background:#1677ff;
-
-color:white;
-
-}
-
-
-.empty{
-
-background:white;
-
-padding:30px;
-
-text-align:center;
-
-color:#999;
-
-}
-
-
-</style>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>文章管理</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f5f5f5;
+      font-family: "Microsoft YaHei", Arial;
+      color: #333;
+    }
+
+    .header {
+      height: 55px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 15px;
+      box-shadow: 0 2px 6px #ddd;
+    }
+
+    .header a {
+      text-decoration: none;
+      color: #1677ff;
+      font-size: 14px;
+    }
+
+    .title {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 12px;
+    }
+
+    .article {
+      background: white;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .article-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .article-title a {
+      color: #333;
+      text-decoration: none;
+    }
+
+    .summary {
+      font-size: 14px;
+      color: #666;
+      margin-top: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info {
+      font-size: 12px;
+      color: #888;
+      line-height: 1.8;
+      margin-top: 8px;
+    }
+
+    .buttons {
+      margin-top: 10px;
+      text-align: right;
+    }
+
+    button {
+      border: 0;
+      border-radius: 5px;
+      padding: 6px 10px;
+      margin-left: 5px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .edit {
+      background: #1677ff;
+      color: white;
+    }
+
+    .hide {
+      background: #666;
+      color: white;
+    }
+
+    .delete {
+      background: #e53935;
+      color: white;
+    }
+
+    .page {
+      text-align: center;
+      padding: 15px;
+    }
+
+    .page button {
+      background: #1677ff;
+      color: white;
+    }
+
+    .empty {
+      background: white;
+      padding: 30px;
+      text-align: center;
+      color: #999;
+    }
+  </style>
 </head>
-
 
 <body>
 
-
-<div class="header">
-
-<a href="admin.html">
-
-←后台
-
-</a>
-
-
-<div class="title" id="pageTitle">
-
-文章管理
-
-</div>
-
-
-<div></div>
-
-
-</div>
-
-
-
-
-<div class="container">
-
-
-<div id="list">
-
-加载中...
-
-</div>
-
-
-<div class="page" id="page">
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<script>
-
-
-const firebaseConfig={
-
-
-apiKey:"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-
-authDomain:"qwegitpoi-blog.firebaseapp.com",
-
-projectId:"qwegitpoi-blog",
-
-messagingSenderId:"313324557146",
-
-appId:"1:313324557146:web:4a93868894c9329006d963"
-
-};
-
-
-firebase.initializeApp(firebaseConfig);
-
-
-const db=firebase.firestore();
-
-
-
-
-let type=
-
-new URLSearchParams(location.search)
-
-.get("type")
-
-||"published";
-
-
-
-let articles=[];
-
-
-let page=1;
-
-
-const size=10;
-
-
-
-
-
-
-if(type==="published"){
-
-pageTitle.innerHTML="已发布文章";
-
-}
-
-if(type==="hidden"){
-
-pageTitle.innerHTML="隐藏文章";
-
-}
-
-if(type==="draft"){
-
-pageTitle.innerHTML="草稿箱";
-
-}
-
-
-
-
-
-
-function load(){
-
-
-
-db.collection("articles")
-
-.where("status","==",type)
-
-.get()
-
-.then(snapshot=>{
-
-
-
-articles=[];
-
-
-
-snapshot.forEach(doc=>{
-
-
-articles.push({
-
-id:doc.id,
-
-...doc.data()
-
-});
-
-
-});
-
-
-
-articles.sort((a,b)=>{
-
-
-let aa=a.createTime?.seconds||0;
-
-let bb=b.createTime?.seconds||0;
-
-
-return bb-aa;
-
-
-});
-
-
-
-render();
-
-
-
-})
-
-.catch(error=>{
-
-
-document.getElementById("list").innerHTML=
-
-"加载失败："+error.message;
-
-
-});
-
-
-}
-
-
-
-
-
-
-
-function render(){
-
-
-
-let start=(page-1)*size;
-
-
-let data=
-
-articles.slice(start,start+size);
-
-
-
-
-
-if(data.length===0){
-
-
-list.innerHTML=
-
-`
-<div class="empty">
-暂无文章
-</div>
-`;
-
-page.innerHTML="";
-
-return;
-
-
-}
-
-
-
-
-
-let html="";
-
-
-
-data.forEach(a=>{
-
-
-html+=`
-
-<div class="article">
-
-
-<div class="article-title">
-
-<a href="article.html?id=${a.id}">
-
-${a.title||"无标题"}
-
-</a>
-
-</div>
-
-
-
-
-<div class="summary">
-
-${firstLine(a.content)}
-
-</div>
-
-
-
-
-<div class="info">
-
-
-发布时间：
-
-${date(a.createTime)}
-
-<br>
-
-
-最后编辑：
-
-${last(a.updateTime)}
-
-</div>
-
-
-
-
-
-<div class="buttons">
-
-
-
-${type!=="draft"
-
-?
-
-`
-
-<button class="hide"
-
-onclick="hideArticle('${a.id}','${a.status}')">
-
-${a.status==="hidden"?"恢复":"隐藏"}
-
-</button>
-
-`
-
-:""
-
-}
-
-
-
-
-<button class="edit"
-
-onclick="edit('${a.id}')">
-
-编辑
-
-</button>
-
-
-
-
-<button class="delete"
-
-onclick="removeArticle('${a.id}')">
-
-删除
-
-</button>
-
-
-</div>
-
-
-</div>
-
-
-`;
-
-});
-
-
-list.innerHTML=html;
-
-
-showPage();
-
-
-}
-
-
-
-
-
-
-
-function showPage(){
-
-
-let total=Math.ceil(articles.length/size);
-
-
-let html="";
-
-
-
-if(page>1){
-
-html+=`
-
-<button onclick="change(${page-1})">
-
-上一页
-
-</button>
-
-`;
-
-}
-
-
-
-html+=`
-
-<span>
-
-${page}/${total||1}
-
-</span>
-
-`;
-
-
-
-if(page<total){
-
-html+=`
-
-<button onclick="change(${page+1})">
-
-下一页
-
-</button>
-
-`;
-
-}
-
-
-
-pageBox.innerHTML=html;
-
-
-}
-
-
-
-
-function change(p){
-
-page=p;
-
-render();
-
-}
-
-
-
-
-
-
-
-function edit(id){
-
-location.href=
-
-"admin-edit.html?id="+id;
-
-}
-
-
-
-
-
-function hideArticle(id,status){
-
-
-let newStatus=
-
-status==="hidden"
-
-?"published"
-
-:"hidden";
-
-
-
-db.collection("articles")
-
-.doc(id)
-
-.update({
-
-status:newStatus
-
-})
-
-.then(()=>{
-
-alert("操作成功");
-
-load();
-
-});
-
-
-
-}
-
-
-
-
-
-
-function removeArticle(id){
-
-
-if(!confirm("确定删除？"))
-
-return;
-
-
-
-db.collection("articles")
-
-.doc(id)
-
-.delete()
-
-.then(()=>{
-
-load();
-
-});
-
-
-}
-
-
-
-
-
-
-
-
-function firstLine(text){
-
-
-if(!text)
-
-return "";
-
-
-
-return text
-
-.replace(/[#>*_-]/g,"")
-
-.split("\n")
-
-.filter(x=>x.trim())
-
-[0]
-
-.substring(0,80);
-
-
-}
-
-
-
-
-
-
-
-function date(t){
-
-
-if(t&&t.toDate)
-
-return t.toDate()
-
-.toLocaleDateString();
-
-
-
-return "";
-
-}
-
-
-
-
-
-
-function last(arr){
-
-
-if(!arr||arr.length===0)
-
-return "暂无";
-
-
-return arr[arr.length-1];
-
-
-}
-
-
-
-
-load();
-
-
-</script>
-
-
+  <div class="header">
+    <a href="admin.html">←后台</a>
+    <div class="title" id="pageTitle">文章管理</div>
+    <div></div>
+  </div>
+
+  <div class="container">
+    <div id="list">加载中...</div>
+    <div class="page" id="page"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      projectId: "qwegitpoi-blog",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    let type = new URLSearchParams(location.search).get("type") || "published";
+    let articles = [];
+    let page = 1;
+    const size = 10;
+
+    const pageTitle = document.getElementById("pageTitle");
+
+    if (type === "published") {
+      pageTitle.innerHTML = "已发布文章";
+    } else if (type === "hidden") {
+      pageTitle.innerHTML = "隐藏文章";
+    } else if (type === "draft") {
+      pageTitle.innerHTML = "草稿箱";
+    }
+
+    function load() {
+      db.collection("articles")
+        .where("status", "==", type)
+        .get()
+        .then(snapshot => {
+          articles = [];
+          snapshot.forEach(doc => {
+            articles.push({
+              id: doc.id,
+              ...doc.data()
+            });
+          });
+
+          articles.sort((a, b) => {
+            let aa = a.createTime?.seconds || 0;
+            let bb = b.createTime?.seconds || 0;
+            return bb - aa;
+          });
+
+          render();
+        })
+        .catch(error => {
+          document.getElementById("list").innerHTML = "加载失败：" + error.message;
+        });
+    }
+
+    function render() {
+      let start = (page - 1) * size;
+      let data = articles.slice(start, start + size);
+
+      if (data.length === 0) {
+        document.getElementById("list").innerHTML = `<div class="empty">暂无文章</div>`;
+        document.getElementById("page").innerHTML = "";
+        return;
+      }
+
+      let html = "";
+      data.forEach(a => {
+        html += `
+        <div class="article">
+          <div class="article-title">
+            <a href="article.html?id=${a.id}">
+              ${a.title || "无标题"}
+            </a>
+          </div>
+
+          <div class="summary">
+            ${firstLine(a.content)}
+          </div>
+
+          <div class="info">
+            发布时间：${date(a.createTime)}<br>
+            最后编辑：${last(a.updateTime)}
+          </div>
+
+          <div class="buttons">
+            ${type !== "draft" ? `
+              <button class="hide" onclick="hideArticle('${a.id}','${a.status}')">
+                ${a.status === "hidden" ? "恢复" : "隐藏"}
+              </button>
+            ` : ""}
+            <button class="edit" onclick="edit('${a.id}')">编辑</button>
+            <button class="delete" onclick="removeArticle('${a.id}')">删除</button>
+          </div>
+        </div>
+        `;
+      });
+
+      document.getElementById("list").innerHTML = html;
+      showPage();
+    }
+
+    function showPage() {
+      let total = Math.ceil(articles.length / size);
+      let html = "";
+
+      if (page > 1) {
+        html += `<button onclick="change(${page - 1})">上一页</button> `;
+      }
+
+      html += `<span>${page}/${total || 1}</span> `;
+
+      if (page < total) {
+        html += `<button onclick="change(${page + 1})">下一页</button>`;
+      }
+
+      // 【修复 Bug】改为了正确的 DOM 节点 ID
+      document.getElementById("page").innerHTML = html;
+    }
+
+    function change(p) {
+      page = p;
+      render();
+    }
+
+    function edit(id) {
+      location.href = "admin-edit.html?id=" + id;
+    }
+
+    function hideArticle(id, status) {
+      let newStatus = status === "hidden" ? "published" : "hidden";
+      db.collection("articles")
+        .doc(id)
+        .update({
+          status: newStatus
+        })
+        .then(() => {
+          alert("操作成功");
+          load();
+        });
+    }
+
+    function removeArticle(id) {
+      if (!confirm("确定删除？")) return;
+      db.collection("articles")
+        .doc(id)
+        .delete()
+        .then(() => {
+          load();
+        });
+    }
+
+    function firstLine(text) {
+      if (!text) return "";
+      // 【修复正则】对 - 和 * 进行转义处理
+      return text
+        .replace(/[#>\*_\-]/g, "")
+        .split("\n")
+        .filter(x => x.trim())[0] || "";
+    }
+
+    function date(t) {
+      if (t && t.toDate) return t.toDate().toLocaleDateString();
+      return "";
+    }
+
+    function last(arr) {
+      if (!arr || arr.length === 0) return "暂无";
+      return arr[arr.length - 1];
+    }
+
+    load();
+  </script>
 </body>
 
 </html>
