@@ -5,9 +5,10 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<title>文章阅读</title>
+
+<title>文章</title>
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -17,15 +18,26 @@
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
 
+
 <style>
+
+
+*{
+
+box-sizing:border-box;
+
+}
+
+
 
 body{
 
 margin:0;
 
-background:#f5f5f5;
+background:#f5f6fa;
 
 font-family:
+
 "Microsoft YaHei",
 Arial;
 
@@ -34,19 +46,25 @@ color:#333;
 }
 
 
+
+
+
 .header{
 
 background:white;
 
 padding:15px;
 
-border-bottom:1px solid #eee;
-
 display:flex;
 
 justify-content:space-between;
 
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.08);
+
 }
+
 
 
 .header a{
@@ -61,11 +79,15 @@ font-size:14px;
 
 
 
+
+
 .container{
 
 padding:15px;
 
 }
+
+
 
 
 
@@ -81,6 +103,7 @@ border-radius:10px;
 
 
 
+
 h1{
 
 font-size:24px;
@@ -93,21 +116,32 @@ margin-top:0;
 
 
 
-.info{
 
-color:#888;
+
+.info{
 
 font-size:14px;
 
+color:#888;
+
 line-height:2;
 
-margin-bottom:15px;
+}
+
+
+
+
+
+.tags{
+
+margin:15px 0;
 
 }
 
 
 
 .tag{
+
 
 display:inline-block;
 
@@ -124,6 +158,7 @@ font-size:13px;
 margin-right:5px;
 
 }
+
 
 
 
@@ -153,13 +188,15 @@ max-width:100%;
 
 
 
+
 .nav{
+
 
 margin-top:30px;
 
-padding-top:20px;
-
 border-top:1px solid #eee;
+
+padding-top:20px;
 
 }
 
@@ -175,7 +212,11 @@ text-decoration:none;
 
 margin:12px 0;
 
+font-size:15px;
+
 }
+
+
 
 
 
@@ -186,22 +227,36 @@ margin:12px 0;
 
 
 
+
 <body>
+
+
 
 
 <div class="header">
 
-<a href="index.html">
+
+<a href="./index.html">
+
 ← 返回首页
-</a >
+
+</a>
+
 
 
 <a href="archive.html">
+
 文章列表
-</a >
+
+</a>
+
 
 
 </div>
+
+
+
+
 
 
 
@@ -212,18 +267,24 @@ margin:12px 0;
 
 
 <h1 id="title">
+
 加载中...
+
 </h1>
 
 
 
-<div id="info" class="info">
+<div id="info"
+
+class="info">
 
 </div>
 
 
 
-<div id="tags">
+<div id="tags"
+
+class="tags">
 
 </div>
 
@@ -233,7 +294,9 @@ margin:12px 0;
 
 
 
-<div id="content" class="content">
+<div id="content"
+
+class="content">
 
 加载文章中...
 
@@ -241,11 +304,17 @@ margin:12px 0;
 
 
 
+
+
 <div class="nav">
 
-<div id="prev"></div>
 
-<div id="next"></div>
+<div id="prev">
+
+</div>
+
+
+<div id="next">
 
 </div>
 
@@ -254,7 +323,13 @@ margin:12px 0;
 </div>
 
 
+
 </div>
+
+
+</div>
+
+
 
 
 
@@ -263,22 +338,29 @@ margin:12px 0;
 <script>
 
 
-const firebaseConfig = {
+const firebaseConfig={
+
+
 
 apiKey:
 "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
 
+
 authDomain:
 "qwegitpoi-blog.firebaseapp.com",
+
 
 projectId:
 "qwegitpoi-blog",
 
+
 messagingSenderId:
 "313324557146",
 
+
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
+
 
 };
 
@@ -287,12 +369,15 @@ appId:
 firebase.initializeApp(firebaseConfig);
 
 
-const db =
+
+const db=
+
 firebase.firestore();
 
 
 
-let id =
+
+let id=
 
 new URLSearchParams(location.search)
 
@@ -302,13 +387,12 @@ new URLSearchParams(location.search)
 
 let articles=[];
 
-let current=0;
+let currentIndex=-1;
 
 
 
 
 
-// 加载文章
 
 
 async function load(){
@@ -317,19 +401,28 @@ async function load(){
 try{
 
 
-let doc = await db.collection("articles")
+let doc=
+
+await db.collection("articles")
+
 .doc(id)
+
 .get();
 
 
 
 if(!doc.exists){
 
-document.getElementById("content").innerHTML=
+
+document.getElementById("content")
+
+.innerHTML=
 
 "文章不存在";
 
+
 return;
+
 
 }
 
@@ -345,17 +438,27 @@ id:doc.id,
 
 
 
-document.title=article.title;
 
 
-
-document.getElementById("title").innerHTML=
+document.title=
 
 article.title;
 
 
 
-document.getElementById("info").innerHTML=
+document.getElementById("title")
+
+.innerHTML=
+
+article.title;
+
+
+
+
+
+document.getElementById("info")
+
+.innerHTML=
 
 `
 
@@ -375,14 +478,17 @@ ${article.author||"管理员"}
 
 
 
-let tags="";
+
+let tagHtml="";
 
 
 
-(article.tags||[]).forEach(t=>{
+(article.tags||[])
+
+.forEach(t=>{
 
 
-tags+=`
+tagHtml+=`
 
 <span class="tag">
 
@@ -392,32 +498,46 @@ ${t}
 
 `;
 
-
 });
 
 
 
-document.getElementById("tags").innerHTML=tags;
+document.getElementById("tags")
+
+.innerHTML=
+
+tagHtml;
 
 
 
 
 
-// Markdown显示
+
 
 
 if(window.marked){
 
 
-document.getElementById("content").innerHTML=
 
-marked.parse(article.content||"");
+document.getElementById("content")
+
+.innerHTML=
+
+marked.parse(
+
+article.content||""
+
+);
+
 
 
 }else{
 
 
-document.getElementById("content").innerText=
+
+document.getElementById("content")
+
+.innerText=
 
 article.content||"";
 
@@ -428,7 +548,8 @@ article.content||"";
 
 
 
-loadNav(article);
+
+loadNav();
 
 
 
@@ -437,28 +558,30 @@ loadNav(article);
 catch(e){
 
 
-document.getElementById("content").innerHTML=
+
+document.getElementById("content")
+
+.innerHTML=
 
 "加载失败："+e.message;
 
 
-}
-
 
 }
 
 
 
+}
 
 
 
 
 
 
-// 上一篇下一篇
 
 
-async function loadNav(article){
+
+async function loadNav(){
 
 
 
@@ -466,7 +589,15 @@ let snap=
 
 await db.collection("articles")
 
+.where(
+"status",
+"==",
+"published"
+)
+
 .get();
+
+
 
 
 
@@ -477,23 +608,17 @@ articles=[];
 snap.forEach(doc=>{
 
 
-let a={
+articles.push({
 
 id:doc.id,
 
 ...doc.data()
 
-};
-
-
-if(a.status==="published"){
-
-articles.push(a);
-
-}
+});
 
 
 });
+
 
 
 
@@ -523,11 +648,13 @@ a.createTime?.seconds||0
 
 
 
-current=
+
+
+currentIndex=
 
 articles.findIndex(
 
-a=>a.id===article.id
+a=>a.id===id
 
 );
 
@@ -535,13 +662,21 @@ a=>a.id===article.id
 
 
 
-if(current>0){
 
 
-let p=articles[current-1];
+if(currentIndex>0){
 
 
-document.getElementById("prev").innerHTML=
+
+let p=
+
+articles[currentIndex-1];
+
+
+
+document.getElementById("prev")
+
+.innerHTML=
 
 `
 
@@ -549,20 +684,33 @@ document.getElementById("prev").innerHTML=
 
 上一篇：${p.title}
 
-</a >
+</a>
 
 `;
+
+
 
 }
 
 
-if(current<articles.length-1){
 
 
-let n=articles[current+1];
 
 
-document.getElementById("next").innerHTML=
+
+if(currentIndex<articles.length-1){
+
+
+
+let n=
+
+articles[currentIndex+1];
+
+
+
+document.getElementById("next")
+
+.innerHTML=
 
 `
 
@@ -570,18 +718,17 @@ document.getElementById("next").innerHTML=
 
 下一篇：${n.title}
 
-</a >
+</a>
 
 `;
 
 
-}
-
-
 
 }
 
 
+
+}
 
 
 
@@ -592,7 +739,9 @@ document.getElementById("next").innerHTML=
 function format(t){
 
 
+
 if(t&&t.toDate){
+
 
 
 return t.toDate()
@@ -603,16 +752,20 @@ return t.toDate()
 }
 
 
+
 return "";
 
 }
 
 
 
+
 load();
 
 
+
 </script>
+
 
 
 </body>

@@ -13,6 +13,7 @@
 </title>
 
 
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -25,8 +26,11 @@
 
 
 *{
+
 box-sizing:border-box;
+
 }
+
 
 
 body{
@@ -36,15 +40,19 @@ margin:0;
 background:#f5f6fa;
 
 font-family:
-"Microsoft YaHei";
+
+"Microsoft YaHei",
+Arial;
+
+color:#333;
 
 }
 
 
 
 
-.header{
 
+.header{
 
 background:white;
 
@@ -56,15 +64,15 @@ top:0;
 
 z-index:10;
 
-box-shadow:0 2px 8px rgba(0,0,0,.08);
+box-shadow:
 
+0 2px 8px rgba(0,0,0,.08);
 
 }
 
 
 
-.header-top{
-
+.top{
 
 display:flex;
 
@@ -72,18 +80,23 @@ justify-content:space-between;
 
 align-items:center;
 
+}
+
+
+
+.top h1{
+
+font-size:20px;
+
+margin:0;
 
 }
 
 
 
-.header h1{
+a{
 
-
-font-size:21px;
-
-margin:0;
-
+text-decoration:none;
 
 }
 
@@ -91,21 +104,19 @@ margin:0;
 
 button{
 
-
-padding:9px 14px;
-
 border:0;
 
-border-radius:20px;
+border-radius:5px;
 
-cursor:pointer;
+padding:6px 10px;
+
+font-size:13px;
 
 }
 
 
 
-
-.blue{
+.primary{
 
 background:#1677ff;
 
@@ -123,14 +134,12 @@ background:#eee;
 
 
 
-
 .container{
 
-
-padding:15px;
-
+padding:12px;
 
 }
+
 
 
 
@@ -138,36 +147,32 @@ padding:15px;
 
 .search{
 
-
 background:white;
 
-padding:15px;
+padding:12px;
 
-border-radius:12px;
+border-radius:8px;
 
-margin:15px 0;
-
+margin-bottom:12px;
 
 }
-
 
 
 
 input{
 
-
 width:100%;
 
-padding:13px;
+padding:10px;
 
 border:1px solid #ddd;
 
-border-radius:25px;
+border-radius:20px;
 
-font-size:16px;
-
+font-size:15px;
 
 }
+
 
 
 
@@ -175,12 +180,47 @@ font-size:16px;
 
 .section-title{
 
-
-font-size:20px;
-
 font-weight:bold;
 
-margin:25px 0 15px;
+font-size:18px;
+
+margin:20px 0 10px;
+
+}
+
+
+
+
+
+
+
+/* 分类文字 */
+
+
+.filter{
+
+background:white;
+
+padding:10px;
+
+border-radius:8px;
+
+}
+
+
+
+.filter span{
+
+
+display:inline-block;
+
+margin:5px 12px 5px 0;
+
+font-size:14px;
+
+color:#1677ff;
+
+cursor:pointer;
 
 
 }
@@ -189,16 +229,23 @@ margin:25px 0 15px;
 
 
 
-.card{
+
+
+
+
+/* 文章列表 */
+
+
+.item{
 
 
 background:white;
 
-padding:18px;
+padding:10px;
 
-border-radius:12px;
+border-radius:8px;
 
-margin-bottom:15px;
+margin-bottom:8px;
 
 
 }
@@ -206,89 +253,86 @@ margin-bottom:15px;
 
 
 
-.title{
+
+.item-top{
 
 
-font-size:18px;
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+gap:8px;
+
+
+}
+
+
+
+
+
+.item-title{
+
+
+font-size:16px;
 
 font-weight:bold;
 
+overflow:hidden;
 
-}
+white-space:nowrap;
 
-
-
-.title a{
-
-
-text-decoration:none;
-
-color:#222;
+text-overflow:ellipsis;
 
 
 }
 
 
 
-.meta{
+.item-title a{
 
-
-font-size:13px;
-
-color:#888;
-
-line-height:1.8;
-
-margin-top:10px;
-
+color:#333;
 
 }
 
 
 
-.tags{
-
-
-color:#1677ff;
-
-font-size:14px;
-
-
-}
 
 
 
-.summary{
+.actions{
 
 
-font-size:14px;
-
-color:#555;
-
-line-height:1.7;
-
-margin:10px 0;
+white-space:nowrap;
 
 
 }
-
-
 
 
 
 .actions button{
 
 
-margin-right:8px;
+margin-left:3px;
+
+padding:4px 8px;
 
 }
 
 
 
+.hide{
+
+background:#777;
+
+color:white;
+
+}
+
 
 
 .edit{
-
 
 background:#1677ff;
 
@@ -300,23 +344,53 @@ color:white;
 
 .delete{
 
-
 background:#e53935;
 
 color:white;
 
+}
+
+
+
+
+
+
+.summary{
+
+
+font-size:14px;
+
+color:#555;
+
+margin-top:8px;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
 
 }
 
 
 
-.draft{
+
+.meta{
 
 
-border-left:4px solid #ff9800;
+font-size:12px;
+
+color:#999;
+
+margin-top:6px;
 
 
 }
+
+
+
+
 
 
 
@@ -325,23 +399,24 @@ border-left:4px solid #ff9800;
 
 background:white;
 
-padding:25px;
+padding:20px;
 
 text-align:center;
 
-color:#888;
+color:#999;
 
-border-radius:10px;
+border-radius:8px;
 
 }
 
 
 
+
+
 </style>
 
+
 </head>
-
-
 
 
 
@@ -354,12 +429,12 @@ border-radius:10px;
 <div class="header">
 
 
-<div class="header-top">
+<div class="top">
 
 
 <h1>
 
-博客管理
+博客后台
 
 </h1>
 
@@ -370,13 +445,11 @@ border-radius:10px;
 
 <a href="index.html">
 
-
 <button class="gray">
 
 首页
 
 </button>
-
 
 </a>
 
@@ -384,13 +457,11 @@ border-radius:10px;
 
 <a href="admin-edit.html">
 
-
-<button class="blue">
+<button class="primary">
 
 发布
 
 </button>
-
 
 </a>
 
@@ -398,9 +469,8 @@ border-radius:10px;
 </div>
 
 
+
 </div>
-
-
 
 
 
@@ -408,19 +478,19 @@ border-radius:10px;
 <div class="search">
 
 
-<input id="search"
+<input
 
-placeholder="搜索标题或正文..."
+id="search"
 
-oninput="searchArticle()">
+placeholder="搜索文章标题或正文"
+
+oninput="render()">
 
 
 </div>
 
 
 </div>
-
-
 
 
 
@@ -429,6 +499,53 @@ oninput="searchArticle()">
 
 
 <div class="container">
+
+
+
+
+
+<div class="section-title">
+
+文章年月
+
+</div>
+
+
+
+<div class="filter"
+
+id="months">
+
+加载中...
+
+</div>
+
+
+
+
+
+
+
+
+<div class="section-title">
+
+文章标签
+
+</div>
+
+
+
+<div class="filter"
+
+id="tags">
+
+加载中...
+
+</div>
+
+
+
+
 
 
 
@@ -453,10 +570,28 @@ oninput="searchArticle()">
 
 <div class="section-title">
 
-草稿箱
+隐藏文章
 
 </div>
 
+
+<div id="hidden">
+
+加载中...
+
+</div>
+
+
+
+
+
+
+
+<div class="section-title">
+
+草稿箱
+
+</div>
 
 
 <div id="draft">
@@ -467,11 +602,9 @@ oninput="searchArticle()">
 
 
 
+
+
 </div>
-
-
-
-
 
 
 
@@ -479,42 +612,28 @@ oninput="searchArticle()">
 
 <script>
 
-
 const firebaseConfig = {
-
 
 apiKey:
 "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
 
-
 authDomain:
 "qwegitpoi-blog.firebaseapp.com",
-
 
 projectId:
 "qwegitpoi-blog",
 
-
 messagingSenderId:
 "313324557146",
 
-
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
-
 
 };
 
 
 
-
-
 firebase.initializeApp(firebaseConfig);
-
-
-
-const auth =
-firebase.auth();
 
 
 
@@ -523,42 +642,15 @@ firebase.firestore();
 
 
 
-
-
 let allArticles=[];
 
 
 
-auth.onAuthStateChanged(user=>{
 
 
-if(!user){
-
-location.href="admin-login.html";
-
-}
-
-else{
-
-
-loadArticles();
-
-
-}
-
-
-});
-
-
-
-
-
-
-
-
+// 加载文章
 
 function loadArticles(){
-
 
 
 db.collection("articles")
@@ -566,12 +658,10 @@ db.collection("articles")
 .get()
 
 
-
 .then(snapshot=>{
 
 
 allArticles=[];
-
 
 
 snapshot.forEach(doc=>{
@@ -590,10 +680,7 @@ id:doc.id,
 
 
 
-
-
 render();
-
 
 
 })
@@ -602,14 +689,13 @@ render();
 
 
 alert(
-"加载失败："+e.message
+"读取失败："+e.message
 );
 
 
 });
 
 
-
 }
 
 
@@ -618,25 +704,7 @@ alert(
 
 
 
-
-
-function searchArticle(){
-
-
-
-render();
-
-
-
-}
-
-
-
-
-
-
-
-
+// 主渲染
 
 function render(){
 
@@ -644,9 +712,7 @@ function render(){
 
 let key=
 
-document.getElementById(
-"search"
-)
+document.getElementById("search")
 
 .value
 
@@ -656,43 +722,42 @@ document.getElementById(
 
 
 
-let list=allArticles.filter(a=>{
+let list=
 
-
-
-if(!key)
-
-return true;
-
-
-
+allArticles.filter(a=>{
 
 
 return (
 
-a.title||""
-
-).toLowerCase()
-
-.includes(key)
-
-
+!key
 
 ||
 
-(
+(a.title||"")
+.toLowerCase()
+.includes(key)
 
-a.content||""
+||
 
-).toLowerCase()
+(a.content||"")
+.toLowerCase()
+.includes(key)
 
-.includes(key);
-
+);
 
 
 });
 
 
+
+
+
+
+showMonths(list);
+
+
+
+showTags(list);
 
 
 
@@ -708,7 +773,17 @@ a.status==="published"
 
 
 
-let drafts=
+let hidden=
+
+list.filter(a=>
+
+a.status==="hidden"
+
+);
+
+
+
+let draft=
 
 list.filter(a=>
 
@@ -721,17 +796,7 @@ a.status==="draft"
 
 
 
-published.sort(sortTime);
-
-drafts.sort(sortTime);
-
-
-
-
-
-document.getElementById(
-"published"
-)
+document.getElementById("published")
 
 .innerHTML=
 
@@ -739,32 +804,137 @@ published.length
 
 ?
 
-published.map(createPublished).join("")
+published.map(createItem).join("")
 
 :
 
-"<div class='empty'>暂无文章</div>";
+empty();
 
 
 
 
 
-
-document.getElementById(
-"draft"
-)
+document.getElementById("hidden")
 
 .innerHTML=
 
-drafts.length
+hidden.length
 
 ?
 
-drafts.map(createDraft).join("")
+hidden.map(createItem).join("")
 
 :
 
-"<div class='empty'>暂无草稿</div>";
+empty();
+
+
+
+
+
+document.getElementById("draft")
+
+.innerHTML=
+
+draft.length
+
+?
+
+draft.map(createDraft).join("")
+
+:
+
+empty();
+
+
+
+}
+
+
+
+
+
+
+
+
+// 年月分类
+
+
+function showMonths(list){
+
+
+
+let obj={};
+
+
+
+list.forEach(a=>{
+
+
+if(!a.createTime)
+
+return;
+
+
+
+let d=a.createTime.toDate();
+
+
+
+let m=
+
+d.getFullYear()
+
++"年"
+
++(d.getMonth()+1)
+
++"月";
+
+
+
+obj[m]=true;
+
+
+
+});
+
+
+
+let html="";
+
+
+
+Object.keys(obj)
+
+.sort()
+
+.reverse()
+
+.forEach(m=>{
+
+
+html+=`
+
+<span onclick="filterMonth('${m}')">
+
+${m}
+
+</span>
+
+`;
+
+
+
+});
+
+
+
+document.getElementById("months")
+
+.innerHTML=
+
+html||"暂无";
 
 
 
@@ -778,21 +948,227 @@ drafts.map(createDraft).join("")
 
 
 
-function createPublished(a){
+
+// 标签分类
+
+
+function showTags(list){
+
+
+
+let obj={};
+
+
+
+list.forEach(a=>{
+
+
+(a.tags||[])
+
+.forEach(t=>{
+
+
+obj[t]=true;
+
+
+});
+
+
+});
+
+
+
+let html="";
+
+
+
+Object.keys(obj)
+
+.sort()
+
+.forEach(t=>{
+
+
+html+=`
+
+<span onclick="filterTag('${t}')">
+
+${t}
+
+</span>
+
+`;
+
+
+
+});
+
+
+
+document.getElementById("tags")
+
+.innerHTML=
+
+html||"暂无";
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 年月筛选
+
+
+function filterMonth(month){
+
+
+
+let result=
+
+allArticles.filter(a=>{
+
+
+if(a.status!=="published")
+
+return false;
+
+
+
+let d=
+
+a.createTime.toDate();
+
+
+
+return (
+
+d.getFullYear()
+
++"年"
+
++(d.getMonth()+1)
+
++"月"
+
+)
+
+===month;
+
+
+});
+
+
+
+document.getElementById("published")
+
+.innerHTML=
+
+result.map(createItem).join("")
+
+||empty();
+
+
+}
+
+
+
+
+
+
+
+
+
+// 标签筛选
+
+
+function filterTag(tag){
+
+
+
+let result=
+
+allArticles.filter(a=>{
+
+
+return (
+
+a.status==="published"
+
+&&
+
+(a.tags||[])
+
+.includes(tag)
+
+);
+
+
+});
+
+
+
+document.getElementById("published")
+
+.innerHTML=
+
+result.map(createItem).join("")
+
+||empty();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 已发布/隐藏文章
+
+
+function createItem(a){
+
+
+
+let actionText=
+
+a.status==="hidden"
+
+?
+
+"显示"
+
+:
+
+"隐藏";
 
 
 
 return `
 
 
-<div class="card">
+<div class="item">
 
 
-<div class="title">
+
+<div class="item-top">
+
+
+<div class="item-title">
 
 
 <a href="article.html?id=${a.id}">
-
 
 ${a.title}
 
@@ -803,40 +1179,112 @@ ${a.title}
 
 
 
+<div class="actions">
 
-<div class="meta">
 
-发布时间：
 
-${format(a.createTime)}
+<button class="hide"
 
-<br>
+onclick="toggleHide('${a.id}','${a.status}')">
 
-最后编辑：
+${actionText}
 
-${lastEdit(a.updateTime)}
+</button>
+
+
+
+<button class="edit"
+
+onclick="edit('${a.id}')">
+
+编辑
+
+</button>
+
+
+
+<button class="delete"
+
+onclick="removeArticle('${a.id}')">
+
+删除
+
+</button>
+
+
 
 </div>
 
 
 
-
-<div class="tags">
-
-标签：
-
-${(a.tags||[]).join(" , ")}
-
 </div>
+
+
+
 
 
 
 <div class="summary">
 
-${summary(a.content)}
+${firstLine(a.content)}
 
 </div>
 
+
+
+
+<div class="meta">
+
+
+${format(a.createTime)}
+
+&nbsp;
+
+${(a.tags||[]).join(" ")}
+
+
+</div>
+
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 草稿
+
+
+function createDraft(a){
+
+
+
+return `
+
+
+<div class="item">
+
+
+<div class="item-top">
+
+
+<div class="item-title">
+
+${a.title}
+
+</div>
 
 
 
@@ -852,9 +1300,10 @@ onclick="edit('${a.id}')">
 </button>
 
 
+
 <button class="delete"
 
-onclick="del('${a.id}')">
+onclick="removeArticle('${a.id}')">
 
 删除
 
@@ -868,35 +1317,10 @@ onclick="del('${a.id}')">
 </div>
 
 
-`;
 
+<div class="summary">
 
-
-}
-
-
-
-
-
-
-
-
-
-function createDraft(a){
-
-
-
-return `
-
-
-<div class="card draft">
-
-
-<div class="title">
-
-
-${a.title}
-
+${firstLine(a.content)}
 
 </div>
 
@@ -904,45 +1328,61 @@ ${a.title}
 
 <div class="meta">
 
-保存：
+草稿
 
-${lastEdit(a.updateTime)}
-
-</div>
-
-
-
-<div class="actions">
-
-
-<button class="edit"
-
-onclick="edit('${a.id}')">
-
-继续编辑
-
-</button>
-
-
-
-<button class="delete"
-
-onclick="del('${a.id}')">
-
-删除
-
-</button>
-
-
+${format(a.createTime)}
 
 </div>
 
 
-</div>
 
+</div>
 
 
 `;
+
+}
+
+
+
+
+
+
+
+
+
+// 隐藏/显示
+
+
+function toggleHide(id,status){
+
+
+
+let newStatus=
+
+status==="hidden"
+
+?
+
+"published"
+
+:
+
+"hidden";
+
+
+
+db.collection("articles")
+
+.doc(id)
+
+.update({
+
+status:newStatus
+
+})
+
+.then(loadArticles);
 
 
 
@@ -954,6 +1394,8 @@ onclick="del('${a.id}')">
 
 
 
+
+// 编辑
 
 
 function edit(id){
@@ -972,8 +1414,10 @@ location.href=
 
 
 
+// 删除
 
-function del(id){
+
+function removeArticle(id){
 
 
 if(!confirm("确定删除？"))
@@ -991,40 +1435,6 @@ db.collection("articles")
 .then(loadArticles);
 
 
-}
-
-
-
-
-
-
-
-
-
-function summary(md){
-
-
-if(!md)return "";
-
-
-
-return md
-
-.replace(/#{1,6}\s/g,"")
-
-.replace(/\*\*/g,"")
-
-.replace(/\*/g,"")
-
-.replace(/<[^>]+>/g,"")
-
-.replace(/\n+/g," ")
-
-.substring(0,100)
-
-+"...";
-
-
 
 }
 
@@ -1034,22 +1444,33 @@ return md
 
 
 
-function sortTime(a,b){
 
 
-return (
+// 第一行摘要
 
-b.createTime?.seconds||0
 
-)
+function firstLine(text){
 
--
 
-(
 
-a.createTime?.seconds||0
+if(!text)
 
-);
+return "";
+
+
+
+return text
+
+.replace(/[#>*_-]/g,"")
+
+.split("\n")
+
+.filter(x=>x.trim())
+
+[0]
+
+.substring(0,80);
+
 
 
 }
@@ -1082,28 +1503,23 @@ return "";
 
 
 
+function empty(){
 
 
+return `
 
+<div class="empty">
 
-function lastEdit(arr){
+暂无文章
 
+</div>
 
-if(arr&&arr.length)
-
-return arr[arr.length-1];
-
-
-return "";
+`;
 
 }
 
 
 
-</script>
 
 
-
-</body>
-
-</html>
+loadArticles();

@@ -7,22 +7,33 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
+
 <title>
 文章编辑
 </title>
 
 
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
 
 
 <style>
 
 
+*{
+
+box-sizing:border-box;
+
+}
+
+
+
 body{
+
+margin:0;
 
 background:#f5f6fa;
 
@@ -31,7 +42,40 @@ font-family:
 "Microsoft YaHei",
 Arial;
 
-margin:0;
+color:#333;
+
+}
+
+
+
+.header{
+
+
+background:white;
+
+padding:15px;
+
+display:flex;
+
+justify-content:space-between;
+
+align-items:center;
+
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+
+.header a{
+
+text-decoration:none;
+
+color:#1677ff;
+
+font-size:14px;
 
 }
 
@@ -39,149 +83,77 @@ margin:0;
 
 .container{
 
-max-width:1000px;
+padding:15px;
 
-margin:30px auto;
+}
+
+
+
+.box{
 
 background:white;
 
-padding:30px;
+padding:15px;
 
 border-radius:10px;
 
-}
-
-
-
-h1{
-
-margin-top:0;
+margin-bottom:15px;
 
 }
 
 
 
-input{
+label{
+
+font-weight:bold;
+
+display:block;
+
+margin-bottom:8px;
+
+}
+
+
+
+input,textarea{
+
 
 width:100%;
-
-padding:12px;
-
-font-size:18px;
-
-box-sizing:border-box;
-
-margin-bottom:15px;
 
 border:1px solid #ddd;
 
-border-radius:5px;
+border-radius:8px;
 
-}
-
-
-
-textarea{
-
-
-width:100%;
-
-height:500px;
-
-box-sizing:border-box;
-
-padding:20px;
+padding:12px;
 
 font-size:16px;
 
+font-family:inherit;
+
+}
+
+
+
+#content{
+
+height:420px;
+
 line-height:1.8;
 
-resize:vertical;
-
-font-family:
-
-Consolas,
-"Microsoft YaHei";
-
-border:1px solid #ddd;
-
-border-radius:5px;
-
 }
 
 
 
+button{
 
 
-.toolbar{
+border:0;
 
-background:#f5f5f5;
+border-radius:6px;
 
-padding:12px;
+padding:10px 18px;
 
-margin-bottom:10px;
-
-border-radius:5px;
-
-}
-
-
-
-.toolbar button{
-
-
-padding:8px 14px;
-
-margin:4px;
-
-cursor:pointer;
-
-border:1px solid #ccc;
-
-background:white;
-
-border-radius:4px;
-
-}
-
-
-
-.toolbar button:hover{
-
-background:#eee;
-
-}
-
-
-
-.tags-tip{
-
-font-size:14px;
-
-color:#777;
-
-margin-bottom:10px;
-
-}
-
-
-
-.action{
-
-margin-top:20px;
-
-}
-
-
-
-.action button{
-
-
-padding:12px 25px;
-
-margin-right:15px;
-
-cursor:pointer;
+font-size:15px;
 
 }
 
@@ -189,8 +161,7 @@ cursor:pointer;
 
 .save{
 
-
-background:#666;
+background:#777;
 
 color:white;
 
@@ -200,30 +171,9 @@ color:white;
 
 .publish{
 
-
 background:#1677ff;
 
 color:white;
-
-}
-
-
-
-.back{
-
-
-background:#eee;
-
-}
-
-
-
-#message{
-
-
-margin-top:20px;
-
-color:#1677ff;
 
 }
 
@@ -236,8 +186,35 @@ color:#1677ff;
 
 
 
-
 <body>
+
+
+
+<div class="header">
+
+
+<a href="admin.html">
+
+← 返回后台
+
+</a>
+
+
+
+<a href="index.html">
+
+首页
+
+</a>
+
+
+
+</div>
+
+
+
+
+
 
 
 
@@ -245,29 +222,9 @@ color:#1677ff;
 
 
 
-<h1>
-
-Markdown文章编辑
-
-</h1>
 
 
-
-<a href="admin.html">
-
-<button class="back">
-
-返回后台
-
-</button>
-
-</a>
-
-
-
-<hr>
-
-
+<div class="box">
 
 
 <label>
@@ -277,33 +234,37 @@ Markdown文章编辑
 </label>
 
 
+<input
 
-<input id="title"
+id="title"
 
 placeholder="请输入文章标题">
 
 
+</div>
 
 
 
+
+
+
+<div class="box">
 
 
 <label>
 
-文章标签
+标签 Tags
 
 </label>
 
 
-<input id="tags"
+<input
+
+id="tags"
 
 placeholder="例如：AI,教学,旅行">
 
 
-<div class="tags-tip">
-
-多个标签请使用英文逗号 , 分隔
-
 </div>
 
 
@@ -311,122 +272,43 @@ placeholder="例如：AI,教学,旅行">
 
 
 
-<h3>
-
-正文编辑
-
-</h3>
 
 
+<div class="box">
 
 
+<label>
 
-<div class="toolbar">
+Markdown正文
 
-
-<button onclick="insertText('# ')">
-
-一级标题
-
-</button>
-
-
-<button onclick="insertText('## ')">
-
-二级标题
-
-</button>
+</label>
 
 
 
-<button onclick="wrapText('**','**')">
+<textarea
 
-加粗
+id="content"
 
-</button>
+placeholder="# 标题
 
+正文内容...
 
-
-<button onclick="wrapText('*','*')">
-
-斜体
-
-</button>
-
-
-
-<button onclick="insertText('<div align=&quot;center&quot;>\n\n')">
-
-居中开始
-
-</button>
-
-
-
-<button onclick="insertText('\n\n</div>')">
-
-居中结束
-
-</button>
-
-
-
-<button onclick="wrapText('[','](https://)')">
-
-链接
-
-</button>
-
-
-
-<button onclick="insertText('- ')">
-
-列表
-
-</button>
-
-
-</div>
-
-
-
-
-
-
-<textarea id="content"
-
-placeholder="
-
-Markdown示例：
-
-# 我的文章
-
-这是正文
-
-**重点内容**
-
-- 项目1
-- 项目2
-
-
-<div align=&quot;center&quot;>
-
-居中文字
-
-</div>
+**加粗文字**
 
 ">
 
 </textarea>
 
 
+</div>
 
 
 
 
 
 
-<div class="action">
+
+<div class="box">
 
 
 <button class="save"
@@ -449,6 +331,11 @@ onclick="saveArticle('published')">
 </button>
 
 
+</div>
+
+
+
+
 
 </div>
 
@@ -456,16 +343,7 @@ onclick="saveArticle('published')">
 
 
 
-<div id="message"></div>
-
-
-
-</div>
 <script>
-
-
-// Firebase 配置
-
 const firebaseConfig = {
 
 
@@ -488,18 +366,12 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
 
 
 
-
-
 firebase.initializeApp(firebaseConfig);
-
-
-
-const auth =
-firebase.auth();
 
 
 
@@ -510,64 +382,23 @@ firebase.firestore();
 
 
 
-let editId = null;
-
-
-
-
-
-
-
-
-// 检查登录
-
-auth.onAuthStateChanged(user=>{
-
-
-if(!user){
-
-
-location.href="admin-login.html";
-
-
-}
-else{
-
-
-checkEdit();
-
-
-}
-
-
-});
-
-
-
-
-
-
-
-
-
 // 判断是否编辑已有文章
 
+let editId =
 
-function checkEdit(){
+new URLSearchParams(location.search)
 
-
-let params =
-new URLSearchParams(
-location.search
-);
+.get("id");
 
 
 
-editId =
-params.get("id");
 
 
 
+
+
+
+// 页面加载
 
 
 if(editId){
@@ -580,7 +411,6 @@ loadArticle();
 
 
 
-}
 
 
 
@@ -589,8 +419,7 @@ loadArticle();
 
 
 
-
-// 加载文章
+// 读取旧文章
 
 
 function loadArticle(){
@@ -608,13 +437,10 @@ db.collection("articles")
 .then(doc=>{
 
 
-
 if(!doc.exists){
 
 
-alert(
-"文章不存在"
-);
+alert("文章不存在");
 
 
 return;
@@ -624,54 +450,55 @@ return;
 
 
 
-let data =
-doc.data();
+let a=doc.data();
 
 
 
 
 
-document.getElementById(
-"title"
-).value =
-data.title || "";
+document.getElementById("title")
+
+.value=
+
+a.title||"";
 
 
 
 
 
-document.getElementById(
-"content"
-).value =
-data.content || "";
+
+document.getElementById("content")
+
+.value=
+
+a.content||"";
 
 
 
 
 
-if(data.tags){
+
+document.getElementById("tags")
+
+.value=
+
+(a.tags||[])
+
+.join(",");
 
 
-document.getElementById(
-"tags"
-).value =
-
-data.tags.join(",");
-
-
-}
 
 
 
 })
 
-
-
-.catch(error=>{
+.catch(e=>{
 
 
 alert(
-"读取失败："+error.message
+
+"读取失败："+e.message
+
 );
 
 
@@ -689,6 +516,8 @@ alert(
 
 
 
+
+
 // 保存文章
 
 
@@ -696,32 +525,28 @@ function saveArticle(status){
 
 
 
-let title =
-document.getElementById(
-"title"
-)
-.value
-.trim();
+let title=
+
+document.getElementById("title")
+
+.value.trim();
 
 
 
 
+let content=
 
-let content =
-document.getElementById(
-"content"
-)
-.value
-.trim();
+document.getElementById("content")
+
+.value.trim();
 
 
 
 
+let tags=
 
-let tags =
-document.getElementById(
-"tags"
-)
+document.getElementById("tags")
+
 .value
 
 .split(",")
@@ -739,24 +564,7 @@ document.getElementById(
 if(!title){
 
 
-alert(
-"请输入文章标题"
-);
-
-
-return;
-
-
-}
-
-
-
-if(!content){
-
-
-alert(
-"请输入文章内容"
-);
+alert("请输入标题");
 
 
 return;
@@ -769,25 +577,60 @@ return;
 
 
 
-let now =
+
+
+let now=
 
 new Date()
 
-.toLocaleString(
-"zh-CN"
-);
+.toLocaleString("zh-CN");
 
 
 
 
 
+
+
+let data={
+
+
+
+title:title,
+
+
+
+content:content,
+
+
+
+tags:tags,
+
+
+
+status:status,
+
+
+
+author:"管理员"
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+if(editId){
 
 
 
 // 编辑已有文章
-
-
-if(editId){
 
 
 
@@ -798,22 +641,27 @@ db.collection("articles")
 .get()
 
 
-
 .then(doc=>{
 
 
 
-let data =
+let old=
+
 doc.data();
 
 
 
-let history =
-data.updateTime || [];
+
+
+let updates=
+
+old.updateTime||[];
 
 
 
-history.push(now);
+
+updates.push(now);
+
 
 
 
@@ -827,24 +675,10 @@ return db.collection("articles")
 .update({
 
 
-
-title:title,
-
+...data,
 
 
-content:content,
-
-
-
-tags:tags,
-
-
-
-status:status,
-
-
-
-updateTime:history
+updateTime:updates
 
 
 
@@ -854,105 +688,10 @@ updateTime:history
 
 })
 
-
-
 .then(()=>{
-
-
-showMessage(
-"保存成功"
-);
-
-
-setTimeout(()=>{
-
-
-location.href="admin.html";
-
-
-},1000);
-
-
-
-})
-
-
-
-.catch(error=>{
 
 
 alert(
-"保存失败："+error.message
-);
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-// 新建文章
-
-
-else{
-
-
-
-db.collection("articles")
-
-.add({
-
-
-
-title:title,
-
-
-
-content:content,
-
-
-
-tags:tags,
-
-
-
-status:status,
-
-
-
-author:"管理员",
-
-
-
-
-createTime:
-
-firebase.firestore.FieldValue.serverTimestamp(),
-
-
-
-
-updateTime:[now]
-
-
-
-})
-
-
-
-.then(()=>{
-
-
-
-showMessage(
 
 status==="published"
 
@@ -968,27 +707,64 @@ status==="published"
 
 
 
+location.href="admin.html";
 
-setTimeout(()=>{
+
+});
+
+
+
+
+
+
+}else{
+
+
+
+// 新文章
+
+
+
+data.createTime=
+
+firebase.firestore.FieldValue.serverTimestamp();
+
+
+
+data.updateTime=[now];
+
+
+
+
+
+
+
+db.collection("articles")
+
+.add(data)
+
+
+.then(()=>{
+
+
+alert(
+
+status==="published"
+
+?
+
+"发布成功"
+
+:
+
+"草稿保存成功"
+
+);
+
 
 
 location.href="admin.html";
 
-
-},1000);
-
-
-
-})
-
-
-
-.catch(error=>{
-
-
-alert(
-"保存失败："+error.message
-);
 
 
 });
@@ -999,194 +775,5 @@ alert(
 
 
 
-}
-
-
-
-
-
-
-
-
-
-// 显示提示
-
-
-function showMessage(text){
-
-
-document.getElementById(
-"message"
-)
-
-.innerHTML=text;
-
 
 }
-
-
-
-
-
-
-
-
-
-// 插入文字
-
-
-function insertText(text){
-
-
-
-let textarea =
-document.getElementById(
-"content"
-);
-
-
-
-let start =
-textarea.selectionStart;
-
-
-
-let end =
-textarea.selectionEnd;
-
-
-
-
-let value =
-textarea.value;
-
-
-
-
-
-textarea.value =
-
-value.substring(0,start)
-
-+
-
-text
-
-+
-
-value.substring(end);
-
-
-
-
-
-textarea.focus();
-
-
-
-textarea.selectionStart =
-
-textarea.selectionEnd =
-
-start + text.length;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 包裹文字
-
-
-function wrapText(before,after){
-
-
-
-let textarea =
-document.getElementById(
-"content"
-);
-
-
-
-let start =
-textarea.selectionStart;
-
-
-
-let end =
-textarea.selectionEnd;
-
-
-
-let selected =
-
-textarea.value.substring(
-start,
-end
-);
-
-
-
-if(!selected){
-
-
-selected="文字";
-
-
-}
-
-
-
-
-
-
-let insert =
-
-before +
-
-selected +
-
-after;
-
-
-
-
-
-textarea.setRangeText(
-
-insert,
-
-start,
-
-end,
-
-"end"
-
-);
-
-
-
-textarea.focus();
-
-
-
-}
-
-
-
-
-
-</script>
-
-
-</body>
-
-</html>

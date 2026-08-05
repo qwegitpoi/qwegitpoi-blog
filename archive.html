@@ -3,16 +3,14 @@
 
 <head>
 
-
 <meta charset="UTF-8">
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 
 <title>
-文章归档
+文章列表
 </title>
-
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -24,7 +22,17 @@
 <style>
 
 
+*{
+
+box-sizing:border-box;
+
+}
+
+
+
 body{
+
+margin:0;
 
 background:#f5f6fa;
 
@@ -33,7 +41,7 @@ font-family:
 "Microsoft YaHei",
 Arial;
 
-margin:0;
+color:#333;
 
 }
 
@@ -41,9 +49,10 @@ margin:0;
 
 .header{
 
+
 background:white;
 
-padding:20px 40px;
+padding:15px;
 
 display:flex;
 
@@ -51,7 +60,24 @@ justify-content:space-between;
 
 align-items:center;
 
-box-shadow:0 2px 8px rgba(0,0,0,.1);
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.08);
+
+
+}
+
+
+
+.header a{
+
+
+color:#1677ff;
+
+text-decoration:none;
+
+font-size:14px;
+
 
 }
 
@@ -59,159 +85,180 @@ box-shadow:0 2px 8px rgba(0,0,0,.1);
 
 .container{
 
-max-width:1000px;
 
-margin:30px auto;
+padding:15px;
+
+
+}
+
+
+
+.title{
+
+
+font-size:21px;
+
+font-weight:bold;
+
+margin:15px 0;
+
 
 }
 
 
 
 
-button{
 
-padding:10px 18px;
+.filter{
 
-cursor:pointer;
-
-}
-
-
-
-.tags-box{
 
 background:white;
 
-padding:20px;
+padding:12px;
 
-border-radius:10px;
+border-radius:8px;
 
-margin-bottom:30px;
+margin-bottom:15px;
+
 
 }
 
 
 
-.tag{
+
+.filter-title{
+
+
+font-size:15px;
+
+font-weight:bold;
+
+margin-bottom:8px;
+
+
+}
+
+
+
+
+.filter span{
+
 
 display:inline-block;
 
-padding:6px 15px;
+color:#1677ff;
 
-background:#eee;
+font-size:14px;
 
-margin:5px;
-
-border-radius:20px;
+margin:5px 12px 5px 0;
 
 cursor:pointer;
 
-}
-
-
-
-.tag:hover{
-
-background:#ddd;
-
-}
-
-
-
-.active{
-
-background:#1677ff;
-
-color:white;
 
 }
 
 
 
 
-.group{
-
-background:white;
-
-padding:25px;
-
-margin-bottom:30px;
-
-border-radius:10px;
-
-}
-
-
-
-.month-title{
-
-font-size:25px;
-
-border-bottom:1px solid #ddd;
-
-padding-bottom:10px;
-
-}
 
 
 
 .article{
 
-padding:15px 0;
 
-border-bottom:1px solid #eee;
+background:white;
+
+padding:14px;
+
+border-radius:8px;
+
+margin-bottom:10px;
+
 
 }
 
 
 
-.article:last-child{
 
-border:none;
+
+.article h2{
+
+
+font-size:17px;
+
+margin:0 0 8px;
+
 
 }
 
 
 
-.article a{
+.article h2 a{
 
-text-decoration:none;
 
 color:#333;
 
-font-size:20px;
+text-decoration:none;
+
 
 }
 
 
 
-.time{
+
+
+.summary{
+
 
 font-size:14px;
 
-color:#888;
+color:#555;
+
+line-height:1.6;
+
 
 }
+
+
+
+.meta{
+
+
+font-size:12px;
+
+color:#999;
+
+margin-top:8px;
+
+
+}
+
+
 
 
 
 .empty{
 
+
 background:white;
 
-padding:30px;
+padding:20px;
+
+text-align:center;
+
+color:#999;
+
+border-radius:8px;
+
 
 }
-
-
 
 
 </style>
 
 
+
 </head>
-
-
 
 
 
@@ -223,28 +270,22 @@ padding:30px;
 <div class="header">
 
 
-<h1>
-
-文章归档
-
-</h1>
-
-
-
 <a href="index.html">
 
-<button>
-
-返回首页
-
-</button>
+← 首页
 
 </a>
 
 
+<span>
+
+文章列表
+
+</span>
+
+
+
 </div>
-
-
 
 
 
@@ -256,16 +297,51 @@ padding:30px;
 
 
 
+<div class="title">
+
+全部文章
+
+</div>
 
 
-<div class="tags-box">
 
 
-<h2>
 
-文章标签
+<div class="filter">
 
-</h2>
+
+<div class="filter-title">
+
+按年月
+
+</div>
+
+
+
+<div id="months">
+
+加载中...
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="filter">
+
+
+<div class="filter-title">
+
+按标签
+
+</div>
+
 
 
 <div id="tags">
@@ -282,16 +358,7 @@ padding:30px;
 
 
 
-<div id="current">
-
-</div>
-
-
-
-
-
-
-<div id="archive">
+<div id="list">
 
 加载中...
 
@@ -314,10 +381,8 @@ padding:30px;
 <script>
 
 
+const firebaseConfig={
 
-
-
-const firebaseConfig = {
 
 
 apiKey:
@@ -350,20 +415,14 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const db =
+const db=
+
 firebase.firestore();
 
 
 
 
-
-
-
-let allArticles=[];
-
-
-
-let currentTag="";
+let articles=[];
 
 
 
@@ -371,32 +430,17 @@ let currentTag="";
 
 
 
-// 获取标签参数
-
-
-let params =
-new URLSearchParams(
-location.search
-);
-
-
-
-currentTag =
-params.get("tag") || "";
-
-
-
-
-
-
-
-
-
-function loadArticles(){
+function load(){
 
 
 
 db.collection("articles")
+
+.where(
+"status",
+"==",
+"published"
+)
 
 .get()
 
@@ -405,30 +449,20 @@ db.collection("articles")
 .then(snapshot=>{
 
 
+articles=[];
+
+
 
 snapshot.forEach(doc=>{
 
 
-let data =
-doc.data();
-
-
-
-if(data.status==="published"){
-
-
-
-allArticles.push({
+articles.push({
 
 id:doc.id,
 
-...data
+...doc.data()
 
 });
-
-
-}
-
 
 
 });
@@ -436,21 +470,22 @@ id:doc.id,
 
 
 
+articles.sort((a,b)=>{
 
 
+return (
 
-allArticles.sort((a,b)=>{
+b.createTime?.seconds||0
 
+)
 
-let ta =
-a.createTime?.seconds || 0;
+-
 
+(
 
-let tb =
-b.createTime?.seconds || 0;
+a.createTime?.seconds||0
 
-
-return tb-ta;
+);
 
 
 });
@@ -458,26 +493,32 @@ return tb-ta;
 
 
 
+showFilters();
 
-showTags();
-
-
-showArchive();
+showArticles(articles);
 
 
 
 })
 
-.catch(error=>{
+.catch(e=>{
 
 
-document.getElementById(
-"archive"
-)
+document.getElementById("list")
 
 .innerHTML=
 
-"加载失败："+error.message;
+`
+
+<div class="empty">
+
+加载失败：
+
+${e.message}
+
+</div>
+
+`;
 
 
 });
@@ -494,43 +535,59 @@ document.getElementById(
 
 
 
+// 年月标签
 
 
-// 标签统计
-
-
-function showTags(){
-
-
-
-let count={};
+function showFilters(){
 
 
 
+let months={};
 
-
-allArticles.forEach(article=>{
-
-
-
-if(article.tags){
+let tags={};
 
 
 
-article.tags.forEach(tag=>{
+articles.forEach(a=>{
 
 
-count[tag]=(count[tag]||0)+1;
+if(a.createTime){
+
+
+let d=a.createTime.toDate();
 
 
 
-});
+let m=
+
+d.getFullYear()
+
++"年"
+
++(d.getMonth()+1)
+
++"月";
+
+
+
+months[m]=true;
 
 
 }
 
 
 
+(a.tags||[])
+
+.forEach(t=>{
+
+
+tags[t]=true;
+
+
+});
+
+
 });
 
 
@@ -538,88 +595,121 @@ count[tag]=(count[tag]||0)+1;
 
 
 
-let html="";
+let mh="";
 
 
 
-if(!currentTag){
+Object.keys(months)
+
+.sort()
+
+.reverse()
+
+.forEach(m=>{
 
 
-html+=`
+mh+=`
 
-<span class="tag active">
+<span onclick="filterMonth('${m}')">
 
-全部
+${m}
 
 </span>
 
 `;
 
-}
-
-else{
+});
 
 
-html+=`
 
-<span class="tag"
+document.getElementById("months")
 
-onclick="selectTag('')">
+.innerHTML=
 
-全部
+mh||"暂无";
+
+
+
+
+
+
+
+let th="";
+
+
+
+Object.keys(tags)
+
+.sort()
+
+.forEach(t=>{
+
+
+th+=`
+
+<span onclick="filterTag('${t}')">
+
+${t}
 
 </span>
 
 `;
-
-}
-
-
-
-
-
-
-
-
-
-Object.keys(count)
-
-.forEach(tag=>{
-
-
-
-html+=`
-
-
-<span class="tag ${tag===currentTag?'active':''}"
-
-onclick="selectTag('${tag}')">
-
-
-${tag}
-
-(${count[tag]})
-
-
-</span>
-
-
-`;
-
-
 
 });
 
 
 
+document.getElementById("tags")
+
+.innerHTML=
+
+th||"暂无";
+
+
+}
 
 
 
-document.getElementById(
-"tags"
+
+
+
+
+
+
+// 年月筛选
+
+
+function filterMonth(month){
+
+
+
+let result=articles.filter(a=>{
+
+
+let d=a.createTime.toDate();
+
+
+
+return (
+
+d.getFullYear()
+
++"年"
+
++(d.getMonth()+1)
+
++"月"
+
 )
 
-.innerHTML=html;
+===month;
+
+
+});
+
+
+
+showArticles(result);
 
 
 
@@ -633,34 +723,36 @@ document.getElementById(
 
 
 
-function selectTag(tag){
+// 标签筛选
+
+
+function filterTag(tag){
 
 
 
-if(tag){
+let result=
+
+articles.filter(a=>{
 
 
-location.href=
+return (
 
-"archive.html?tag="+
+a.tags||[]
 
-encodeURIComponent(tag);
+)
+
+.includes(tag);
+
+
+});
+
+
+
+showArticles(result);
+
 
 
 }
-
-else{
-
-
-location.href="archive.html";
-
-
-}
-
-
-}
-
-
 
 
 
@@ -673,122 +765,31 @@ location.href="archive.html";
 // 显示文章
 
 
-function showArchive(){
+function showArticles(list){
 
 
 
-let articles=allArticles;
+if(list.length===0){
 
 
-
-if(currentTag){
-
-
-
-articles=
-
-articles.filter(article=>{
-
-
-return article.tags &&
-
-article.tags.includes(currentTag);
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-if(currentTag){
-
-
-document.getElementById(
-"current"
-)
+document.getElementById("list")
 
 .innerHTML=
 
 `
 
-<h2>
+<div class="empty">
 
-当前标签：
+暂无文章
 
-${currentTag}
-
-</h2>
+</div>
 
 `;
 
-}
-
-
-else{
-
-
-document.getElementById(
-"current"
-)
-
-.innerHTML="";
+return;
 
 
 }
-
-
-
-
-
-
-
-let groups={};
-
-
-
-
-
-articles.forEach(article=>{
-
-
-
-let d=getDate(article.createTime);
-
-
-
-let key=
-
-d.year+"年"+d.month+"月";
-
-
-
-
-
-if(!groups[key]){
-
-
-groups[key]=[];
-
-
-}
-
-
-
-groups[key].push(article);
-
-
-
-});
-
-
-
 
 
 
@@ -798,78 +799,47 @@ let html="";
 
 
 
-
-
-if(articles.length===0){
-
-
-html=
-
-`
-
-<div class="empty">
-
-暂无相关文章
-
-</div>
-
-`;
-
-
-}
-
-
-
-
-
-Object.keys(groups)
-
-.forEach(month=>{
-
+list.forEach(a=>{
 
 
 html+=`
 
-<div class="group">
-
-
-<div class="month-title">
-
-${month}
-
-</div>
-
-
-`;
-
-
-
-
-
-
-
-groups[month].forEach(article=>{
-
-
-
-html+=`
 
 <div class="article">
 
 
-<a href="article.html?id=${article.id}">
+<h2>
 
-${article.title}
+<a href="article.html?id=${a.id}">
+
+${a.title}
 
 </a>
 
+</h2>
 
 
-<div class="time">
 
-${formatTime(article.createTime)}
+<div class="summary">
+
+${firstLine(a.content)}
 
 </div>
+
+
+
+<div class="meta">
+
+
+${format(a.createTime)}
+
+&nbsp;
+
+${(a.tags||[]).join(" ")}
+
+
+</div>
+
 
 
 </div>
@@ -883,30 +853,11 @@ ${formatTime(article.createTime)}
 
 
 
-
-
-
-html+="</div>";
-
-
-
-});
-
-
-
-
-
-
-
-
-document.getElementById(
-"archive"
-)
+document.getElementById("list")
 
 .innerHTML=html;
 
 
-
 }
 
 
@@ -917,37 +868,26 @@ document.getElementById(
 
 
 
-function getDate(time){
+function firstLine(text){
+
+
+if(!text)
+
+return "";
 
 
 
-if(time&&time.toDate){
+return text
 
+.replace(/[#>*_-]/g,"")
 
-let d=time.toDate();
+.split("\n")
 
+.filter(x=>x.trim())
 
+[0]
 
-return {
-
-year:d.getFullYear(),
-
-month:d.getMonth()+1
-
-};
-
-
-}
-
-
-
-return {
-
-year:"未知",
-
-month:"未知"
-
-};
+.substring(0,100);
 
 
 }
@@ -957,23 +897,15 @@ month:"未知"
 
 
 
+function format(t){
 
 
-
-function formatTime(time){
-
+if(t&&t.toDate){
 
 
-if(time&&time.toDate){
+return t.toDate()
 
-
-
-return time.toDate()
-
-.toLocaleDateString(
-"zh-CN"
-);
-
+.toLocaleDateString("zh-CN");
 
 
 }
@@ -982,18 +914,11 @@ return time.toDate()
 
 return "";
 
-
-
 }
 
 
 
-
-
-
-
-loadArticles();
-
+load();
 
 
 </script>

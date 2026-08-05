@@ -9,7 +9,7 @@
 
 
 <title>
-我的个人博客
+我的博客
 </title>
 
 
@@ -47,14 +47,12 @@ color:#333;
 
 
 
-
-
 .header{
 
 
 background:white;
 
-padding:18px 16px;
+padding:15px;
 
 display:flex;
 
@@ -62,13 +60,9 @@ justify-content:space-between;
 
 align-items:center;
 
-position:sticky;
+box-shadow:
 
-top:0;
-
-z-index:10;
-
-box-shadow:0 2px 8px rgba(0,0,0,.08);
+0 2px 8px rgba(0,0,0,.08);
 
 
 }
@@ -77,7 +71,7 @@ box-shadow:0 2px 8px rgba(0,0,0,.08);
 
 .logo{
 
-font-size:22px;
+font-size:21px;
 
 font-weight:bold;
 
@@ -86,7 +80,6 @@ font-weight:bold;
 
 
 .admin{
-
 
 font-size:14px;
 
@@ -99,7 +92,6 @@ text-decoration:none;
 
 
 
-
 .container{
 
 padding:15px;
@@ -108,50 +100,9 @@ padding:15px;
 
 
 
-
-
-.tools{
-
-
-display:flex;
-
-gap:12px;
-
-margin-bottom:20px;
-
-
-}
-
-
-
-.tool{
-
-
-background:white;
-
-flex:1;
-
-padding:15px;
-
-border-radius:12px;
-
-text-align:center;
-
-text-decoration:none;
-
-color:#333;
-
-box-shadow:0 2px 6px rgba(0,0,0,.05);
-
-}
-
-
-
-
 .title{
 
-
-font-size:22px;
+font-size:20px;
 
 font-weight:bold;
 
@@ -163,58 +114,41 @@ margin:20px 0 15px;
 
 
 
-
-
-.card{
+.article{
 
 
 background:white;
 
-padding:18px;
+padding:15px;
 
-border-radius:12px;
+border-radius:10px;
 
-margin-bottom:15px;
-
+margin-bottom:12px;
 
 }
 
 
 
-.card h2{
 
+.article h2{
 
-font-size:19px;
+font-size:18px;
 
 margin:0 0 10px;
 
+line-height:1.5;
 
 }
 
 
 
-.card h2 a{
+.article h2 a{
 
-
-color:#222;
 
 text-decoration:none;
 
+color:#333;
 
-}
-
-
-
-
-
-.time{
-
-
-font-size:13px;
-
-color:#999;
-
-margin-bottom:12px;
 
 }
 
@@ -224,15 +158,27 @@ margin-bottom:12px;
 .summary{
 
 
-font-size:15px;
-
-line-height:1.8;
+font-size:14px;
 
 color:#555;
 
+line-height:1.7;
 
 }
 
+
+
+
+.meta{
+
+
+font-size:12px;
+
+color:#999;
+
+margin-top:10px;
+
+}
 
 
 
@@ -242,20 +188,19 @@ color:#555;
 
 display:block;
 
-background:#1677ff;
-
-color:white;
+background:white;
 
 text-align:center;
 
-padding:14px;
+padding:15px;
 
-border-radius:25px;
+border-radius:10px;
+
+color:#1677ff;
 
 text-decoration:none;
 
-margin:25px 0;
-
+margin-top:20px;
 
 }
 
@@ -263,21 +208,21 @@ margin:25px 0;
 
 
 
+.empty{
 
 
-.footer{
+background:white;
 
+padding:20px;
 
 text-align:center;
 
-font-size:13px;
-
 color:#999;
 
-padding:30px;
+border-radius:10px;
+
 
 }
-
 
 
 
@@ -288,10 +233,7 @@ padding:30px;
 
 
 
-
-
 <body>
-
 
 
 
@@ -324,52 +266,7 @@ href="admin-login.html">
 
 
 
-
-
 <div class="container">
-
-
-
-
-
-<div class="tools">
-
-
-<a class="tool"
-
-href="search.html">
-
-🔍
-
-<br>
-
-搜索文章
-
-</a>
-
-
-
-<a class="tool"
-
-href="archive.html">
-
-🏷
-
-<br>
-
-文章归档
-
-</a>
-
-
-
-</div>
-
-
-
-
-
-
 
 
 <div class="title">
@@ -377,8 +274,6 @@ href="archive.html">
 最新文章
 
 </div>
-
-
 
 
 
@@ -391,33 +286,17 @@ href="archive.html">
 
 
 
-
 <a class="more"
 
 href="archive.html">
 
-查看更多文章
+查看全部文章
 
 </a>
 
 
 
-
-
 </div>
-
-
-
-
-
-
-
-<div class="footer">
-
-© 我的个人博客
-
-</div>
-
 
 
 
@@ -429,7 +308,7 @@ href="archive.html">
 <script>
 
 
-const firebaseConfig = {
+const firebaseConfig={
 
 
 apiKey:
@@ -451,9 +330,8 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
-
-
 
 
 
@@ -462,7 +340,8 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const db =
+const db=
+
 firebase.firestore();
 
 
@@ -471,13 +350,17 @@ firebase.firestore();
 
 
 
-
-
-function load(){
+function loadArticles(){
 
 
 
 db.collection("articles")
+
+.where(
+"status",
+"==",
+"published"
+)
 
 .get()
 
@@ -486,37 +369,20 @@ db.collection("articles")
 .then(snapshot=>{
 
 
-
-let articles=[];
-
-
-
+let list=[];
 
 
 
 snapshot.forEach(doc=>{
 
 
-let data=doc.data();
-
-
-
-if(data.status==="published"){
-
-
-
-articles.push({
+list.push({
 
 id:doc.id,
 
-...data
+...doc.data()
 
 });
-
-
-
-}
-
 
 
 });
@@ -527,8 +393,7 @@ id:doc.id,
 
 
 
-
-articles.sort((a,b)=>{
+list.sort((a,b)=>{
 
 
 return (
@@ -553,11 +418,76 @@ a.createTime?.seconds||0
 
 
 
+show(
 
-articles=
+list.slice(0,6)
 
-articles.slice(0,6);
+);
 
+
+
+})
+
+.catch(e=>{
+
+
+document.getElementById("list")
+
+.innerHTML=
+
+`
+
+<div class="empty">
+
+文章加载失败：
+
+${e.message}
+
+</div>
+
+`;
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+
+
+function show(list){
+
+
+
+if(list.length===0){
+
+
+document.getElementById("list")
+
+.innerHTML=
+
+`
+
+<div class="empty">
+
+暂无文章
+
+</div>
+
+`;
+
+return;
+
+
+}
 
 
 
@@ -569,36 +499,16 @@ let html="";
 
 
 
-
-
-if(articles.length===0){
-
-
-
-html=
-
-"<p>暂无文章</p>";
-
-
-
-}
-
-
-
-
-
-articles.forEach(a=>{
-
+list.forEach(a=>{
 
 
 html+=`
 
 
-<div class="card">
+<div class="article">
 
 
 <h2>
-
 
 <a href="article.html?id=${a.id}">
 
@@ -606,26 +516,27 @@ ${a.title}
 
 </a>
 
-
 </h2>
-
-
-
-
-<div class="time">
-
-
-${format(a.createTime)}
-
-</div>
 
 
 
 
 <div class="summary">
 
+${firstLine(a.content)}
 
-${summary(a.content)}
+</div>
+
+
+
+
+<div class="meta">
+
+${format(a.createTime)}
+
+&nbsp;
+
+${(a.tags||[]).join(" ")}
 
 </div>
 
@@ -647,35 +558,12 @@ ${summary(a.content)}
 
 
 
-document.getElementById(
-"list"
-)
+document.getElementById("list")
 
 .innerHTML=html;
 
 
 
-})
-
-
-
-.catch(e=>{
-
-
-document.getElementById(
-"list"
-)
-
-.innerHTML=
-
-"文章加载失败："+e.message;
-
-
-
-});
-
-
-
 }
 
 
@@ -686,75 +574,29 @@ document.getElementById(
 
 
 
-function summary(md){
+function firstLine(text){
 
 
 
-if(!md)return "";
+if(!text)
+
+return "";
 
 
 
-let t=md;
+return text
 
+.replace(/[#>*_-]/g,"")
 
+.split("\n")
 
-t=t.replace(
-/#{1,6}\s/g,
-""
-);
+.filter(x=>x.trim())
 
+[0]
 
-
-t=t.replace(
-/\*\*/g,
-""
-);
-
-
-
-t=t.replace(
-/\*/g,
-""
-);
-
-
-
-t=t.replace(
-/<[^>]+>/g,
-""
-);
-
-
-
-t=t.replace(
-/\n+/g,
-" "
-);
-
-
-
-
-
-
-return t.length>100
-
-?
-
-t.substring(0,100)+"..."
-
-:
-
-t;
-
-
+.substring(0,100);
 
 }
-
-
-
-
-
-
 
 
 
@@ -767,10 +609,7 @@ if(t&&t.toDate){
 
 return t.toDate()
 
-.toLocaleDateString(
-"zh-CN"
-);
-
+.toLocaleDateString("zh-CN");
 
 
 }
@@ -779,25 +618,17 @@ return t.toDate()
 
 return "";
 
-
-
 }
 
 
 
 
-
-
-
-load();
-
+loadArticles();
 
 
 </script>
 
 
-
 </body>
-
 
 </html>

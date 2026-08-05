@@ -13,6 +13,7 @@
 </title>
 
 
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
@@ -27,6 +28,7 @@
 box-sizing:border-box;
 
 }
+
 
 
 body{
@@ -47,12 +49,13 @@ color:#333;
 
 
 
+
 .header{
 
 
 background:white;
 
-padding:16px;
+padding:15px;
 
 display:flex;
 
@@ -60,29 +63,16 @@ justify-content:space-between;
 
 align-items:center;
 
-position:sticky;
+box-shadow:
 
-top:0;
+0 2px 8px rgba(0,0,0,.08);
 
-box-shadow:0 2px 8px rgba(0,0,0,.08);
 
 }
 
 
 
-
-.header h1{
-
-font-size:22px;
-
-margin:0;
-
-}
-
-
-
-.home{
-
+.header a{
 
 color:#1677ff;
 
@@ -94,47 +84,39 @@ font-size:14px;
 
 
 
-
 .container{
-
 
 padding:15px;
 
 }
-
 
 
 
 
 .search-box{
 
-
 background:white;
 
 padding:15px;
 
-border-radius:12px;
-
-margin-bottom:20px;
-
+border-radius:10px;
 
 }
+
 
 
 
 input{
 
-
 width:100%;
 
-padding:14px;
-
-font-size:16px;
+padding:12px;
 
 border:1px solid #ddd;
 
 border-radius:25px;
 
+font-size:16px;
 
 }
 
@@ -142,65 +124,68 @@ border-radius:25px;
 
 
 
-.result{
+.article{
 
 
 background:white;
 
-padding:18px;
+padding:15px;
 
-border-radius:12px;
+margin-top:12px;
 
-margin-bottom:15px;
+border-radius:10px;
+
 
 }
 
 
 
-.result a{
+
+.article h2{
 
 
 font-size:18px;
 
-font-weight:bold;
+margin:0 0 10px;
 
-color:#222;
+
+}
+
+
+
+.article h2 a{
+
 
 text-decoration:none;
 
-
-}
-
-
-
-
-.time{
-
-
-font-size:13px;
-
-color:#999;
-
-margin:8px 0;
+color:#333;
 
 
 }
-
 
 
 
 .summary{
 
-
-font-size:15px;
-
-line-height:1.7;
+font-size:14px;
 
 color:#555;
 
+line-height:1.7;
 
 }
 
+
+
+.meta{
+
+font-size:12px;
+
+color:#999;
+
+margin-top:10px;
+
+}
 
 
 
@@ -210,25 +195,22 @@ color:#555;
 
 background:white;
 
-padding:30px;
+padding:20px;
+
+border-radius:10px;
 
 text-align:center;
 
 color:#888;
 
-border-radius:12px;
-
-
 }
+
 
 
 </style>
 
 
-
 </head>
-
-
 
 
 
@@ -240,20 +222,20 @@ border-radius:12px;
 <div class="header">
 
 
-<h1>
+<a href="index.html">
 
-搜索文章
-
-</h1>
-
-
-<a class="home"
-
-href="index.html">
-
-返回首页
+← 首页
 
 </a>
+
+
+
+<span>
+
+搜索
+
+</span>
+
 
 
 </div>
@@ -269,40 +251,36 @@ href="index.html">
 
 
 
-
-
 <div class="search-box">
 
 
-<input id="keyword"
+<input
 
-placeholder="输入关键词搜索..."
+id="keyword"
+
+placeholder="输入关键词搜索"
 
 oninput="search()">
 
 
-
 </div>
 
 
 
 
 
-<div id="results">
+<div id="list">
 
 
 请输入关键词
 
-</div>
-
-
-
-
-
 
 </div>
 
 
+
+
+</div>
 
 
 
@@ -313,7 +291,9 @@ oninput="search()">
 <script>
 
 
-const firebaseConfig = {
+
+const firebaseConfig={
+
 
 
 apiKey:
@@ -335,6 +315,7 @@ messagingSenderId:
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
 };
 
 
@@ -345,10 +326,9 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const db =
+const db=
+
 firebase.firestore();
-
-
 
 
 
@@ -360,16 +340,17 @@ let articles=[];
 
 
 
-
-
-// 加载文章
-
-
-function loadArticles(){
+function load(){
 
 
 
 db.collection("articles")
+
+.where(
+"status",
+"==",
+"published"
+)
 
 .get()
 
@@ -378,48 +359,23 @@ db.collection("articles")
 .then(snapshot=>{
 
 
+articles=[];
+
+
+
 snapshot.forEach(doc=>{
-
-
-let data=doc.data();
-
-
-
-if(data.status==="published"){
-
 
 
 articles.push({
 
 id:doc.id,
 
-...data
+...doc.data()
 
 });
 
 
-}
-
-
-
 });
-
-
-
-})
-
-
-
-.catch(e=>{
-
-
-document.getElementById(
-"results"
-)
-
-.innerHTML=
-
-"加载失败："+e.message;
 
 
 });
@@ -434,11 +390,6 @@ document.getElementById(
 
 
 
-
-
-
-
-// 搜索
 
 
 function search(){
@@ -447,9 +398,7 @@ function search(){
 
 let key=
 
-document.getElementById(
-"keyword"
-)
+document.getElementById("keyword")
 
 .value
 
@@ -461,13 +410,10 @@ document.getElementById(
 
 
 
-
 if(!key){
 
 
-document.getElementById(
-"results"
-)
+document.getElementById("list")
 
 .innerHTML=
 
@@ -483,36 +429,34 @@ return;
 
 
 
-
-
-let list=
+let result=
 
 articles.filter(a=>{
 
 
+return (
 
-let title=
 
 (a.title||"")
-.toLowerCase();
+
+.toLowerCase()
+
+.includes(key)
 
 
-
-let content=
-
-(a.content||"")
-.toLowerCase();
-
-
-
-
-
-return title.includes(key)
 
 ||
 
-content.includes(key);
 
+
+(a.content||"")
+
+.toLowerCase()
+
+.includes(key)
+
+
+);
 
 
 });
@@ -521,10 +465,7 @@ content.includes(key);
 
 
 
-
-
-
-showResults(list);
+show(result);
 
 
 
@@ -537,21 +478,16 @@ showResults(list);
 
 
 
-
-function showResults(list){
-
-
-
-let html="";
-
-
+function show(list){
 
 
 
 if(list.length===0){
 
 
-html=
+document.getElementById("list")
+
+.innerHTML=
 
 `
 
@@ -563,6 +499,7 @@ html=
 
 `;
 
+return;
 
 
 }
@@ -571,52 +508,55 @@ html=
 
 
 
+let html="";
+
 
 
 list.forEach(a=>{
 
 
-
 html+=`
 
 
-<div class="result">
+<div class="article">
+
+
+<h2>
 
 
 <a href="article.html?id=${a.id}">
 
-
 ${a.title}
-
 
 </a>
 
 
-
-<div class="time">
-
-
-发布时间：
-
-${format(a.createTime)}
-
-</div>
+</h2>
 
 
 
 
 <div class="summary">
 
+${firstLine(a.content)}
 
-${summary(a.content)}
+</div>
 
+
+
+<div class="meta">
+
+${format(a.createTime)}
+
+&nbsp;
+
+${(a.tags||[]).join(" ")}
 
 </div>
 
 
 
 </div>
-
 
 
 `;
@@ -629,14 +569,11 @@ ${summary(a.content)}
 
 
 
+document.getElementById("list")
 
+.innerHTML=
 
-document.getElementById(
-"results"
-)
-
-.innerHTML=html;
-
+html;
 
 
 }
@@ -648,72 +585,29 @@ document.getElementById(
 
 
 
-
-function summary(md){
-
+function firstLine(text){
 
 
-if(!md)return "";
+if(!text)
 
-
-
-let t=md;
+return "";
 
 
 
-t=t.replace(
-/#{1,6}\s/g,
-""
-);
+return text
 
+.replace(/[#>*_-]/g,"")
 
+.split("\n")
 
-t=t.replace(
-/\*\*/g,
-""
-);
+.filter(x=>x.trim())
 
+[0]
 
-
-t=t.replace(
-/\*/g,
-""
-);
-
-
-
-t=t.replace(
-/<[^>]+>/g,
-""
-);
-
-
-
-t=t.replace(
-/\n+/g,
-" "
-);
-
-
-
-
-
-
-return t.length>100
-
-?
-
-t.substring(0,100)+"..."
-
-:
-
-t;
-
+.substring(0,100);
 
 
 }
-
-
 
 
 
@@ -724,15 +618,14 @@ t;
 function format(t){
 
 
+
 if(t&&t.toDate){
+
 
 
 return t.toDate()
 
-.toLocaleDateString(
-"zh-CN"
-);
-
+.toLocaleDateString("zh-CN");
 
 
 }
@@ -741,19 +634,11 @@ return t.toDate()
 
 return "";
 
-
-
 }
 
 
 
-
-
-
-
-
-loadArticles();
-
+load();
 
 
 </script>
