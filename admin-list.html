@@ -205,10 +205,11 @@
 
       let html = "";
       data.forEach(a => {
+        const currentStatus = a.status || "published";
         html += `
         <div class="article">
           <div class="article-title">
-            <a href="article.html?id=${a.id}">
+            <a href="article.html?id=${a.id}" target="_blank">
               ${a.title || "无标题"}
             </a>
           </div>
@@ -224,8 +225,8 @@
 
           <div class="buttons">
             ${type !== "draft" ? `
-              <button class="hide" onclick="hideArticle('${a.id}','${a.status}')">
-                ${a.status === "hidden" ? "恢复" : "隐藏"}
+              <button class="hide" onclick="hideArticle('${a.id}', '${currentStatus}')">
+                ${currentStatus === "hidden" ? "恢复" : "隐藏"}
               </button>
             ` : ""}
             <button class="edit" onclick="edit('${a.id}')">编辑</button>
@@ -253,7 +254,6 @@
         html += `<button onclick="change(${page + 1})">下一页</button>`;
       }
 
-      // 【修复 Bug】改为了正确的 DOM 节点 ID
       document.getElementById("page").innerHTML = html;
     }
 
@@ -266,16 +266,18 @@
       location.href = "admin-edit.html?id=" + id;
     }
 
-    function hideArticle(id, status) {
-      let newStatus = status === "hidden" ? "published" : "hidden";
+    function hideArticle(id, currentStatus) {
+      let newStatus = currentStatus === "hidden" ? "published" : "hidden";
       db.collection("articles")
         .doc(id)
         .update({
           status: newStatus
         })
         .then(() => {
-          alert("操作成功");
-          load();
+          load(); // 重新加载列表，隐藏的文章会自动移出当前列表
+        })
+        .catch(err => {
+          alert("操作失败：" + err.message);
         });
     }
 
@@ -286,12 +288,14 @@
         .delete()
         .then(() => {
           load();
+        })
+        .catch(err => {
+          alert("删除失败：" + err.message);
         });
     }
 
     function firstLine(text) {
       if (!text) return "";
-      // 【修复正则】对 - 和 * 进行转义处理
       return text
         .replace(/[#>\*_\-]/g, "")
         .split("\n")
