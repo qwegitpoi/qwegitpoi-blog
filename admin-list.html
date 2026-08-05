@@ -8,7 +8,9 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
 
-<title>文章管理</title>
+<title>
+文章管理
+</title>
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
@@ -16,11 +18,14 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
 
+
 <style>
 
 
 *{
+
 box-sizing:border-box;
+
 }
 
 
@@ -31,7 +36,11 @@ margin:0;
 
 background:#f5f6fa;
 
-font-family:"Microsoft YaHei",Arial;
+font-family:
+
+"Microsoft YaHei",
+Arial,
+sans-serif;
 
 color:#333;
 
@@ -39,19 +48,28 @@ color:#333;
 
 
 
+
+
+/* 顶部 */
+
 .header{
+
 
 background:white;
 
-padding:15px;
+height:55px;
 
 display:flex;
 
-justify-content:space-between;
-
 align-items:center;
 
-box-shadow:0 2px 8px rgba(0,0,0,.08);
+justify-content:space-between;
+
+padding:0 15px;
+
+box-shadow:
+
+0 2px 8px rgba(0,0,0,.08);
 
 }
 
@@ -69,6 +87,21 @@ font-size:14px;
 
 
 
+.header-title{
+
+font-size:18px;
+
+font-weight:bold;
+
+}
+
+
+
+
+
+
+
+
 .container{
 
 padding:12px;
@@ -77,13 +110,20 @@ padding:12px;
 
 
 
-.box{
+
+
+
+
+
+/* 搜索 */
+
+.search-box{
 
 background:white;
 
 padding:12px;
 
-border-radius:8px;
+border-radius:10px;
 
 margin-bottom:12px;
 
@@ -91,15 +131,18 @@ margin-bottom:12px;
 
 
 
-input{
+.search-box input{
+
 
 width:100%;
 
-padding:10px;
+height:40px;
 
 border:1px solid #ddd;
 
 border-radius:20px;
+
+padding:0 15px;
 
 font-size:15px;
 
@@ -107,7 +150,33 @@ font-size:15px;
 
 
 
-.box-title{
+
+
+
+
+
+
+/* 分类 */
+
+.filter-box{
+
+
+background:white;
+
+padding:12px;
+
+border-radius:10px;
+
+margin-bottom:12px;
+
+}
+
+
+
+.filter-title{
+
+
+font-size:15px;
 
 font-weight:bold;
 
@@ -117,7 +186,8 @@ margin-bottom:8px;
 
 
 
-span{
+.filter-item{
+
 
 display:inline-block;
 
@@ -125,7 +195,9 @@ font-size:14px;
 
 color:#1677ff;
 
-margin:5px 12px 5px 0;
+margin-right:12px;
+
+margin-bottom:8px;
 
 cursor:pointer;
 
@@ -135,13 +207,21 @@ cursor:pointer;
 
 
 
+
+
+
+
+
+/* 文章 */
+
 .item{
+
 
 background:white;
 
-padding:12px;
+border-radius:10px;
 
-border-radius:8px;
+padding:12px;
 
 margin-bottom:10px;
 
@@ -149,13 +229,17 @@ margin-bottom:10px;
 
 
 
-.top{
+
+
+
+.item-top{
+
 
 display:flex;
 
-justify-content:space-between;
+align-items:center;
 
-align-items:flex-start;
+justify-content:space-between;
 
 gap:8px;
 
@@ -163,7 +247,12 @@ gap:8px;
 
 
 
-.title{
+
+
+
+
+.article-title{
+
 
 font-size:16px;
 
@@ -171,27 +260,35 @@ font-weight:bold;
 
 flex:1;
 
+min-width:0;
+
+
 }
 
 
 
-.title a{
+.article-title a{
+
 
 color:#333;
 
 text-decoration:none;
 
+
 }
+
+
 
 
 
 .summary{
 
-font-size:14px;
-
-color:#555;
 
 margin-top:8px;
+
+font-size:14px;
+
+color:#666;
 
 white-space:nowrap;
 
@@ -199,11 +296,19 @@ overflow:hidden;
 
 text-overflow:ellipsis;
 
+
 }
 
 
 
+
+
+
+
 .meta{
+
+
+margin-top:8px;
 
 font-size:12px;
 
@@ -211,39 +316,64 @@ color:#888;
 
 line-height:1.8;
 
-margin-top:8px;
-
 }
 
 
 
 
+
+
+
+
+
+
+/* 操作按钮 */
 
 .actions{
 
-white-space:nowrap;
+
+display:flex;
+
+flex-shrink:0;
+
+gap:4px;
+
+position:relative;
+
+z-index:20;
+
 
 }
+
+
 
 
 
 .actions button{
 
+
 border:0;
 
-padding:4px 7px;
+padding:5px 8px;
 
 font-size:12px;
 
-border-radius:4px;
+border-radius:5px;
 
-margin-left:3px;
+cursor:pointer;
+
+position:relative;
+
+z-index:30;
+
 
 }
 
 
 
-.hide{
+
+.btn-hide{
+
 
 background:#666;
 
@@ -253,7 +383,9 @@ color:white;
 
 
 
-.edit{
+
+.btn-edit{
+
 
 background:#1677ff;
 
@@ -263,7 +395,8 @@ color:white;
 
 
 
-.delete{
+.btn-delete{
+
 
 background:#e53935;
 
@@ -273,11 +406,27 @@ color:white;
 
 
 
+
+
+
+
+
+
+
+/* 分页 */
+
 .page{
+
+
+background:white;
+
+padding:15px;
 
 text-align:center;
 
-padding:15px;
+border-radius:10px;
+
+margin-top:10px;
 
 }
 
@@ -285,25 +434,52 @@ padding:15px;
 
 .page button{
 
+
+border:0;
+
+background:#1677ff;
+
+color:white;
+
 padding:8px 15px;
 
-margin:5px;
+border-radius:5px;
+
+margin:0 5px;
+
+cursor:pointer;
 
 }
 
 
 
+
+
+.page span{
+
+color:#555;
+
+}
+
+
+
+
+
+
+
+
 .empty{
+
 
 background:white;
 
-padding:20px;
+padding:25px;
 
 text-align:center;
 
 color:#999;
 
-border-radius:8px;
+border-radius:10px;
 
 }
 
@@ -313,6 +489,7 @@ border-radius:8px;
 
 
 </head>
+
 
 
 <body>
@@ -329,14 +506,21 @@ border-radius:8px;
 </a>
 
 
-<div id="pageTitle">
+<div class="header-title"
+
+id="pageTitle">
 
 文章管理
 
 </div>
 
 
+<div></div>
+
+
 </div>
+
+
 
 
 
@@ -346,7 +530,10 @@ border-radius:8px;
 
 
 
-<div class="box">
+
+
+
+<div class="search-box">
 
 
 <input
@@ -355,7 +542,7 @@ id="search"
 
 placeholder="搜索标题或正文"
 
-oninput="filter()">
+oninput="filterArticles()">
 
 
 </div>
@@ -364,17 +551,21 @@ oninput="filter()">
 
 
 
-<div class="box">
 
 
-<div class="box-title">
+
+
+<div class="filter-box">
+
+
+<div class="filter-title">
 
 年月分类
 
 </div>
 
 
-<div id="months">
+<div id="monthList">
 
 </div>
 
@@ -385,17 +576,21 @@ oninput="filter()">
 
 
 
-<div class="box">
 
 
-<div class="box-title">
+
+
+<div class="filter-box">
+
+
+<div class="filter-title">
 
 标签分类
 
 </div>
 
 
-<div id="tags">
+<div id="tagList">
 
 </div>
 
@@ -407,7 +602,10 @@ oninput="filter()">
 
 
 
-<div id="list">
+
+
+
+<div id="articleList">
 
 加载中...
 
@@ -415,9 +613,18 @@ oninput="filter()">
 
 
 
-<div class="page" id="pages">
+
+
+
+
+<div class="page"
+
+id="pageBox">
 
 </div>
+
+
+
 
 
 
@@ -430,10 +637,9 @@ oninput="filter()">
 
 
 <script>
+// Firebase配置
 
-
-
-const firebaseConfig={
+const firebaseConfig = {
 
 
 apiKey:
@@ -464,12 +670,14 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const db=firebase.firestore();
+const db = firebase.firestore();
 
 
 
 
-let type=
+// 当前分类
+
+let currentType =
 
 new URLSearchParams(location.search)
 
@@ -479,31 +687,18 @@ new URLSearchParams(location.search)
 
 
 
-let all=[];
 
-let showList=[];
 
-let page=1;
+let allArticles=[];
 
-let size=10;
+let showArticles=[];
 
 
 
+let currentPage=1;
 
 
-if(type==="published")
-
-pageTitle.innerHTML="已发表文章";
-
-
-if(type==="hidden")
-
-pageTitle.innerHTML="隐藏文章";
-
-
-if(type==="draft")
-
-pageTitle.innerHTML="草稿箱";
+const pageSize=10;
 
 
 
@@ -511,7 +706,49 @@ pageTitle.innerHTML="草稿箱";
 
 
 
-function load(){
+
+// 标题
+
+
+if(currentType==="published"){
+
+document.getElementById("pageTitle")
+
+.innerHTML="已发表文章";
+
+}
+
+
+if(currentType==="hidden"){
+
+document.getElementById("pageTitle")
+
+.innerHTML="隐藏文章";
+
+}
+
+
+if(currentType==="draft"){
+
+document.getElementById("pageTitle")
+
+.innerHTML="草稿箱";
+
+}
+
+
+
+
+
+
+
+
+
+
+// 加载文章
+
+
+function loadArticles(){
 
 
 
@@ -519,32 +756,38 @@ db.collection("articles")
 
 .get()
 
+
+
 .then(snapshot=>{
 
 
-all=[];
+allArticles=[];
 
 
 
 snapshot.forEach(doc=>{
 
 
-let a={
+let data={
+
 
 id:doc.id,
 
+
 ...doc.data()
+
 
 };
 
 
 
-if(a.status===type){
+if(data.status===currentType){
 
-all.push(a);
+
+allArticles.push(data);
+
 
 }
-
 
 
 });
@@ -553,7 +796,7 @@ all.push(a);
 
 
 
-all.sort((a,b)=>{
+allArticles.sort((a,b)=>{
 
 
 return (
@@ -575,27 +818,47 @@ a.createTime?.seconds||0
 
 
 
-showList=[...all];
 
 
-showFilter();
+
+showArticles=[...allArticles];
 
 
-render();
+
+createFilters();
+
+
+
+renderArticles();
 
 
 
 })
 
-.catch(e=>{
+
+.catch(error=>{
 
 
-list.innerHTML=
+document.getElementById("articleList")
 
-"加载失败："+e.message;
+.innerHTML=
+
+`
+
+<div class="empty">
+
+加载失败：
+
+${error.message}
+
+</div>
+
+`;
+
 
 
 });
+
 
 
 }
@@ -608,110 +871,63 @@ list.innerHTML=
 
 
 
-
-function filter(){
-
+// 创建分类
 
 
-let key=
-
-document.getElementById("search")
-
-.value
-
-.toLowerCase();
+function createFilters(){
 
 
 
-showList=all.filter(a=>{
+let monthData={};
 
 
-return !key
-
-||
-
-(a.title||"")
-
-.toLowerCase()
-
-.includes(key)
-
-
-||
-
-(a.content||"")
-
-.toLowerCase()
-
-.includes(key);
-
-
-});
-
-
-
-page=1;
-
-
-render();
-
-
-}
+let tagData={};
 
 
 
 
 
+allArticles.forEach(article=>{
 
 
 
+if(article.createTime){
 
 
-function showFilter(){
+let date=
 
-
-
-let months={};
-
-let tags={};
+article.createTime.toDate();
 
 
 
-all.forEach(a=>{
+let month=
 
-
-if(a.createTime){
-
-
-let d=a.createTime.toDate();
-
-
-
-let m=
-
-d.getFullYear()
+date.getFullYear()
 
 +"年"
 
-+(d.getMonth()+1)
++(date.getMonth()+1)
 
 +"月";
 
 
 
-months[m]=true;
+monthData[month]=true;
 
 
 }
 
 
 
-(a.tags||[])
-
-.forEach(t=>{
 
 
-tags[t]=true;
+
+(article.tags||[])
+
+.forEach(tag=>{
+
+
+tagData[tag]=true;
 
 
 });
@@ -723,61 +939,94 @@ tags[t]=true;
 
 
 
-let mh="";
 
 
 
-Object.keys(months)
+
+let monthHtml="";
+
+
+
+Object.keys(monthData)
+
+.sort()
 
 .reverse()
 
-.forEach(m=>{
+.forEach(month=>{
 
 
-mh+=`
+monthHtml+=`
 
-<span onclick="monthFilter('${m}')">
 
-${m}
+<span class="filter-item"
+
+onclick="selectMonth('${month}')">
+
+${month}
 
 </span>
 
+
 `;
+
+
 
 });
 
 
 
-months.innerHTML=mh||"暂无";
+document.getElementById("monthList")
+
+.innerHTML=
+
+monthHtml||"暂无";
 
 
 
 
 
 
-let th="";
 
 
 
-Object.keys(tags)
-
-.forEach(t=>{
+let tagHtml="";
 
 
-th+=`
 
-<span onclick="tagFilter('${t}')">
+Object.keys(tagData)
 
-${t}
+.sort()
+
+.forEach(tag=>{
+
+
+tagHtml+=`
+
+
+<span class="filter-item"
+
+onclick="selectTag('${tag}')">
+
+${tag}
 
 </span>
 
+
 `;
+
+
 
 });
 
 
-tags.innerHTML=th||"暂无";
+
+document.getElementById("tagList")
+
+.innerHTML=
+
+tagHtml||"暂无";
+
 
 
 }
@@ -790,42 +1039,131 @@ tags.innerHTML=th||"暂无";
 
 
 
-
-function monthFilter(m){
-
+// 搜索
 
 
-showList=
-
-all.filter(a=>{
+function filterArticles(){
 
 
-let d=a.createTime.toDate();
+
+let keyword=
+
+document.getElementById("search")
+
+.value
+
+.trim()
+
+.toLowerCase();
+
+
+
+
+
+showArticles=
+
+allArticles.filter(article=>{
 
 
 
 return (
 
-d.getFullYear()
+!keyword
+
+||
+
+
+(article.title||"")
+
+.toLowerCase()
+
+.includes(keyword)
+
+
+
+||
+
+
+(article.content||"")
+
+.toLowerCase()
+
+.includes(keyword)
+
+
+);
+
+
+});
+
+
+
+currentPage=1;
+
+
+renderArticles();
+
+
+
+}
+
+
+
+
+
+
+
+
+
+// 年月筛选
+
+
+function selectMonth(month){
+
+
+
+showArticles=
+
+allArticles.filter(article=>{
+
+
+if(!article.createTime)
+
+return false;
+
+
+
+let date=
+
+article.createTime.toDate();
+
+
+
+let value=
+
+date.getFullYear()
 
 +"年"
 
-+(d.getMonth()+1)
++(date.getMonth()+1)
 
-+"月"
++"月";
 
-)
 
-===m;
+
+return value===month;
+
 
 
 });
 
 
 
-page=1;
+currentPage=1;
 
-render();
+
+renderArticles();
+
 
 }
 
@@ -836,30 +1174,38 @@ render();
 
 
 
-function tagFilter(t){
+
+// 标签筛选
+
+
+function selectTag(tag){
 
 
 
-showList=
+showArticles=
 
-all.filter(a=>{
+allArticles.filter(article=>{
 
 
 return (
 
-a.tags||[]
+article.tags||[]
 
 )
 
-.includes(t);
+.includes(tag);
+
 
 
 });
 
 
-page=1;
 
-render();
+currentPage=1;
+
+
+renderArticles();
+
 
 }
 
@@ -871,28 +1217,48 @@ render();
 
 
 
-function render(){
+
+
+// 渲染列表
+
+
+function renderArticles(){
 
 
 
 let start=
 
-(page-1)*size;
+(currentPage-1)
+
+*
+
+pageSize;
 
 
 
-let data=
+let list=
 
-showList.slice(start,start+size);
+showArticles.slice(
+
+start,
+
+start+pageSize
+
+);
 
 
 
 
 
-if(data.length===0){
 
 
-list.innerHTML=
+if(list.length===0){
+
+
+
+document.getElementById("articleList")
+
+.innerHTML=
 
 `
 
@@ -904,7 +1270,13 @@ list.innerHTML=
 
 `;
 
-pages.innerHTML="";
+
+
+document.getElementById("pageBox")
+
+.innerHTML="";
+
+
 
 return;
 
@@ -915,29 +1287,55 @@ return;
 
 
 
+
+
+
 let html="";
 
 
 
-data.forEach(a=>{
+
+
+list.forEach(article=>{
+
+
+
+
+
+let hideText=
+
+article.status==="hidden"
+
+?
+
+"恢复"
+
+:
+
+"隐藏";
+
+
 
 
 
 html+=`
 
+
 <div class="item">
 
 
-<div class="top">
+<div class="item-top">
 
 
-<div class="title">
+<div class="article-title">
 
-<a href="article.html?id=${a.id}">
 
-${a.title}
+<a href="article.html?id=${article.id}">
+
+${article.title}
 
 </a>
+
 
 </div>
 
@@ -947,17 +1345,23 @@ ${a.title}
 
 
 
-${type!=="draft"
+${currentType!=="draft"
 
 ?
 
 `
 
-<button class="hide"
+<button
 
-onclick="toggle('${a.id}','${a.status}')">
+class="btn-hide"
 
-${a.status==="hidden"?"恢复":"隐藏"}
+data-id="${article.id}"
+
+data-status="${article.status}"
+
+onclick="toggleStatus(this)">
+
+${hideText}
 
 </button>
 
@@ -970,9 +1374,12 @@ ${a.status==="hidden"?"恢复":"隐藏"}
 
 
 
-<button class="edit"
 
-onclick="edit('${a.id}')">
+<button
+
+class="btn-edit"
+
+onclick="editArticle('${article.id}')">
 
 编辑
 
@@ -980,20 +1387,26 @@ onclick="edit('${a.id}')">
 
 
 
-<button class="delete"
 
-onclick="del('${a.id}')">
+
+<button
+
+class="btn-delete"
+
+onclick="deleteArticle('${article.id}')">
 
 删除
 
 </button>
 
 
-</div>
-
-
 
 </div>
+
+
+
+</div>
+
 
 
 
@@ -1001,9 +1414,14 @@ onclick="del('${a.id}')">
 
 <div class="summary">
 
-${firstLine(a.content)}
+
+${getFirstLine(article.content)}
+
 
 </div>
+
+
+
 
 
 
@@ -1012,7 +1430,8 @@ ${firstLine(a.content)}
 
 发布时间：
 
-${format(a.createTime)}
+${formatDate(article.createTime)}
+
 
 
 <br>
@@ -1020,7 +1439,8 @@ ${format(a.createTime)}
 
 最后编辑：
 
-${lastUpdate(a.updateTime)}
+${getLastUpdate(article.updateTime)}
+
 
 
 <br>
@@ -1028,7 +1448,7 @@ ${lastUpdate(a.updateTime)}
 
 标签：
 
-${(a.tags||[]).join(" ")}
+${(article.tags||[]).join(" ")}
 
 
 </div>
@@ -1036,8 +1456,11 @@ ${(a.tags||[]).join(" ")}
 
 
 </div>
+
 
 `;
+
+
 
 
 
@@ -1046,10 +1469,15 @@ ${(a.tags||[]).join(" ")}
 
 
 
-list.innerHTML=html;
 
 
-showPage();
+document.getElementById("articleList")
+
+.innerHTML=html;
+
+
+
+showPagination();
 
 
 }
@@ -1062,11 +1490,20 @@ showPage();
 
 
 
-function showPage(){
+// 分页
+
+
+function showPagination(){
 
 
 
-let total=Math.ceil(showList.length/size);
+let total=
+
+Math.ceil(
+
+showArticles.length/pageSize
+
+);
 
 
 
@@ -1074,12 +1511,15 @@ let html="";
 
 
 
-if(page>1){
+
+
+if(currentPage>1){
+
 
 
 html+=`
 
-<button onclick="changePage(${page-1})">
+<button onclick="changePage(${currentPage-1})">
 
 上一页
 
@@ -1091,16 +1531,26 @@ html+=`
 
 
 
-html+=`${page}/${total||1}`;
+html+=`
+
+<span>
+
+${currentPage}/${total||1}
+
+</span>
+
+`;
 
 
 
-if(page<total){
+
+
+if(currentPage<total){
 
 
 html+=`
 
-<button onclick="changePage(${page+1})">
+<button onclick="changePage(${currentPage+1})">
 
 下一页
 
@@ -1112,7 +1562,10 @@ html+=`
 
 
 
-pages.innerHTML=html;
+document.getElementById("pageBox")
+
+.innerHTML=html;
+
 
 
 }
@@ -1123,11 +1576,16 @@ pages.innerHTML=html;
 
 
 
-function changePage(p){
 
-page=p;
 
-render();
+function changePage(page){
+
+
+currentPage=page;
+
+
+renderArticles();
+
 
 }
 
@@ -1138,17 +1596,42 @@ render();
 
 
 
-function toggle(id,status){
+
+// 隐藏 / 恢复
+
+
+function toggleStatus(button){
+
+
+
+let id=
+
+button.dataset.id;
+
+
+
+let oldStatus=
+
+button.dataset.status;
+
+
 
 
 
 let newStatus=
 
-status==="hidden"
+oldStatus==="hidden"
 
-?"published"
+?
 
-:"hidden";
+"published"
+
+:
+
+"hidden";
+
+
+
 
 
 
@@ -1162,8 +1645,41 @@ status:newStatus
 
 })
 
-.then(load);
+.then(()=>{
 
+
+alert(
+
+newStatus==="hidden"
+
+?
+
+"文章已隐藏"
+
+:
+
+"文章已恢复"
+
+);
+
+
+
+loadArticles();
+
+
+})
+
+.catch(error=>{
+
+
+alert(
+
+"操作失败："+error.message
+
+);
+
+
+});
 
 
 }
@@ -1174,8 +1690,12 @@ status:newStatus
 
 
 
-function edit(id){
 
+
+// 编辑
+
+
+function editArticle(id){
 
 
 location.href=
@@ -1191,11 +1711,19 @@ location.href=
 
 
 
-function del(id){
+
+
+// 删除
+
+
+function deleteArticle(id){
 
 
 
-if(confirm("确定删除？")){
+if(!confirm("确定删除这篇文章？"))
+
+return;
+
 
 
 db.collection("articles")
@@ -1204,28 +1732,42 @@ db.collection("articles")
 
 .delete()
 
-.then(load);
+.then(()=>{
+
+
+alert("删除成功");
+
+
+loadArticles();
+
+
+});
 
 
 }
 
 
 
-}
 
 
 
 
 
 
-
-function firstLine(t){
-
-
-if(!t)return "";
+// 第一行
 
 
-return t
+function getFirstLine(text){
+
+
+
+if(!text)
+
+return "";
+
+
+
+return text
 
 .replace(/[#>*_-]/g,"")
 
@@ -1238,6 +1780,7 @@ return t
 .substring(0,80);
 
 
+
 }
 
 
@@ -1246,18 +1789,25 @@ return t
 
 
 
-function format(t){
 
 
-if(t&&t.toDate){
+// 发布时间
 
 
-return t.toDate()
+function formatDate(time){
+
+
+
+if(time&&time.toDate){
+
+
+return time.toDate()
 
 .toLocaleDateString("zh-CN");
 
 
 }
+
 
 
 return "";
@@ -1270,7 +1820,12 @@ return "";
 
 
 
-function lastUpdate(arr){
+
+
+// 最后编辑
+
+
+function getLastUpdate(arr){
 
 
 
@@ -1290,14 +1845,6 @@ return arr[arr.length-1];
 
 
 
-load();
 
 
-
-</script>
-
-
-
-</body>
-
-</html>
+loadArticles();
