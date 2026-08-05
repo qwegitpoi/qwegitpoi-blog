@@ -2,506 +2,108 @@
 <html lang="zh-CN">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<title>
-博客管理后台
-</title>
-
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-
-
-<style>
-
-
-*{
-
-box-sizing:border-box;
-
-}
-
-
-
-body{
-
-margin:0;
-
-background:#f5f6fa;
-
-font-family:
-
-"Microsoft YaHei",
-Arial;
-
-color:#333;
-
-}
-
-
-
-
-.header{
-
-background:white;
-
-padding:15px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-box-shadow:
-
-0 2px 8px rgba(0,0,0,.08);
-
-}
-
-
-
-.header h1{
-
-font-size:20px;
-
-margin:0;
-
-}
-
-
-
-.header a{
-
-color:#1677ff;
-
-text-decoration:none;
-
-font-size:14px;
-
-}
-
-
-
-
-.container{
-
-padding:15px;
-
-}
-
-
-
-
-.card{
-
-background:white;
-
-border-radius:12px;
-
-padding:20px;
-
-margin-bottom:15px;
-
-box-shadow:
-
-0 2px 8px rgba(0,0,0,.05);
-
-cursor:pointer;
-
-}
-
-
-
-
-.card-title{
-
-
-font-size:18px;
-
-font-weight:bold;
-
-margin-bottom:8px;
-
-
-}
-
-
-
-.card-info{
-
-
-font-size:14px;
-
-color:#888;
-
-
-}
-
-
-
-.icon{
-
-
-font-size:28px;
-
-margin-bottom:10px;
-
-
-}
-
-
-
-</style>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>博客管理后台</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6fa; font-family: "Microsoft YaHei", Arial; color: #333; }
+    .header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .header h1 { font-size: 20px; margin: 0; }
+    .header a { color: #1677ff; text-decoration: none; font-size: 14px; }
+    .container { padding: 15px; }
+    .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,.05); cursor: pointer; }
+    .card-title { font-size: 18px; font-weight: bold; margin-bottom: 8px; }
+    .card-info { font-size: 14px; color: #888; }
+    .icon { font-size: 28px; margin-bottom: 10px; }
+  </style>
 </head>
-
-
 
 <body>
 
-
-
-<div class="header">
-
-
-<h1>
-
-博客后台
-
-</h1>
-
-
-
-<a href="index.html">
-
-返回首页
-
-</a>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="container">
-
-
-
-
-
-<div class="card"
-
-onclick="location.href='admin-edit.html'">
-
-
-<div class="icon">
-
-✏️
-
-</div>
-
-
-<div class="card-title">
-
-发布文章
-
-</div>
-
-
-<div class="card-info">
-
-创建新的 Markdown 文章
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<div class="card"
-
-onclick="location.href='admin-list.html?type=published'">
-
-
-<div class="icon">
-
-📚
-
-</div>
-
-
-<div class="card-title">
-
-已发表文章
-
-</div>
-
-
-<div class="card-info"
-
-id="publishedCount">
-
-加载中...
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="card"
-
-onclick="location.href='admin-list.html?type=hidden'">
-
-
-<div class="icon">
-
-👁
-
-</div>
-
-
-<div class="card-title">
-
-隐藏文章
-
-</div>
-
-
-<div class="card-info"
-
-id="hiddenCount">
-
-加载中...
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-<div class="card"
-
-onclick="location.href='admin-list.html?type=draft'">
-
-
-<div class="icon">
-
-📝
-
-</div>
-
-
-<div class="card-title">
-
-草稿箱
-
-</div>
-
-
-<div class="card-info"
-
-id="draftCount">
-
-加载中...
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<script>
-
-
-
-const firebaseConfig={
-
-
-
-apiKey:
-"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-
-
-authDomain:
-"qwegitpoi-blog.firebaseapp.com",
-
-
-projectId:
-"qwegitpoi-blog",
-
-
-messagingSenderId:
-"313324557146",
-
-
-appId:
-"1:313324557146:web:4a93868894c9329006d963"
-
-
-
-};
-
-
-
-
-
-
-firebase.initializeApp(firebaseConfig);
-
-
-
-const db=
-
-firebase.firestore();
-
-
-
-
-
-
-
-function loadCount(){
-
-
-
-db.collection("articles")
-
-.get()
-
-.then(snapshot=>{
-
-
-
-let published=0;
-
-let hidden=0;
-
-let draft=0;
-
-
-
-
-
-snapshot.forEach(doc=>{
-
-
-let a=doc.data();
-
-
-
-if(a.status==="published")
-
-published++;
-
-
-
-if(a.status==="hidden")
-
-hidden++;
-
-
-
-if(a.status==="draft")
-
-draft++;
-
-
-
-});
-
-
-
-
-
-document.getElementById("publishedCount")
-
-.innerHTML=
-
-"共 "+published+" 篇文章";
-
-
-
-
-
-document.getElementById("hiddenCount")
-
-.innerHTML=
-
-"共 "+hidden+" 篇文章";
-
-
-
-
-
-document.getElementById("draftCount")
-
-.innerHTML=
-
-"共 "+draft+" 篇文章";
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-loadCount();
-
-
-</script>
-
-
+  <div class="header">
+    <h1>博客后台</h1>
+    <a href="index.html">返回首页</a>
+  </div>
+
+  <div class="container">
+    <div class="card" onclick="location.href='admin-edit.html'">
+      <div class="icon">✏️</div>
+      <div class="card-title">发布文章</div>
+      <div class="card-info">创建新的 Markdown 文章</div>
+    </div>
+
+    <div class="card" onclick="location.href='admin-messages.html'">
+      <div class="icon">📫</div>
+      <div class="card-title">私信信箱</div>
+      <div class="card-info" id="messageCount">加载中...</div>
+    </div>
+
+    <div class="card" onclick="location.href='admin-list.html?type=published'">
+      <div class="icon">📚</div>
+      <div class="card-title">已发表文章</div>
+      <div class="card-info" id="publishedCount">加载中...</div>
+    </div>
+
+    <div class="card" onclick="location.href='admin-list.html?type=hidden'">
+      <div class="icon">👁</div>
+      <div class="card-title">隐藏文章</div>
+      <div class="card-info" id="hiddenCount">加载中...</div>
+    </div>
+
+    <div class="card" onclick="location.href='admin-list.html?type=draft'">
+      <div class="icon">📝</div>
+      <div class="card-title">草稿箱</div>
+      <div class="card-info" id="draftCount">加载中...</div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      projectId: "qwegitpoi-blog",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        loadCount();
+      } else {
+        alert("请先登录");
+        window.location.href = "admin-login.html";
+      }
+    });
+
+    function loadCount() {
+      db.collection("articles").get().then(snapshot => {
+        let published = 0, hidden = 0, draft = 0;
+        snapshot.forEach(doc => {
+          let a = doc.data();
+          if (a.status === "published") published++;
+          if (a.status === "hidden") hidden++;
+          if (a.status === "draft") draft++;
+        });
+        document.getElementById("publishedCount").innerHTML = "共 " + published + " 篇文章";
+        document.getElementById("hiddenCount").innerHTML = "共 " + hidden + " 篇文章";
+        document.getElementById("draftCount").innerHTML = "共 " + draft + " 篇文章";
+      });
+
+      db.collection("messages").get().then(snapshot => {
+        document.getElementById("messageCount").innerHTML = "共 " + snapshot.size + " 条私信";
+      });
+    }
+  </script>
 
 </body>
 

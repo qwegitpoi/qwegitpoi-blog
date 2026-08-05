@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发送私信</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6fa; font-family: "Microsoft YaHei", Arial; color: #333; }
+    .header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .header a { color: #1677ff; text-decoration: none; font-size: 14px; }
+    .container { padding: 15px; max-width: 500px; margin: 30px auto; }
+    .box { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,.05); }
+    h1 { font-size: 20px; margin-top: 0; margin-bottom: 20px; text-align: center; }
+    label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 6px; }
+    input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 15px; font-family: inherit; }
+    textarea { height: 120px; resize: vertical; }
+    button { width: 100%; background: #1677ff; color: white; border: none; padding: 12px; font-size: 16px; border-radius: 6px; cursor: pointer; }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <a href="index.html">← 返回首页</a>
+    <span>发送私信</span>
+  </div>
+
+  <div class="container">
+    <div class="box">
+      <h1>✉️ 给博主发私信</h1>
+      <label>你的称呼</label>
+      <input id="senderName" type="text" placeholder="例如：张三（选填）">
+
+      <label>联系方式</label>
+      <input id="contactInfo" type="text" placeholder="邮箱 / 微信 / QQ（方便博主回复）">
+
+      <label>私信内容</label>
+      <textarea id="message" placeholder="请写下你想对博主说的话..."></textarea>
+
+      <button onclick="sendMessage()">发送私信</button>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      projectId: "qwegitpoi-blog",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function sendMessage() {
+      let senderName = document.getElementById("senderName").value.trim() || "热心网友";
+      let contactInfo = document.getElementById("contactInfo").value.trim();
+      let message = document.getElementById("message").value.trim();
+
+      if (!message) {
+        alert("请输入私信内容！");
+        return;
+      }
+
+      db.collection("messages").add({
+        senderName: senderName,
+        contactInfo: contactInfo,
+        message: message,
+        createTime: firebase.firestore.FieldValue.serverTimestamp()
+      }).then(() => {
+        alert("私信已成功发送给博主！");
+        window.location.href = "index.html";
+      }).catch(e => {
+        alert("发送失败：" + e.message);
+      });
+    }
+  </script>
+</body>
+
+</html>

@@ -7,181 +7,43 @@
   <title>文章</title>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
   <style>
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6fa; font-family: "Microsoft YaHei", Arial; color: #333; }
+    .header { background: white; padding: 15px; display: flex; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .header a { color: #1677ff; text-decoration: none; font-size: 14px; }
+    .container { padding: 15px; max-width: 800px; margin: 0 auto; }
+    .article { background: white; padding: 20px; border-radius: 10px; }
+    h1 { font-size: 24px; line-height: 1.5; margin-top: 0; }
+    .info { font-size: 14px; color: #888; line-height: 2; }
+    .tags { margin: 15px 0; }
+    .tag { display: inline-block; background: #eef5ff; color: #1677ff; padding: 4px 10px; border-radius: 15px; font-size: 13px; margin-right: 5px; }
+    .content { font-size: 16px; line-height: 1.9; }
+    .content h2 { margin-top: 30px; }
+    .content img { max-width: 100%; }
+    .nav { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
+    .nav a { display: block; color: #1677ff; text-decoration: none; margin: 12px 0; font-size: 15px; }
 
-    body {
-      margin: 0;
-      background: #f5f6fa;
-      font-family: "Microsoft YaHei", Arial;
-      color: #333;
-    }
-
-    .header {
-      background: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
-    }
-
-    .header a {
-      color: #1677ff;
-      text-decoration: none;
-      font-size: 14px;
-    }
-
-    .container {
-      padding: 15px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .article {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    h1 {
-      font-size: 24px;
-      line-height: 1.5;
-      margin-top: 0;
-    }
-
-    .info {
-      font-size: 14px;
-      color: #888;
-      line-height: 2;
-    }
-
-    .tags {
-      margin: 15px 0;
-    }
-
-    .tag {
-      display: inline-block;
-      background: #eef5ff;
-      color: #1677ff;
-      padding: 4px 10px;
-      border-radius: 15px;
-      font-size: 13px;
-      margin-right: 5px;
-    }
-
-    .content {
-      font-size: 16px;
-      line-height: 1.9;
-    }
-
-    .content h2 {
-      margin-top: 30px;
-    }
-
-    .content img {
-      max-width: 100%;
-    }
-
-    .nav {
-      margin-top: 30px;
-      border-top: 1px solid #eee;
-      padding-top: 20px;
-    }
-
-    .nav a {
-      display: block;
-      color: #1677ff;
-      text-decoration: none;
-      margin: 12px 0;
-      font-size: 15px;
-    }
-
-    /* ================= 留言区样式 ================= */
-    .comments-section {
-      margin-top: 25px;
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-    }
-
-    .comments-title {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-      border-left: 4px solid #1677ff;
-      padding-left: 10px;
-    }
-
-    .comment-form input,
-    .comment-form textarea {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 10px;
-      font-family: inherit;
-    }
-
-    .comment-form textarea {
-      height: 80px;
-      resize: vertical;
-    }
-
-    .comment-form button {
-      background: #1677ff;
-      color: white;
-      border: none;
-      padding: 8px 18px;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .comment-list {
-      margin-top: 20px;
-    }
-
-    .comment-item {
-      border-bottom: 1px solid #eee;
-      padding: 12px 0;
-    }
-
-    .comment-item:last-child {
-      border-bottom: none;
-    }
-
-    .comment-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 13px;
-      color: #888;
-      margin-bottom: 6px;
-    }
-
-    .comment-nickname {
-      font-weight: bold;
-      color: #333;
-    }
-
-    .comment-content {
-      font-size: 14px;
-      line-height: 1.6;
-      color: #444;
-      white-space: pre-wrap;
-    }
-
-    .empty-comments {
-      color: #999;
-      font-size: 14px;
-      text-align: center;
-      padding: 15px 0;
-    }
+    /* 留言区 */
+    .comments-section { margin-top: 25px; background: white; padding: 20px; border-radius: 10px; }
+    .comments-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-left: 4px solid #1677ff; padding-left: 10px; }
+    .comment-form input, .comment-form textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 10px; font-family: inherit; }
+    .comment-form textarea { height: 80px; resize: vertical; }
+    .visibility-options { margin-bottom: 12px; font-size: 14px; color: #555; }
+    .visibility-options label { margin-right: 15px; cursor: pointer; }
+    .comment-form button { background: #1677ff; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+    .comment-list { margin-top: 20px; }
+    .comment-item { border-bottom: 1px solid #eee; padding: 12px 0; }
+    .comment-item:last-child { border-bottom: none; }
+    .comment-header { display: flex; justify-content: space-between; font-size: 13px; color: #888; margin-bottom: 6px; }
+    .comment-nickname { font-weight: bold; color: #333; }
+    .comment-content { font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; }
+    .private-tip { color: #999; font-style: italic; }
+    .empty-comments { color: #999; font-size: 14px; text-align: center; padding: 15px 0; }
   </style>
 </head>
 
@@ -211,6 +73,12 @@
       <div class="comment-form">
         <input id="nickname" type="text" placeholder="昵称（选填，默认“热心网友”）" maxlength="20">
         <textarea id="commentMsg" placeholder="欢迎留下你的评论..."></textarea>
+        
+        <div class="visibility-options">
+          <label><input type="radio" name="isPrivate" value="false" checked> 🌐 公开留言</label>
+          <label><input type="radio" name="isPrivate" value="true"> 🔒 仅对博主可见</label>
+        </div>
+
         <button onclick="submitComment()">提交留言</button>
       </div>
 
@@ -229,37 +97,35 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
     let id = new URLSearchParams(location.search).get("id");
     let articles = [];
     let currentIndex = -1;
+    let isAdmin = false;
+
+    // 检查当前是否为博主（已登录状态）
+    auth.onAuthStateChanged(user => {
+      if (user) isAdmin = true;
+      load();
+    });
 
     async function load() {
       try {
         let doc = await db.collection("articles").doc(id).get();
-
         if (!doc.exists) {
           document.getElementById("content").innerHTML = "文章不存在";
           return;
         }
 
-        let article = {
-          id: doc.id,
-          ...doc.data()
-        };
-
+        let article = { id: doc.id, ...doc.data() };
         document.title = article.title;
         document.getElementById("title").innerHTML = article.title;
-        document.getElementById("info").innerHTML = `
-          发布时间：${format(article.createTime)}<br>
-          作者：${article.author || "管理员"}
-        `;
+        document.getElementById("info").innerHTML = `发布时间：${format(article.createTime)}<br>作者：${article.author || "管理员"}`;
 
         let tagHtml = "";
-        (article.tags || []).forEach(t => {
-          tagHtml += `<span class="tag">${t}</span>`;
-        });
+        (article.tags || []).forEach(t => { tagHtml += `<span class="tag">${t}</span>`; });
         document.getElementById("tags").innerHTML = tagHtml;
 
         if (window.marked) {
@@ -269,87 +135,70 @@
         }
 
         loadNav();
-        loadComments(); // 加载留言
+        loadComments();
       } catch (e) {
         document.getElementById("content").innerHTML = "加载失败：" + e.message;
       }
     }
 
     async function loadNav() {
-      let snap = await db.collection("articles")
-        .where("status", "==", "published")
-        .get();
-
+      let snap = await db.collection("articles").where("status", "==", "published").get();
       articles = [];
-      snap.forEach(doc => {
-        articles.push({
-          id: doc.id,
-          ...doc.data()
-        });
-      });
-
+      snap.forEach(doc => { articles.push({ id: doc.id, ...doc.data() }); });
       articles.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
       currentIndex = articles.findIndex(a => a.id === id);
 
       if (currentIndex > 0) {
-        let p = articles[currentIndex - 1];
-        document.getElementById("prev").innerHTML = `
-          <a href="article.html?id=${p.id}">上一篇：${p.title}</a>
-        `;
+        document.getElementById("prev").innerHTML = `<a href="article.html?id=${articles[currentIndex - 1].id}">上一篇：${articles[currentIndex - 1].title}</a>`;
       }
-
       if (currentIndex < articles.length - 1 && currentIndex !== -1) {
-        let n = articles[currentIndex + 1];
-        document.getElementById("next").innerHTML = `
-          <a href="article.html?id=${n.id}">下一篇：${n.title}</a>
-        `;
+        document.getElementById("next").innerHTML = `<a href="article.html?id=${articles[currentIndex + 1].id}">下一篇：${articles[currentIndex + 1].title}</a>`;
       }
     }
 
-    // ================= 留言区逻辑 =================
-    
-    // 1. 加载留言
     function loadComments() {
-      db.collection("comments")
-        .where("articleId", "==", id)
-        .get()
-        .then(snapshot => {
-          let list = [];
-          snapshot.forEach(doc => {
-            list.push({ id: doc.id, ...doc.data() });
-          });
+      db.collection("comments").where("articleId", "==", id).get().then(snapshot => {
+        let list = [];
+        snapshot.forEach(doc => { list.push({ id: doc.id, ...doc.data() }); });
+        list.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
 
-          // 按时间倒序
-          list.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
+        if (list.length === 0) {
+          document.getElementById("commentList").innerHTML = `<div class="empty-comments">暂无留言，快来抢沙发吧~</div>`;
+          return;
+        }
 
-          if (list.length === 0) {
-            document.getElementById("commentList").innerHTML = `<div class="empty-comments">暂无留言，快来抢沙发吧~</div>`;
-            return;
+        let html = "";
+        list.forEach(c => {
+          let isPrivate = c.isPrivate === true || c.isPrivate === "true";
+          let contentHtml = "";
+
+          // 判断显示逻辑：如果是公开的，或是博主本人，可以看内容；否则提示私密
+          if (!isPrivate || isAdmin) {
+            contentHtml = `<div class="comment-content">${escapeHtml(c.content || "")} ${isPrivate ? '<span style="color:#ff4d4f; font-size:12px;">(🔒 博主可见)</span>' : ''}</div>`;
+          } else {
+            contentHtml = `<div class="comment-content private-tip">🔒 该留言仅博主可见</div>`;
           }
 
-          let html = "";
-          list.forEach(c => {
-            html += `
-              <div class="comment-item">
-                <div class="comment-header">
-                  <span class="comment-nickname">${escapeHtml(c.nickname || "热心网友")}</span>
-                  <span>${format(c.createTime)}</span>
-                </div>
-                <div class="comment-content">${escapeHtml(c.content || "")}</div>
+          html += `
+            <div class="comment-item">
+              <div class="comment-header">
+                <span class="comment-nickname">${escapeHtml(c.nickname || "热心网友")}</span>
+                <span>${format(c.createTime)}</span>
               </div>
-            `;
-          });
-          document.getElementById("commentList").innerHTML = html;
-        })
-        .catch(e => {
-          document.getElementById("commentList").innerHTML = `<div class="empty-comments">留言加载失败：${e.message}</div>`;
+              ${contentHtml}
+            </div>
+          `;
         });
+        document.getElementById("commentList").innerHTML = html;
+      }).catch(e => {
+        document.getElementById("commentList").innerHTML = `<div class="empty-comments">留言加载失败：${e.message}</div>`;
+      });
     }
 
-    // 2. 提交留言
     function submitComment() {
       let nickname = document.getElementById("nickname").value.trim() || "热心网友";
       let content = document.getElementById("commentMsg").value.trim();
+      let isPrivate = document.querySelector('input[name="isPrivate"]:checked').value === "true";
 
       if (!content) {
         alert("请输入留言内容！");
@@ -360,35 +209,26 @@
         articleId: id,
         nickname: nickname,
         content: content,
+        isPrivate: isPrivate,
         createTime: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      db.collection("comments").add(commentData)
-        .then(() => {
-          alert("留言成功！");
-          document.getElementById("commentMsg").value = ""; // 清空输入框
-          loadComments(); // 重新加载留言
-        })
-        .catch(e => {
-          alert("留言失败，请检查数据库权限或稍后重试：" + e.message);
-        });
-    }
-
-    // 转义 HTML 防止 XSS 攻击
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, function (m) {
-        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m];
+      db.collection("comments").add(commentData).then(() => {
+        alert("留言成功！");
+        document.getElementById("commentMsg").value = "";
+        loadComments();
+      }).catch(e => {
+        alert("留言失败：" + e.message);
       });
     }
 
-    function format(t) {
-      if (t && t.toDate) {
-        return t.toDate().toLocaleString("zh-CN");
-      }
-      return "";
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
     }
 
-    load();
+    function format(t) {
+      return (t && t.toDate) ? t.toDate().toLocaleString("zh-CN") : "";
+    }
   </script>
 </body>
 

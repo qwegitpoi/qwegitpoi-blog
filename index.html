@@ -2,633 +2,99 @@
 <html lang="zh-CN">
 
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-
-
-<title>
-我的博客
-</title>
-
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
-
-
-<style>
-
-
-*{
-
-box-sizing:border-box;
-
-}
-
-
-
-body{
-
-margin:0;
-
-background:#f5f6fa;
-
-font-family:
-
-"Microsoft YaHei",
-Arial;
-
-color:#333;
-
-}
-
-
-
-.header{
-
-
-background:white;
-
-padding:15px;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-box-shadow:
-
-0 2px 8px rgba(0,0,0,.08);
-
-
-}
-
-
-
-.logo{
-
-font-size:21px;
-
-font-weight:bold;
-
-}
-
-
-
-.admin{
-
-font-size:14px;
-
-color:#1677ff;
-
-text-decoration:none;
-
-}
-
-
-
-
-.container{
-
-padding:15px;
-
-}
-
-
-
-.title{
-
-font-size:20px;
-
-font-weight:bold;
-
-margin:20px 0 15px;
-
-}
-
-
-
-
-
-.article{
-
-
-background:white;
-
-padding:15px;
-
-border-radius:10px;
-
-margin-bottom:12px;
-
-}
-
-
-
-
-.article h2{
-
-font-size:18px;
-
-margin:0 0 10px;
-
-line-height:1.5;
-
-}
-
-
-
-.article h2 a{
-
-
-text-decoration:none;
-
-color:#333;
-
-
-}
-
-
-
-
-.summary{
-
-
-font-size:14px;
-
-color:#555;
-
-line-height:1.7;
-
-}
-
-
-
-
-.meta{
-
-
-font-size:12px;
-
-color:#999;
-
-margin-top:10px;
-
-}
-
-
-
-
-.more{
-
-
-display:block;
-
-background:white;
-
-text-align:center;
-
-padding:15px;
-
-border-radius:10px;
-
-color:#1677ff;
-
-text-decoration:none;
-
-margin-top:20px;
-
-}
-
-
-
-
-
-.empty{
-
-
-background:white;
-
-padding:20px;
-
-text-align:center;
-
-color:#999;
-
-border-radius:10px;
-
-
-}
-
-
-
-</style>
-
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>我的博客</title>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f5f6fa; font-family: "Microsoft YaHei", Arial; color: #333; }
+    .header { background: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .logo { font-size: 21px; font-weight: bold; }
+    .nav-links a { font-size: 14px; color: #1677ff; text-decoration: none; margin-left: 12px; }
+    .container { padding: 15px; }
+    .title { font-size: 20px; font-weight: bold; margin: 20px 0 15px; }
+    .article { background: white; padding: 15px; border-radius: 10px; margin-bottom: 12px; }
+    .article h2 { font-size: 18px; margin: 0 0 10px; line-height: 1.5; }
+    .article h2 a { text-decoration: none; color: #333; }
+    .summary { font-size: 14px; color: #555; line-height: 1.7; }
+    .meta { font-size: 12px; color: #999; margin-top: 10px; }
+    .more { display: block; background: white; text-align: center; padding: 15px; border-radius: 10px; color: #1677ff; text-decoration: none; margin-top: 20px; }
+    .empty { background: white; padding: 20px; text-align: center; color: #999; border-radius: 10px; }
+  </style>
 </head>
-
-
 
 <body>
 
-
-
-<div class="header">
-
-
-<div class="logo">
-
-我的博客
-
-</div>
-
-
-
-<a class="admin"
-
-href="admin-login.html">
-
-管理员登录
-
-</a>
-
-
-
-</div>
-
-
-
-
-
-
-
-<div class="container">
-
-
-<div class="title">
-
-最新文章
-
-</div>
-
-
-
-<div id="list">
-
-加载中...
-
-</div>
-
-
-
-
-<a class="more"
-
-href="archive.html">
-
-查看全部文章
-
-</a>
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<script>
-
-
-const firebaseConfig={
-
-
-apiKey:
-"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-
-
-authDomain:
-"qwegitpoi-blog.firebaseapp.com",
-
-
-projectId:
-"qwegitpoi-blog",
-
-
-messagingSenderId:
-"313324557146",
-
-
-appId:
-"1:313324557146:web:4a93868894c9329006d963"
-
-
-};
-
-
-
-
-firebase.initializeApp(firebaseConfig);
-
-
-
-const db=
-
-firebase.firestore();
-
-
-
-
-
-
-
-function loadArticles(){
-
-
-
-db.collection("articles")
-
-.where(
-"status",
-"==",
-"published"
-)
-
-.get()
-
-
-
-.then(snapshot=>{
-
-
-let list=[];
-
-
-
-snapshot.forEach(doc=>{
-
-
-list.push({
-
-id:doc.id,
-
-...doc.data()
-
-});
-
-
-});
-
-
-
-
-
-
-
-list.sort((a,b)=>{
-
-
-return (
-
-b.createTime?.seconds||0
-
-)
-
--
-
-(
-
-a.createTime?.seconds||0
-
-);
-
-
-});
-
-
-
-
-
-
-show(
-
-list.slice(0,6)
-
-);
-
-
-
-})
-
-.catch(e=>{
-
-
-document.getElementById("list")
-
-.innerHTML=
-
-`
-
-<div class="empty">
-
-文章加载失败：
-
-${e.message}
-
-</div>
-
-`;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function show(list){
-
-
-
-if(list.length===0){
-
-
-document.getElementById("list")
-
-.innerHTML=
-
-`
-
-<div class="empty">
-
-暂无文章
-
-</div>
-
-`;
-
-return;
-
-
-}
-
-
-
-
-
-
-
-let html="";
-
-
-
-list.forEach(a=>{
-
-
-html+=`
-
-
-<div class="article">
-
-
-<h2>
-
-<a href="article.html?id=${a.id}">
-
-${a.title}
-
-</a>
-
-</h2>
-
-
-
-
-<div class="summary">
-
-${firstLine(a.content)}
-
-</div>
-
-
-
-
-<div class="meta">
-
-${format(a.createTime)}
-
-&nbsp;
-
-${(a.tags||[]).join(" ")}
-
-</div>
-
-
-
-</div>
-
-
-
-`;
-
-
-
-});
-
-
-
-
-
-
-
-document.getElementById("list")
-
-.innerHTML=html;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-function firstLine(text){
-
-
-
-if(!text)
-
-return "";
-
-
-
-return text
-
-.replace(/[#>*_-]/g,"")
-
-.split("\n")
-
-.filter(x=>x.trim())
-
-[0]
-
-.substring(0,100);
-
-}
-
-
-
-function format(t){
-
-
-
-if(t&&t.toDate){
-
-
-return t.toDate()
-
-.toLocaleDateString("zh-CN");
-
-
-}
-
-
-
-return "";
-
-}
-
-
-
-
-loadArticles();
-
-
-</script>
-
-
+  <div class="header">
+    <div class="logo">我的博客</div>
+    <div class="nav-links">
+      <a href="contact.html">📩 私信博主</a>
+      <a href="admin-login.html">管理员登录</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="title">最新文章</div>
+    <div id="list">加载中...</div>
+    <a class="more" href="archive.html">查看全部文章</a>
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      projectId: "qwegitpoi-blog",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function loadArticles() {
+      db.collection("articles").where("status", "==", "published").get().then(snapshot => {
+        let list = [];
+        snapshot.forEach(doc => { list.push({ id: doc.id, ...doc.data() }); });
+        list.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
+        show(list.slice(0, 6));
+      }).catch(e => {
+        document.getElementById("list").innerHTML = `<div class="empty">文章加载失败：${e.message}</div>`;
+      });
+    }
+
+    function show(list) {
+      if (list.length === 0) {
+        document.getElementById("list").innerHTML = `<div class="empty">暂无文章</div>`;
+        return;
+      }
+      let html = "";
+      list.forEach(a => {
+        html += `
+          <div class="article">
+            <h2><a href="article.html?id=${a.id}">${a.title}</a></h2>
+            <div class="summary">${firstLine(a.content)}</div>
+            <div class="meta">${format(a.createTime)} &nbsp; ${(a.tags || []).join(" ")}</div>
+          </div>
+        `;
+      });
+      document.getElementById("list").innerHTML = html;
+    }
+
+    function firstLine(text) {
+      if (!text) return "";
+      return text.replace(/[#>\*_\-]/g, "").split("\n").filter(x => x.trim())[0]?.substring(0, 100) || "";
+    }
+
+    function format(t) {
+      return (t && t.toDate) ? t.toDate().toLocaleDateString("zh-CN") : "";
+    }
+
+    loadArticles();
+  </script>
 </body>
 
 </html>
