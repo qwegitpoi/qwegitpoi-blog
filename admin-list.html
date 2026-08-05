@@ -7,6 +7,7 @@
   <title>文章管理</title>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
   <style>
@@ -136,7 +137,7 @@
   </div>
 
   <div class="container">
-    <div id="list">加载中...</div>
+    <div id="list">验证身份中...</div>
     <div class="page" id="page"></div>
   </div>
 
@@ -150,6 +151,7 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
     let type = new URLSearchParams(location.search).get("type") || "published";
@@ -166,6 +168,18 @@
     } else if (type === "draft") {
       pageTitle.innerHTML = "草稿箱";
     }
+
+    // 增加全局权限登录拦截
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        // 用户已认证，正常加载数据
+        load();
+      } else {
+        // 未登录，自动重定向至登录页
+        alert("未登录或登录状态已失效，请先登录");
+        window.location.href = "admin-login.html";
+      }
+    });
 
     function load() {
       db.collection("articles")
@@ -274,7 +288,7 @@
           status: newStatus
         })
         .then(() => {
-          load(); // 重新加载列表，隐藏的文章会自动移出当前列表
+          load();
         })
         .catch(err => {
           alert("操作失败：" + err.message);
@@ -311,8 +325,6 @@
       if (!arr || arr.length === 0) return "暂无";
       return arr[arr.length - 1];
     }
-
-    load();
   </script>
 </body>
 
