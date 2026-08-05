@@ -3,8 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>文章管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章管理 - 博客后台</title>
 
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
@@ -17,112 +17,145 @@
 
     body {
       margin: 0;
-      background: #f5f5f5;
-      font-family: "Microsoft YaHei", Arial;
+      background: #f5f6fa;
+      font-family: "Microsoft YaHei", Arial, sans-serif;
       color: #333;
     }
 
     .header {
-      height: 55px;
+      height: 60px;
       background: white;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 15px;
-      box-shadow: 0 2px 6px #ddd;
+      padding: 0 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
     }
 
-    .header a {
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .header a, .btn-link {
       text-decoration: none;
       color: #1677ff;
       font-size: 14px;
-    }
-
-    .title {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    .container {
-      padding: 12px;
-    }
-
-    .article {
-      background: white;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-    }
-
-    .article-title {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    .article-title a {
-      color: #333;
-      text-decoration: none;
-    }
-
-    .summary {
-      font-size: 14px;
-      color: #666;
-      margin-top: 8px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .info {
-      font-size: 12px;
-      color: #888;
-      line-height: 1.8;
-      margin-top: 8px;
-    }
-
-    .buttons {
-      margin-top: 10px;
-      text-align: right;
-    }
-
-    button {
-      border: 0;
-      border-radius: 5px;
-      padding: 6px 10px;
-      margin-left: 5px;
-      font-size: 13px;
       cursor: pointer;
     }
 
-    .edit {
+    .btn-logout {
+      background: #ff4d4f;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .btn-logout:hover {
+      background: #d9363e;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      padding: 0 15px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .btn-primary {
       background: #1677ff;
       color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 14px;
+      cursor: pointer;
     }
 
-    .hide {
-      background: #666;
-      color: white;
+    .article-item {
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
-    .delete {
-      background: #e53935;
-      color: white;
+    .article-info h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
     }
 
-    .page {
-      text-align: center;
-      padding: 15px;
+    .article-meta {
+      font-size: 12px;
+      color: #8c8c8c;
+      display: flex;
+      gap: 12px;
     }
 
-    .page button {
-      background: #1677ff;
-      color: white;
+    .tag-badge {
+      background: #e6f4ff;
+      color: #1677ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-op {
+      padding: 5px 10px;
+      border-radius: 4px;
+      border: 1px solid #d9d9d9;
+      background: white;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .btn-op.danger {
+      color: #ff4d4f;
+      border-color: #ff4d4f;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .pagination button {
+      padding: 5px 12px;
+      border: 1px solid #d9d9d9;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     .empty {
-      background: white;
-      padding: 30px;
       text-align: center;
+      padding: 40px;
       color: #999;
     }
   </style>
@@ -131,17 +164,28 @@
 <body>
 
   <div class="header">
-    <a href="admin.html">←后台</a>
-    <div class="title" id="pageTitle">文章管理</div>
-    <div></div>
+    <div class="header-left">
+      <a href="admin.html">← 返回控制台</a>
+      <h1>文章管理列表</h1>
+    </div>
+    <div>
+      <button class="btn-logout" onclick="logout()">退出登录</button>
+    </div>
   </div>
 
   <div class="container">
-    <div id="list">验证身份中...</div>
-    <div class="page" id="page"></div>
+    <div class="actions">
+      <div id="filterTitle">所有文章</div>
+      <a href="admin-edit.html" class="btn-primary">+ 新增文章</a>
+    </div>
+
+    <div id="list">加载中...</div>
+
+    <div class="pagination" id="pageBox"></div>
   </div>
 
   <script>
+    // Firebase 配置
     const firebaseConfig = {
       apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
       authDomain: "qwegitpoi-blog.firebaseapp.com",
@@ -151,127 +195,112 @@
     };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
-    let type = new URLSearchParams(location.search).get("type") || "published";
-    let articles = [];
-    let page = 1;
-    const size = 10;
-
-    const pageTitle = document.getElementById("pageTitle");
-
-    if (type === "published") {
-      pageTitle.innerHTML = "已发布文章";
-    } else if (type === "hidden") {
-      pageTitle.innerHTML = "隐藏文章";
-    } else if (type === "draft") {
-      pageTitle.innerHTML = "草稿箱";
-    }
-
-    // 增加全局权限登录拦截
+    // 登录权限拦截
     auth.onAuthStateChanged(user => {
-      if (user) {
-        // 用户已认证，正常加载数据
-        load();
-      } else {
-        // 未登录，自动重定向至登录页
-        alert("未登录或登录状态已失效，请先登录");
+      if (!user) {
         window.location.href = "admin-login.html";
+      } else {
+        loadArticles();
       }
     });
 
-    function load() {
-      db.collection("articles")
-        .where("status", "==", type)
-        .get()
-        .then(snapshot => {
-          articles = [];
-          snapshot.forEach(doc => {
-            articles.push({
-              id: doc.id,
-              ...doc.data()
-            });
-          });
+    function logout() {
+      auth.signOut().then(() => {
+        window.location.href = "admin-login.html";
+      });
+    }
 
-          articles.sort((a, b) => {
-            let aa = a.createTime?.seconds || 0;
-            let bb = b.createTime?.seconds || 0;
-            return bb - aa;
-          });
+    let articles = [];
+    let page = 1;
+    const size = 5;
 
-          render();
-        })
-        .catch(error => {
-          document.getElementById("list").innerHTML = "加载失败：" + error.message;
+    // 解析 URL 参数（例如：?type=draft 或 ?type=hidden）
+    const urlParams = new URLSearchParams(window.location.search);
+    const filterType = urlParams.get("type");
+
+    async function loadArticles() {
+      try {
+        let query = db.collection("articles");
+
+        if (filterType) {
+          query = query.where("status", "==", filterType);
+          document.getElementById("filterTitle").innerText = 
+            filterType === 'draft' ? '草稿箱' : (filterType === 'hidden' ? '已隐藏文章' : '已发布文章');
+        }
+
+        const snap = await query.get();
+        articles = [];
+        snap.forEach(doc => {
+          articles.push({ id: doc.id, ...doc.data() });
         });
+
+        // 优先按创建时间降序排列
+        articles.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
+
+        render();
+      } catch (e) {
+        document.getElementById("list").innerHTML = `<div class="empty">加载失败：${e.message}</div>`;
+      }
     }
 
     function render() {
-      let start = (page - 1) * size;
-      let data = articles.slice(start, start + size);
-
-      if (data.length === 0) {
-        document.getElementById("list").innerHTML = `<div class="empty">暂无文章</div>`;
-        document.getElementById("page").innerHTML = "";
+      const listEl = document.getElementById("list");
+      if (articles.length === 0) {
+        listEl.innerHTML = `<div class="empty">暂无文章</div>`;
+        document.getElementById("pageBox").innerHTML = "";
         return;
       }
 
+      const start = (page - 1) * size;
+      const pageData = articles.slice(start, start + size);
+
       let html = "";
-      data.forEach(a => {
-        const currentStatus = a.status || "published";
+      pageData.forEach(item => {
+        const isHidden = item.status === "hidden";
         html += `
-        <div class="article">
-          <div class="article-title">
-            <a href="article.html?id=${a.id}" target="_blank">
-              ${a.title || "无标题"}
-            </a>
-          </div>
-
-          <div class="summary">
-            ${firstLine(a.content)}
-          </div>
-
-          <div class="info">
-            发布时间：${date(a.createTime)}<br>
-            最后编辑：${last(a.updateTime)}
-          </div>
-
-          <div class="buttons">
-            ${type !== "draft" ? `
-              <button class="hide" onclick="hideArticle('${a.id}', '${currentStatus}')">
-                ${currentStatus === "hidden" ? "恢复" : "隐藏"}
+          <div class="article-item">
+            <div class="article-info">
+              <h3>${escapeHtml(item.title || "无标题")}</h3>
+              <div class="article-meta">
+                <span>状态: ${item.status || "published"}</span>
+                <span>标签: ${(item.tags || []).map(t => `<span class="tag-badge">${escapeHtml(t)}</span>`).join(" ")}</span>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button class="btn-op" onclick="edit('${item.id}')">编辑</button>
+              <button class="btn-op" onclick="toggleHide('${item.id}', '${item.status}')">
+                ${isHidden ? '取消隐藏' : '隐藏'}
               </button>
-            ` : ""}
-            <button class="edit" onclick="edit('${a.id}')">编辑</button>
-            <button class="delete" onclick="removeArticle('${a.id}')">删除</button>
+              <button class="btn-op danger" onclick="deleteArticle('${item.id}')">删除</button>
+            </div>
           </div>
-        </div>
         `;
       });
 
-      document.getElementById("list").innerHTML = html;
+      listEl.innerHTML = html;
       showPage();
     }
 
     function showPage() {
-      let total = Math.ceil(articles.length / size);
+      const total = Math.ceil(articles.length / size);
+      const pageBox = document.getElementById("pageBox");
       let html = "";
 
       if (page > 1) {
-        html += `<button onclick="change(${page - 1})">上一页</button> `;
+        html += `<button onclick="changePage(${page - 1})">上一页</button>`;
       }
-
-      html += `<span>${page}/${total || 1}</span> `;
-
+      html += `<span>${page} / ${total || 1}</span>`;
       if (page < total) {
-        html += `<button onclick="change(${page + 1})">下一页</button>`;
+        html += `<button onclick="changePage(${page + 1})">下一页</button>`;
       }
 
-      document.getElementById("page").innerHTML = html;
+      pageBox.innerHTML = html;
     }
 
-    function change(p) {
+    function changePage(p) {
       page = p;
       render();
     }
@@ -280,50 +309,21 @@
       location.href = "admin-edit.html?id=" + id;
     }
 
-    function hideArticle(id, currentStatus) {
-      let newStatus = currentStatus === "hidden" ? "published" : "hidden";
-      db.collection("articles")
-        .doc(id)
-        .update({
-          status: newStatus
-        })
-        .then(() => {
-          load();
-        })
-        .catch(err => {
-          alert("操作失败：" + err.message);
-        });
+    async function toggleHide(id, status) {
+      const newStatus = status === "hidden" ? "published" : "hidden";
+      await db.collection("articles").doc(id).update({ status: newStatus });
+      loadArticles();
     }
 
-    function removeArticle(id) {
-      if (!confirm("确定删除？")) return;
-      db.collection("articles")
-        .doc(id)
-        .delete()
-        .then(() => {
-          load();
-        })
-        .catch(err => {
-          alert("删除失败：" + err.message);
-        });
+    async function deleteArticle(id) {
+      if (confirm("确定要删除这篇文章吗？此操作无法撤销。")) {
+        await db.collection("articles").doc(id).delete();
+        loadArticles();
+      }
     }
 
-    function firstLine(text) {
-      if (!text) return "";
-      return text
-        .replace(/[#>\*_\-]/g, "")
-        .split("\n")
-        .filter(x => x.trim())[0] || "";
-    }
-
-    function date(t) {
-      if (t && t.toDate) return t.toDate().toLocaleDateString();
-      return "";
-    }
-
-    function last(arr) {
-      if (!arr || arr.length === 0) return "暂无";
-      return arr[arr.length - 1];
+    function escapeHtml(str) {
+      return (str || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
   </script>
 </body>
