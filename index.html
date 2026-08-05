@@ -46,7 +46,6 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-color);
             padding: 1rem 0;
-            transition: all 0.3s ease;
         }
 
         .header-container {
@@ -212,10 +211,13 @@
             font-size: 0.8rem;
         }
 
-        .loading, .empty {
+        .loading, .empty, .error {
             text-align: center;
             padding: 3rem 0;
             color: var(--text-muted);
+        }
+        .error {
+            color: #ef4444;
         }
 
         footer {
@@ -252,19 +254,20 @@
     </div>
 
     <footer>
-        <p>© 2026 Powered by Firebase & GitHub Pages</p>
+        <p>© Powered by Firebase & GitHub Pages</p>
     </footer>
 
     <script>
-        // 1. Firebase 初始化配置
+        // 已填入你的真实 Firebase 配置参数
         const firebaseConfig = {
-            // 请在此处替换为你的真实 Firebase 配置信息
-            apiKey: "YOUR_API_KEY",
+            apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
             authDomain: "qwegitpoi-blog.firebaseapp.com",
+            databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
             projectId: "qwegitpoi-blog",
-            storageBucket: "qwegitpoi-blog.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            storageBucket: "qwegitpoi-blog.firebasestorage.app",
+            messagingSenderId: "313324557146",
+            appId: "1:313324557146:web:4a93868894c9329006d963",
+            measurementId: "G-M01JQCZ0WX"
         };
 
         if (!firebase.apps.length) {
@@ -272,42 +275,47 @@
         }
         const db = firebase.firestore();
 
-        // Markdown 过滤优化函数 (截取首段文字作为摘要)
+        // 摘要解析工具函数
         function getSummary(content) {
             if (!content) return "暂无摘要...";
             let plainText = content
-                .replace(/#+\s+/g, '') // 移除标题
-                .replace(/!?\[.*?\]\(.*?\)/g, '') // 移除图片和链接
-                .replace(/[*_`~>]/g, '') // 移除格式符号
+                .replace(/#+\s+/g, '')
+                .replace(/!?\[.*?\]\(.*?\)/g, '')
+                .replace(/[*_`~>]/g, '')
                 .trim();
             return plainText.length > 120 ? plainText.substring(0, 120) + "..." : plainText;
         }
 
-        // 加载公开文章
+        // 加载文章列表逻辑
         function loadArticles() {
             const listContainer = document.getElementById('article-list');
 
-            // 仅查询未隐藏的文章 (hide != true)
             db.collection("articles")
-                .where("hide", "!=", true)
                 .get()
                 .then((querySnapshot) => {
                     listContainer.innerHTML = "";
-                    if (querySnapshot.empty) {
+                    
+                    const publicArticles = [];
+                    querySnapshot.forEach((doc) => {
+                        const data = doc.data();
+                        if (data.hide !== true) {
+                            publicArticles.push({ id: doc.id, ...data });
+                        }
+                    });
+
+                    if (publicArticles.length === 0) {
                         listContainer.innerHTML = '<div class="empty">博主还没有发布任何文章哦 ~</div>';
                         return;
                     }
 
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        const articleId = doc.id;
-                        const title = data.title || "无标题";
-                        const date = data.date || "未知时间";
-                        const tag = data.tag || "随笔";
-                        const summary = getSummary(data.content);
+                    publicArticles.forEach((article) => {
+                        const title = article.title || "无标题";
+                        const date = article.date || "未知时间";
+                        const tag = article.tag || "随笔";
+                        const summary = getSummary(article.content);
 
                         const cardHTML = `
-                            <a href="article.html?id=${articleId}" class="article-card">
+                            <a href="article.html?id=${article.id}" class="article-card">
                                 <h2>${title}</h2>
                                 <p>${summary}</p>
                                 <div class="article-meta">
@@ -321,14 +329,11 @@
                 })
                 .catch((error) => {
                     console.error("加载文章失败: ", error);
-                    listContainer.innerHTML = '<div class="empty">加载文章列表失败，请稍后重试。</div>';
+                    listContainer.innerHTML = `<div class="error">加载文章列表失败：${error.message}</div>`;
                 });
         }
 
-        // 页面初始化：游客访问直接加载文章列表，不触发任何跳转
-        window.onload = function() {
-            loadArticles();
-        };
+        document.addEventListener("DOMContentLoaded", loadArticles);
     </script>
 </body>
 </html>
