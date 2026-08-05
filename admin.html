@@ -13,10 +13,7 @@
 </title>
 
 
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-
-<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
 
@@ -51,18 +48,17 @@ color:#333;
 
 
 
-
 .header{
 
 background:white;
 
 padding:15px;
 
-position:sticky;
+display:flex;
 
-top:0;
+justify-content:space-between;
 
-z-index:10;
+align-items:center;
 
 box-shadow:
 
@@ -72,19 +68,7 @@ box-shadow:
 
 
 
-.top{
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-}
-
-
-
-.top h1{
+.header h1{
 
 font-size:20px;
 
@@ -94,156 +78,55 @@ margin:0;
 
 
 
-a{
+.header a{
+
+color:#1677ff;
 
 text-decoration:none;
 
-}
-
-
-
-button{
-
-border:0;
-
-border-radius:5px;
-
-padding:6px 10px;
-
-font-size:13px;
+font-size:14px;
 
 }
 
-
-
-.primary{
-
-background:#1677ff;
-
-color:white;
-
-}
-
-
-
-.gray{
-
-background:#eee;
-
-}
 
 
 
 .container{
 
-padding:12px;
+padding:15px;
 
 }
 
 
 
 
-
-
-.search{
+.card{
 
 background:white;
 
-padding:12px;
+border-radius:12px;
 
-border-radius:8px;
+padding:20px;
 
-margin-bottom:12px;
+margin-bottom:15px;
 
-}
+box-shadow:
 
-
-
-input{
-
-width:100%;
-
-padding:10px;
-
-border:1px solid #ddd;
-
-border-radius:20px;
-
-font-size:15px;
-
-}
-
-
-
-
-
-
-.section-title{
-
-font-weight:bold;
-
-font-size:18px;
-
-margin:20px 0 10px;
-
-}
-
-
-
-
-
-
-
-/* 分类文字 */
-
-
-.filter{
-
-background:white;
-
-padding:10px;
-
-border-radius:8px;
-
-}
-
-
-
-.filter span{
-
-
-display:inline-block;
-
-margin:5px 12px 5px 0;
-
-font-size:14px;
-
-color:#1677ff;
+0 2px 8px rgba(0,0,0,.05);
 
 cursor:pointer;
 
-
 }
 
 
 
 
+.card-title{
 
 
+font-size:18px;
 
-
-
-/* 文章列表 */
-
-
-.item{
-
-
-background:white;
-
-padding:10px;
-
-border-radius:8px;
+font-weight:bold;
 
 margin-bottom:8px;
 
@@ -252,164 +135,27 @@ margin-bottom:8px;
 
 
 
-
-
-.item-top{
-
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-gap:8px;
-
-
-}
-
-
-
-
-
-.item-title{
-
-
-font-size:16px;
-
-font-weight:bold;
-
-overflow:hidden;
-
-white-space:nowrap;
-
-text-overflow:ellipsis;
-
-
-}
-
-
-
-.item-title a{
-
-color:#333;
-
-}
-
-
-
-
-
-
-.actions{
-
-
-white-space:nowrap;
-
-
-}
-
-
-
-.actions button{
-
-
-margin-left:3px;
-
-padding:4px 8px;
-
-}
-
-
-
-.hide{
-
-background:#777;
-
-color:white;
-
-}
-
-
-
-.edit{
-
-background:#1677ff;
-
-color:white;
-
-}
-
-
-
-.delete{
-
-background:#e53935;
-
-color:white;
-
-}
-
-
-
-
-
-
-.summary{
+.card-info{
 
 
 font-size:14px;
 
-color:#555;
-
-margin-top:8px;
-
-white-space:nowrap;
-
-overflow:hidden;
-
-text-overflow:ellipsis;
+color:#888;
 
 
 }
 
 
 
+.icon{
 
-.meta{
 
+font-size:28px;
 
-font-size:12px;
-
-color:#999;
-
-margin-top:6px;
+margin-bottom:10px;
 
 
 }
-
-
-
-
-
-
-
-.empty{
-
-
-background:white;
-
-padding:20px;
-
-text-align:center;
-
-color:#999;
-
-border-radius:8px;
-
-}
-
-
 
 
 
@@ -420,16 +166,11 @@ border-radius:8px;
 
 
 
-
-
 <body>
 
 
 
 <div class="header">
-
-
-<div class="top">
 
 
 <h1>
@@ -440,54 +181,11 @@ border-radius:8px;
 
 
 
-<div>
-
-
 <a href="index.html">
 
-<button class="gray">
-
-首页
-
-</button>
+返回首页
 
 </a>
-
-
-
-<a href="admin-edit.html">
-
-<button class="primary">
-
-发布
-
-</button>
-
-</a>
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-<div class="search">
-
-
-<input
-
-id="search"
-
-placeholder="搜索文章标题或正文"
-
-oninput="render()">
-
-
-</div>
 
 
 </div>
@@ -504,43 +202,68 @@ oninput="render()">
 
 
 
-<div class="section-title">
+<div class="card"
 
-文章年月
+onclick="location.href='admin-edit.html'">
+
+
+<div class="icon">
+
+✏️
+
+</div>
+
+
+<div class="card-title">
+
+发布文章
+
+</div>
+
+
+<div class="card-info">
+
+创建新的 Markdown 文章
+
+</div>
+
 
 </div>
 
 
 
-<div class="filter"
 
-id="months">
+
+
+
+<div class="card"
+
+onclick="location.href='admin-list.html?type=published'">
+
+
+<div class="icon">
+
+📚
+
+</div>
+
+
+<div class="card-title">
+
+已发表文章
+
+</div>
+
+
+<div class="card-info"
+
+id="publishedCount">
 
 加载中...
 
 </div>
 
 
-
-
-
-
-
-
-<div class="section-title">
-
-文章标签
-
-</div>
-
-
-
-<div class="filter"
-
-id="tags">
-
-加载中...
-
 </div>
 
 
@@ -549,35 +272,34 @@ id="tags">
 
 
 
-<div class="section-title">
 
-已发布文章
+<div class="card"
+
+onclick="location.href='admin-list.html?type=hidden'">
+
+
+<div class="icon">
+
+👁
 
 </div>
 
 
-<div id="published">
-
-加载中...
-
-</div>
-
-
-
-
-
-
-
-<div class="section-title">
+<div class="card-title">
 
 隐藏文章
 
 </div>
 
 
-<div id="hidden">
+<div class="card-info"
+
+id="hiddenCount">
 
 加载中...
+
+</div>
+
 
 </div>
 
@@ -587,24 +309,47 @@ id="tags">
 
 
 
-<div class="section-title">
+
+<div class="card"
+
+onclick="location.href='admin-list.html?type=draft'">
+
+
+<div class="icon">
+
+📝
+
+</div>
+
+
+<div class="card-title">
 
 草稿箱
 
 </div>
 
 
-<div id="draft">
+<div class="card-info"
+
+id="draftCount">
 
 加载中...
 
 </div>
 
 
+</div>
+
+
+
 
 
 
 </div>
+
+
+
+
 
 
 
@@ -612,24 +357,37 @@ id="tags">
 
 <script>
 
-const firebaseConfig = {
+
+
+const firebaseConfig={
+
+
 
 apiKey:
 "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
 
+
 authDomain:
 "qwegitpoi-blog.firebaseapp.com",
+
 
 projectId:
 "qwegitpoi-blog",
 
+
 messagingSenderId:
 "313324557146",
+
 
 appId:
 "1:313324557146:web:4a93868894c9329006d963"
 
+
+
 };
+
+
+
 
 
 
@@ -637,113 +395,61 @@ firebase.initializeApp(firebaseConfig);
 
 
 
-const db =
+const db=
+
 firebase.firestore();
 
 
 
-let allArticles=[];
 
 
 
 
+function loadCount(){
 
-// 加载文章
-
-function loadArticles(){
 
 
 db.collection("articles")
 
 .get()
 
-
 .then(snapshot=>{
 
 
-allArticles=[];
+
+let published=0;
+
+let hidden=0;
+
+let draft=0;
+
+
+
 
 
 snapshot.forEach(doc=>{
 
 
-allArticles.push({
-
-id:doc.id,
-
-...doc.data()
-
-});
-
-
-});
+let a=doc.data();
 
 
 
-render();
+if(a.status==="published")
 
-
-})
-
-.catch(e=>{
-
-
-alert(
-"读取失败："+e.message
-);
-
-
-});
-
-
-}
+published++;
 
 
 
+if(a.status==="hidden")
+
+hidden++;
 
 
 
+if(a.status==="draft")
 
-// 主渲染
+draft++;
 
-function render(){
-
-
-
-let key=
-
-document.getElementById("search")
-
-.value
-
-.toLowerCase();
-
-
-
-
-
-let list=
-
-allArticles.filter(a=>{
-
-
-return (
-
-!key
-
-||
-
-(a.title||"")
-.toLowerCase()
-.includes(key)
-
-||
-
-(a.content||"")
-.toLowerCase()
-.includes(key)
-
-);
 
 
 });
@@ -752,148 +458,31 @@ return (
 
 
 
-
-showMonths(list);
-
-
-
-showTags(list);
-
-
-
-
-
-let published=
-
-list.filter(a=>
-
-a.status==="published"
-
-);
-
-
-
-let hidden=
-
-list.filter(a=>
-
-a.status==="hidden"
-
-);
-
-
-
-let draft=
-
-list.filter(a=>
-
-a.status==="draft"
-
-);
-
-
-
-
-
-
-document.getElementById("published")
+document.getElementById("publishedCount")
 
 .innerHTML=
 
-published.length
-
-?
-
-published.map(createItem).join("")
-
-:
-
-empty();
+"共 "+published+" 篇文章";
 
 
 
 
 
-document.getElementById("hidden")
+document.getElementById("hiddenCount")
 
 .innerHTML=
 
-hidden.length
-
-?
-
-hidden.map(createItem).join("")
-
-:
-
-empty();
+"共 "+hidden+" 篇文章";
 
 
 
 
 
-document.getElementById("draft")
+document.getElementById("draftCount")
 
 .innerHTML=
 
-draft.length
-
-?
-
-draft.map(createDraft).join("")
-
-:
-
-empty();
-
-
-
-}
-
-
-
-
-
-
-
-
-// 年月分类
-
-
-function showMonths(list){
-
-
-
-let obj={};
-
-
-
-list.forEach(a=>{
-
-
-if(!a.createTime)
-
-return;
-
-
-
-let d=a.createTime.toDate();
-
-
-
-let m=
-
-d.getFullYear()
-
-+"年"
-
-+(d.getMonth()+1)
-
-+"月";
-
-
-
-obj[m]=true;
+"共 "+draft+" 篇文章";
 
 
 
@@ -901,625 +490,19 @@ obj[m]=true;
 
 
 
-let html="";
-
-
-
-Object.keys(obj)
-
-.sort()
-
-.reverse()
-
-.forEach(m=>{
-
-
-html+=`
-
-<span onclick="filterMonth('${m}')">
-
-${m}
-
-</span>
-
-`;
-
-
-
-});
-
-
-
-document.getElementById("months")
-
-.innerHTML=
-
-html||"暂无";
-
-
-
 }
 
 
 
 
 
+loadCount();
 
 
+</script>
 
 
 
-// 标签分类
+</body>
 
-
-function showTags(list){
-
-
-
-let obj={};
-
-
-
-list.forEach(a=>{
-
-
-(a.tags||[])
-
-.forEach(t=>{
-
-
-obj[t]=true;
-
-
-});
-
-
-});
-
-
-
-let html="";
-
-
-
-Object.keys(obj)
-
-.sort()
-
-.forEach(t=>{
-
-
-html+=`
-
-<span onclick="filterTag('${t}')">
-
-${t}
-
-</span>
-
-`;
-
-
-
-});
-
-
-
-document.getElementById("tags")
-
-.innerHTML=
-
-html||"暂无";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 年月筛选
-
-
-function filterMonth(month){
-
-
-
-let result=
-
-allArticles.filter(a=>{
-
-
-if(a.status!=="published")
-
-return false;
-
-
-
-let d=
-
-a.createTime.toDate();
-
-
-
-return (
-
-d.getFullYear()
-
-+"年"
-
-+(d.getMonth()+1)
-
-+"月"
-
-)
-
-===month;
-
-
-});
-
-
-
-document.getElementById("published")
-
-.innerHTML=
-
-result.map(createItem).join("")
-
-||empty();
-
-
-}
-
-
-
-
-
-
-
-
-
-// 标签筛选
-
-
-function filterTag(tag){
-
-
-
-let result=
-
-allArticles.filter(a=>{
-
-
-return (
-
-a.status==="published"
-
-&&
-
-(a.tags||[])
-
-.includes(tag)
-
-);
-
-
-});
-
-
-
-document.getElementById("published")
-
-.innerHTML=
-
-result.map(createItem).join("")
-
-||empty();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 已发布/隐藏文章
-
-
-function createItem(a){
-
-
-
-let actionText=
-
-a.status==="hidden"
-
-?
-
-"显示"
-
-:
-
-"隐藏";
-
-
-
-return `
-
-
-<div class="item">
-
-
-
-<div class="item-top">
-
-
-<div class="item-title">
-
-
-<a href="article.html?id=${a.id}">
-
-${a.title}
-
-</a>
-
-
-</div>
-
-
-
-<div class="actions">
-
-
-
-<button class="hide"
-
-onclick="toggleHide('${a.id}','${a.status}')">
-
-${actionText}
-
-</button>
-
-
-
-<button class="edit"
-
-onclick="edit('${a.id}')">
-
-编辑
-
-</button>
-
-
-
-<button class="delete"
-
-onclick="removeArticle('${a.id}')">
-
-删除
-
-</button>
-
-
-
-</div>
-
-
-
-</div>
-
-
-
-
-
-
-<div class="summary">
-
-${firstLine(a.content)}
-
-</div>
-
-
-
-
-<div class="meta">
-
-
-${format(a.createTime)}
-
-&nbsp;
-
-${(a.tags||[]).join(" ")}
-
-
-</div>
-
-
-
-</div>
-
-
-`;
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 草稿
-
-
-function createDraft(a){
-
-
-
-return `
-
-
-<div class="item">
-
-
-<div class="item-top">
-
-
-<div class="item-title">
-
-${a.title}
-
-</div>
-
-
-
-<div class="actions">
-
-
-<button class="edit"
-
-onclick="edit('${a.id}')">
-
-编辑
-
-</button>
-
-
-
-<button class="delete"
-
-onclick="removeArticle('${a.id}')">
-
-删除
-
-</button>
-
-
-</div>
-
-
-
-</div>
-
-
-
-<div class="summary">
-
-${firstLine(a.content)}
-
-</div>
-
-
-
-<div class="meta">
-
-草稿
-
-${format(a.createTime)}
-
-</div>
-
-
-
-</div>
-
-
-`;
-
-}
-
-
-
-
-
-
-
-
-
-// 隐藏/显示
-
-
-function toggleHide(id,status){
-
-
-
-let newStatus=
-
-status==="hidden"
-
-?
-
-"published"
-
-:
-
-"hidden";
-
-
-
-db.collection("articles")
-
-.doc(id)
-
-.update({
-
-status:newStatus
-
-})
-
-.then(loadArticles);
-
-
-
-}
-
-
-
-
-
-
-
-
-// 编辑
-
-
-function edit(id){
-
-
-location.href=
-
-"admin-edit.html?id="+id;
-
-
-}
-
-
-
-
-
-
-
-// 删除
-
-
-function removeArticle(id){
-
-
-if(!confirm("确定删除？"))
-
-return;
-
-
-
-db.collection("articles")
-
-.doc(id)
-
-.delete()
-
-.then(loadArticles);
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 第一行摘要
-
-
-function firstLine(text){
-
-
-
-if(!text)
-
-return "";
-
-
-
-return text
-
-.replace(/[#>*_-]/g,"")
-
-.split("\n")
-
-.filter(x=>x.trim())
-
-[0]
-
-.substring(0,80);
-
-
-
-}
-
-
-
-
-
-
-
-
-function format(t){
-
-
-if(t&&t.toDate){
-
-
-return t.toDate()
-
-.toLocaleString("zh-CN");
-
-
-}
-
-
-return "";
-
-}
-
-
-
-
-function empty(){
-
-
-return `
-
-<div class="empty">
-
-暂无文章
-
-</div>
-
-`;
-
-}
-
-
-
-
-
-loadArticles();
+</html>
