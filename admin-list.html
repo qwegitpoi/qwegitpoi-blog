@@ -7,40 +7,27 @@
 
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-
-<title>
-文章管理
-</title>
+<title>文章管理</title>
 
 
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-
 
 
 <style>
 
-
 *{
-
 box-sizing:border-box;
-
 }
-
 
 
 body{
 
 margin:0;
 
-background:#f5f6fa;
+background:#f5f5f5;
 
-font-family:
-
-"Microsoft YaHei",
-Arial,
-sans-serif;
+font-family:"Microsoft YaHei",Arial;
 
 color:#333;
 
@@ -48,16 +35,11 @@ color:#333;
 
 
 
-
-
-/* 顶部 */
-
 .header{
 
+height:55px;
 
 background:white;
-
-height:55px;
 
 display:flex;
 
@@ -67,38 +49,29 @@ justify-content:space-between;
 
 padding:0 15px;
 
-box-shadow:
-
-0 2px 8px rgba(0,0,0,.08);
+box-shadow:0 2px 6px #ddd;
 
 }
 
 
-
 .header a{
 
-color:#1677ff;
-
 text-decoration:none;
+
+color:#1677ff;
 
 font-size:14px;
 
 }
 
 
-
-.header-title{
+.title{
 
 font-size:18px;
 
 font-weight:bold;
 
 }
-
-
-
-
-
 
 
 
@@ -110,158 +83,27 @@ padding:12px;
 
 
 
-
-
-
-
-
-/* 搜索 */
-
-.search-box{
-
-background:white;
-
-padding:12px;
-
-border-radius:10px;
-
-margin-bottom:12px;
-
-}
-
-
-
-.search-box input{
-
-
-width:100%;
-
-height:40px;
-
-border:1px solid #ddd;
-
-border-radius:20px;
-
-padding:0 15px;
-
-font-size:15px;
-
-}
-
-
-
-
-
-
-
-
-
-/* 分类 */
-
-.filter-box{
+.article{
 
 
 background:white;
 
-padding:12px;
-
-border-radius:10px;
-
-margin-bottom:12px;
-
-}
-
-
-
-.filter-title{
-
-
-font-size:15px;
-
-font-weight:bold;
-
-margin-bottom:8px;
-
-}
-
-
-
-.filter-item{
-
-
-display:inline-block;
-
-font-size:14px;
-
-color:#1677ff;
-
-margin-right:12px;
-
-margin-bottom:8px;
-
-cursor:pointer;
-
-}
-
-
-
-
-
-
-
-
-
-
-/* 文章 */
-
-.item{
-
-
-background:white;
-
-border-radius:10px;
+border-radius:8px;
 
 padding:12px;
 
 margin-bottom:10px;
 
-}
-
-
-
-
-
-
-.item-top{
-
-
-display:flex;
-
-align-items:center;
-
-justify-content:space-between;
-
-gap:8px;
 
 }
-
-
-
-
 
 
 
 .article-title{
 
-
 font-size:16px;
 
 font-weight:bold;
-
-flex:1;
-
-min-width:0;
-
 
 }
 
@@ -269,26 +111,21 @@ min-width:0;
 
 .article-title a{
 
-
 color:#333;
 
 text-decoration:none;
-
 
 }
 
 
 
-
-
 .summary{
-
-
-margin-top:8px;
 
 font-size:14px;
 
 color:#666;
+
+margin-top:8px;
 
 white-space:nowrap;
 
@@ -296,19 +133,11 @@ overflow:hidden;
 
 text-overflow:ellipsis;
 
-
 }
 
 
 
-
-
-
-
-.meta{
-
-
-margin-top:8px;
+.info{
 
 font-size:12px;
 
@@ -316,76 +145,40 @@ color:#888;
 
 line-height:1.8;
 
-}
-
-
-
-
-
-
-
-
-
-
-/* 操作按钮 */
-
-.actions{
-
-
-display:flex;
-
-flex-shrink:0;
-
-gap:4px;
-
-position:relative;
-
-z-index:20;
-
+margin-top:8px;
 
 }
 
 
 
+.buttons{
+
+margin-top:10px;
+
+text-align:right;
+
+}
 
 
-.actions button{
+
+button{
 
 
 border:0;
 
-padding:5px 8px;
-
-font-size:12px;
-
 border-radius:5px;
 
-cursor:pointer;
+padding:6px 10px;
 
-position:relative;
+margin-left:5px;
 
-z-index:30;
-
-
-}
-
-
-
-
-.btn-hide{
-
-
-background:#666;
-
-color:white;
+font-size:13px;
 
 }
 
 
 
-
-.btn-edit{
-
+.edit{
 
 background:#1677ff;
 
@@ -394,9 +187,16 @@ color:white;
 }
 
 
+.hide{
 
-.btn-delete{
+background:#666;
 
+color:white;
+
+}
+
+
+.delete{
 
 background:#e53935;
 
@@ -406,27 +206,11 @@ color:white;
 
 
 
-
-
-
-
-
-
-
-/* 分页 */
-
 .page{
-
-
-background:white;
-
-padding:15px;
 
 text-align:center;
 
-border-radius:10px;
-
-margin-top:10px;
+padding:15px;
 
 }
 
@@ -434,55 +218,24 @@ margin-top:10px;
 
 .page button{
 
-
-border:0;
-
 background:#1677ff;
 
 color:white;
 
-padding:8px 15px;
-
-border-radius:5px;
-
-margin:0 5px;
-
-cursor:pointer;
-
 }
-
-
-
-
-
-.page span{
-
-color:#555;
-
-}
-
-
-
-
-
-
 
 
 .empty{
 
-
 background:white;
 
-padding:25px;
+padding:30px;
 
 text-align:center;
 
 color:#999;
 
-border-radius:10px;
-
 }
-
 
 
 </style>
@@ -491,24 +244,19 @@ border-radius:10px;
 </head>
 
 
-
 <body>
-
 
 
 <div class="header">
 
-
 <a href="admin.html">
 
-← 后台首页
+←后台
 
 </a>
 
 
-<div class="header-title"
-
-id="pageTitle">
+<div class="title" id="pageTitle">
 
 文章管理
 
@@ -523,113 +271,22 @@ id="pageTitle">
 
 
 
-
-
-
 <div class="container">
 
 
-
-
-
-
-<div class="search-box">
-
-
-<input
-
-id="search"
-
-placeholder="搜索标题或正文"
-
-oninput="filterArticles()">
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="filter-box">
-
-
-<div class="filter-title">
-
-年月分类
-
-</div>
-
-
-<div id="monthList">
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div class="filter-box">
-
-
-<div class="filter-title">
-
-标签分类
-
-</div>
-
-
-<div id="tagList">
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-
-
-<div id="articleList">
+<div id="list">
 
 加载中...
 
 </div>
 
 
-
-
-
-
-
-<div class="page"
-
-id="pageBox">
+<div class="page" id="page">
 
 </div>
 
 
-
-
-
-
 </div>
-
 
 
 
@@ -637,47 +294,33 @@ id="pageBox">
 
 
 <script>
-// Firebase配置
-
-const firebaseConfig = {
 
 
-apiKey:
-"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+const firebaseConfig={
 
 
-authDomain:
-"qwegitpoi-blog.firebaseapp.com",
+apiKey:"AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
 
+authDomain:"qwegitpoi-blog.firebaseapp.com",
 
-projectId:
-"qwegitpoi-blog",
+projectId:"qwegitpoi-blog",
 
+messagingSenderId:"313324557146",
 
-messagingSenderId:
-"313324557146",
-
-
-appId:
-"1:313324557146:web:4a93868894c9329006d963"
-
+appId:"1:313324557146:web:4a93868894c9329006d963"
 
 };
-
 
 
 firebase.initializeApp(firebaseConfig);
 
 
-
-const db = firebase.firestore();
-
+const db=firebase.firestore();
 
 
 
-// 当前分类
 
-let currentType =
+let type=
 
 new URLSearchParams(location.search)
 
@@ -687,52 +330,34 @@ new URLSearchParams(location.search)
 
 
 
+let articles=[];
 
 
-let allArticles=[];
-
-let showArticles=[];
+let page=1;
 
 
-
-let currentPage=1;
-
-
-const pageSize=10;
+const size=10;
 
 
 
 
 
 
+if(type==="published"){
 
-
-// 标题
-
-
-if(currentType==="published"){
-
-document.getElementById("pageTitle")
-
-.innerHTML="已发表文章";
+pageTitle.innerHTML="已发布文章";
 
 }
 
+if(type==="hidden"){
 
-if(currentType==="hidden"){
-
-document.getElementById("pageTitle")
-
-.innerHTML="隐藏文章";
+pageTitle.innerHTML="隐藏文章";
 
 }
 
+if(type==="draft"){
 
-if(currentType==="draft"){
-
-document.getElementById("pageTitle")
-
-.innerHTML="草稿箱";
+pageTitle.innerHTML="草稿箱";
 
 }
 
@@ -741,542 +366,107 @@ document.getElementById("pageTitle")
 
 
 
-
-
-
-
-// 加载文章
-
-
-function loadArticles(){
+function load(){
 
 
 
 db.collection("articles")
 
+.where("status","==",type)
+
 .get()
-
-
 
 .then(snapshot=>{
 
 
-allArticles=[];
+
+articles=[];
 
 
 
 snapshot.forEach(doc=>{
 
 
-let data={
-
+articles.push({
 
 id:doc.id,
 
-
 ...doc.data()
 
-
-};
-
-
-
-if(data.status===currentType){
-
-
-allArticles.push(data);
-
-
-}
+});
 
 
 });
 
 
 
+articles.sort((a,b)=>{
 
 
-allArticles.sort((a,b)=>{
+let aa=a.createTime?.seconds||0;
+
+let bb=b.createTime?.seconds||0;
 
 
-return (
-
-b.createTime?.seconds||0
-
-)
-
--
-
-(
-
-a.createTime?.seconds||0
-
-);
+return bb-aa;
 
 
 });
 
 
 
-
-
-
-showArticles=[...allArticles];
-
-
-
-createFilters();
-
-
-
-renderArticles();
+render();
 
 
 
 })
 
-
 .catch(error=>{
 
 
-document.getElementById("articleList")
+document.getElementById("list").innerHTML=
 
-.innerHTML=
+"加载失败："+error.message;
+
+
+});
+
+
+}
+
+
+
+
+
+
+
+function render(){
+
+
+
+let start=(page-1)*size;
+
+
+let data=
+
+articles.slice(start,start+size);
+
+
+
+
+
+if(data.length===0){
+
+
+list.innerHTML=
 
 `
-
 <div class="empty">
-
-加载失败：
-
-${error.message}
-
-</div>
-
-`;
-
-
-
-});
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 创建分类
-
-
-function createFilters(){
-
-
-
-let monthData={};
-
-
-let tagData={};
-
-
-
-
-
-allArticles.forEach(article=>{
-
-
-
-if(article.createTime){
-
-
-let date=
-
-article.createTime.toDate();
-
-
-
-let month=
-
-date.getFullYear()
-
-+"年"
-
-+(date.getMonth()+1)
-
-+"月";
-
-
-
-monthData[month]=true;
-
-
-}
-
-
-
-
-
-
-(article.tags||[])
-
-.forEach(tag=>{
-
-
-tagData[tag]=true;
-
-
-});
-
-
-});
-
-
-
-
-
-
-
-
-
-let monthHtml="";
-
-
-
-Object.keys(monthData)
-
-.sort()
-
-.reverse()
-
-.forEach(month=>{
-
-
-monthHtml+=`
-
-
-<span class="filter-item"
-
-onclick="selectMonth('${month}')">
-
-${month}
-
-</span>
-
-
-`;
-
-
-
-});
-
-
-
-document.getElementById("monthList")
-
-.innerHTML=
-
-monthHtml||"暂无";
-
-
-
-
-
-
-
-
-
-let tagHtml="";
-
-
-
-Object.keys(tagData)
-
-.sort()
-
-.forEach(tag=>{
-
-
-tagHtml+=`
-
-
-<span class="filter-item"
-
-onclick="selectTag('${tag}')">
-
-${tag}
-
-</span>
-
-
-`;
-
-
-
-});
-
-
-
-document.getElementById("tagList")
-
-.innerHTML=
-
-tagHtml||"暂无";
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 搜索
-
-
-function filterArticles(){
-
-
-
-let keyword=
-
-document.getElementById("search")
-
-.value
-
-.trim()
-
-.toLowerCase();
-
-
-
-
-
-showArticles=
-
-allArticles.filter(article=>{
-
-
-
-return (
-
-!keyword
-
-||
-
-
-(article.title||"")
-
-.toLowerCase()
-
-.includes(keyword)
-
-
-
-||
-
-
-(article.content||"")
-
-.toLowerCase()
-
-.includes(keyword)
-
-
-);
-
-
-});
-
-
-
-currentPage=1;
-
-
-renderArticles();
-
-
-
-}
-
-
-
-
-
-
-
-
-
-// 年月筛选
-
-
-function selectMonth(month){
-
-
-
-showArticles=
-
-allArticles.filter(article=>{
-
-
-if(!article.createTime)
-
-return false;
-
-
-
-let date=
-
-article.createTime.toDate();
-
-
-
-let value=
-
-date.getFullYear()
-
-+"年"
-
-+(date.getMonth()+1)
-
-+"月";
-
-
-
-return value===month;
-
-
-
-});
-
-
-
-currentPage=1;
-
-
-renderArticles();
-
-
-}
-
-
-
-
-
-
-
-
-
-// 标签筛选
-
-
-function selectTag(tag){
-
-
-
-showArticles=
-
-allArticles.filter(article=>{
-
-
-return (
-
-article.tags||[]
-
-)
-
-.includes(tag);
-
-
-
-});
-
-
-
-currentPage=1;
-
-
-renderArticles();
-
-
-}
-
-
-
-
-
-
-
-
-
-
-
-// 渲染列表
-
-
-function renderArticles(){
-
-
-
-let start=
-
-(currentPage-1)
-
-*
-
-pageSize;
-
-
-
-let list=
-
-showArticles.slice(
-
-start,
-
-start+pageSize
-
-);
-
-
-
-
-
-
-
-if(list.length===0){
-
-
-
-document.getElementById("articleList")
-
-.innerHTML=
-
-`
-
-<div class="empty">
-
 暂无文章
-
 </div>
-
 `;
 
-
-
-document.getElementById("pageBox")
-
-.innerHTML="";
-
-
+page.innerHTML="";
 
 return;
 
@@ -1287,81 +477,75 @@ return;
 
 
 
-
-
-
 let html="";
 
 
 
-
-
-list.forEach(article=>{
-
-
-
-
-
-let hideText=
-
-article.status==="hidden"
-
-?
-
-"恢复"
-
-:
-
-"隐藏";
-
-
-
+data.forEach(a=>{
 
 
 html+=`
 
-
-<div class="item">
-
-
-<div class="item-top">
+<div class="article">
 
 
 <div class="article-title">
 
+<a href="article.html?id=${a.id}">
 
-<a href="article.html?id=${article.id}">
-
-${article.title}
+${a.title||"无标题"}
 
 </a>
-
 
 </div>
 
 
 
-<div class="actions">
+
+<div class="summary">
+
+${firstLine(a.content)}
+
+</div>
 
 
 
-${currentType!=="draft"
+
+<div class="info">
+
+
+发布时间：
+
+${date(a.createTime)}
+
+<br>
+
+
+最后编辑：
+
+${last(a.updateTime)}
+
+</div>
+
+
+
+
+
+<div class="buttons">
+
+
+
+${type!=="draft"
 
 ?
 
 `
 
-<button
+<button class="hide"
 
-class="btn-hide"
+onclick="hideArticle('${a.id}','${a.status}')">
 
-data-id="${article.id}"
-
-data-status="${article.status}"
-
-onclick="toggleStatus(this)">
-
-${hideText}
+${a.status==="hidden"?"恢复":"隐藏"}
 
 </button>
 
@@ -1374,12 +558,9 @@ ${hideText}
 
 
 
+<button class="edit"
 
-<button
-
-class="btn-edit"
-
-onclick="editArticle('${article.id}')">
+onclick="edit('${a.id}')">
 
 编辑
 
@@ -1388,71 +569,16 @@ onclick="editArticle('${article.id}')">
 
 
 
+<button class="delete"
 
-<button
-
-class="btn-delete"
-
-onclick="deleteArticle('${article.id}')">
+onclick="removeArticle('${a.id}')">
 
 删除
 
 </button>
 
 
-
 </div>
-
-
-
-</div>
-
-
-
-
-
-
-<div class="summary">
-
-
-${getFirstLine(article.content)}
-
-
-</div>
-
-
-
-
-
-
-<div class="meta">
-
-
-发布时间：
-
-${formatDate(article.createTime)}
-
-
-
-<br>
-
-
-最后编辑：
-
-${getLastUpdate(article.updateTime)}
-
-
-
-<br>
-
-
-标签：
-
-${(article.tags||[]).join(" ")}
-
-
-</div>
-
 
 
 </div>
@@ -1460,24 +586,13 @@ ${(article.tags||[]).join(" ")}
 
 `;
 
-
-
-
-
 });
 
 
+list.innerHTML=html;
 
 
-
-
-document.getElementById("articleList")
-
-.innerHTML=html;
-
-
-
-showPagination();
+showPage();
 
 
 }
@@ -1488,38 +603,21 @@ showPagination();
 
 
 
+function showPage(){
 
 
-// 分页
-
-
-function showPagination(){
-
-
-
-let total=
-
-Math.ceil(
-
-showArticles.length/pageSize
-
-);
-
+let total=Math.ceil(articles.length/size);
 
 
 let html="";
 
 
 
-
-
-if(currentPage>1){
-
-
+if(page>1){
 
 html+=`
 
-<button onclick="changePage(${currentPage-1})">
+<button onclick="change(${page-1})">
 
 上一页
 
@@ -1535,7 +633,7 @@ html+=`
 
 <span>
 
-${currentPage}/${total||1}
+${page}/${total||1}
 
 </span>
 
@@ -1543,14 +641,11 @@ ${currentPage}/${total||1}
 
 
 
-
-
-if(currentPage<total){
-
+if(page<total){
 
 html+=`
 
-<button onclick="changePage(${currentPage+1})">
+<button onclick="change(${page+1})">
 
 下一页
 
@@ -1562,11 +657,19 @@ html+=`
 
 
 
-document.getElementById("pageBox")
-
-.innerHTML=html;
+pageBox.innerHTML=html;
 
 
+}
+
+
+
+
+function change(p){
+
+page=p;
+
+render();
 
 }
 
@@ -1576,16 +679,11 @@ document.getElementById("pageBox")
 
 
 
+function edit(id){
 
+location.href=
 
-function changePage(page){
-
-
-currentPage=page;
-
-
-renderArticles();
-
+"admin-edit.html?id="+id;
 
 }
 
@@ -1593,45 +691,16 @@ renderArticles();
 
 
 
-
-
-
-
-// 隐藏 / 恢复
-
-
-function toggleStatus(button){
-
-
-
-let id=
-
-button.dataset.id;
-
-
-
-let oldStatus=
-
-button.dataset.status;
-
-
-
+function hideArticle(id,status){
 
 
 let newStatus=
 
-oldStatus==="hidden"
+status==="hidden"
 
-?
+?"published"
 
-"published"
-
-:
-
-"hidden";
-
-
-
+:"hidden";
 
 
 
@@ -1647,61 +716,13 @@ status:newStatus
 
 .then(()=>{
 
+alert("操作成功");
 
-alert(
-
-newStatus==="hidden"
-
-?
-
-"文章已隐藏"
-
-:
-
-"文章已恢复"
-
-);
-
-
-
-loadArticles();
-
-
-})
-
-.catch(error=>{
-
-
-alert(
-
-"操作失败："+error.message
-
-);
-
+load();
 
 });
 
 
-}
-
-
-
-
-
-
-
-
-
-// 编辑
-
-
-function editArticle(id){
-
-
-location.href=
-
-"admin-edit.html?id="+id;
-
 
 }
 
@@ -1710,17 +731,10 @@ location.href=
 
 
 
+function removeArticle(id){
 
 
-
-// 删除
-
-
-function deleteArticle(id){
-
-
-
-if(!confirm("确定删除这篇文章？"))
+if(!confirm("确定删除？"))
 
 return;
 
@@ -1734,12 +748,7 @@ db.collection("articles")
 
 .then(()=>{
 
-
-alert("删除成功");
-
-
-loadArticles();
-
+load();
 
 });
 
@@ -1753,12 +762,7 @@ loadArticles();
 
 
 
-
-// 第一行
-
-
-function getFirstLine(text){
-
+function firstLine(text){
 
 
 if(!text)
@@ -1780,7 +784,6 @@ return text
 .substring(0,80);
 
 
-
 }
 
 
@@ -1789,24 +792,14 @@ return text
 
 
 
+function date(t){
 
 
-// 发布时间
+if(t&&t.toDate)
 
+return t.toDate()
 
-function formatDate(time){
-
-
-
-if(time&&time.toDate){
-
-
-return time.toDate()
-
-.toLocaleDateString("zh-CN");
-
-
-}
+.toLocaleDateString();
 
 
 
@@ -1819,20 +812,12 @@ return "";
 
 
 
-
-
-
-// 最后编辑
-
-
-function getLastUpdate(arr){
-
+function last(arr){
 
 
 if(!arr||arr.length===0)
 
 return "暂无";
-
 
 
 return arr[arr.length-1];
@@ -1843,8 +828,12 @@ return arr[arr.length-1];
 
 
 
+load();
 
 
+</script>
 
 
-loadArticles();
+</body>
+
+</html>
