@@ -1,59 +1,388 @@
-<script>
-  // 渲染文章列表函数片段
-  function renderTable(articles) {
-    const tbody = document.getElementById('article-tbody');
-    tbody.innerHTML = articles.map(item => {
-      const isFeatured = item.featured === true || item.is_featured === true;
-      const isHidden = item.hide === true || item.status === 'hidden';
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 - 文章列表</title>
 
-      return `
-        <tr>
-          <td>
-            <span class="${isHidden ? 'status-hidden' : ''}">${item.title}</span>
-            ${isFeatured ? '<span style="color:#ff9500; font-weight:bold; margin-left:4px;">[★ 精选]</span>' : ''}
-            ${isHidden ? ' <small style="color:#8e8e93;">(已隐藏)</small>' : ''}
-          </td>
-          <td>${item.tag || '随笔'}</td>
-          <td>
-            <button onclick="editArticle('${item.id}')">编辑</button>
-            
-            <button onclick="toggleHide('${item.id}', ${isHidden})">
-              ${isHidden ? '显示' : '隐藏'}
-            </button>
-            
-            <button 
-              style="background-color: ${isFeatured ? '#ff9500' : '#ffffff'}; color: ${isFeatured ? '#fff' : '#333'}; border: 1px solid #d1d1d6; border-radius: 4px; cursor: pointer; padding: 2px 8px;"
-              onclick="toggleFeatured('${item.id}', ${isFeatured})"
-            >
-              ${isFeatured ? '取消精选' : '精选'}
-            </button>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-            <button onclick="deleteArticle('${item.id}')" style="color:red;">删除</button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-  }
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  // 切换【精选】状态写入 Firebase Firestore
-  function toggleFeatured(docId, currentFeatured) {
-    db.collection('articles').doc(docId).update({
-      featured: !currentFeatured
-    }).then(() => {
-      alert(currentFeatured ? '已取消精选' : '已设为精选');
-      location.reload(); // 重新刷新数据
-    }).catch(err => {
-      alert('更新失败: ' + err.message);
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #f1f5f9;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 24px 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* 顶部导航 */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-main);
+      text-decoration: none;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .btn-nav {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      transition: background 0.15s ease;
+    }
+
+    .btn-nav:hover {
+      background-color: #f1f5f9;
+      color: var(--text-main);
+    }
+
+    .btn-logout {
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background-color: #fee2e2;
+      color: #dc2626;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+    .btn-logout:hover {
+      background-color: #fca5a5;
+    }
+
+    /* 文章列表表格与卡片风格 */
+    .table-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.875rem;
+    }
+
+    th, td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      line-height: 1.35;
+    }
+
+    th {
+      background-color: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.8rem;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    /* 状态与小徽章 */
+    .tag {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background-color: #eff6ff;
+      color: var(--primary-color);
+      font-weight: 500;
+    }
+
+    .badge-featured {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 4px;
+      background-color: #fff7ed;
+      color: #ea580c;
+      border: 1px solid #ffedd5;
+      font-weight: 600;
+      margin-left: 6px;
+    }
+
+    .status-hidden {
+      color: #94a3b8;
+      font-style: italic;
+    }
+
+    /* 操作按钮 */
+    .actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn-action {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background-color: #ffffff;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+    }
+
+    .btn-action:hover {
+      background-color: #f1f5f9;
+    }
+
+    .btn-featured-active {
+      background-color: #ea580c;
+      color: #ffffff;
+      border-color: #ea580c;
+    }
+
+    .btn-featured-active:hover {
+      background-color: #c2410c;
+    }
+
+    .btn-danger {
+      color: #dc2626;
+      border-color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background-color: #fee2e2;
+    }
+
+    .empty-text {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <a href="admin.html" class="nav-title">⚙️ 博客后台管理</a>
+      <div class="nav-actions">
+        <a href="admin.html" class="btn-nav">控制台首页</a>
+        <a href="admin-edit.html" class="btn-nav">✍️ 发布新文章</a>
+        <button class="btn-logout" onclick="handleLogout()">退出登录</button>
+      </div>
+    </header>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 45%;">文章标题</th>
+            <th style="width: 15%;">分类标签</th>
+            <th style="width: 18%;">发表时间</th>
+            <th style="width: 22%;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="article-tbody">
+          <tr>
+            <td colspan="4" class="empty-text">正在从数据库加载文章列表...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // 你的真实 Firebase 配置 (已自动解析并应用)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qwegitpoi-blog",
+      storageBucket: "qwegitpoi-blog.firebasestorage.app",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963",
+      measurementId: "G-M01JQCZ0WX"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let targetCollectionName = 'articles'; // 默认集合
+
+    // 1. 权限拦截：未登录跳转 login
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = 'admin-login.html';
+      } else {
+        loadAdminArticles();
+      }
     });
-  }
 
-  // 切换【隐藏】状态写入 Firebase Firestore
-  function toggleHide(docId, currentHidden) {
-    db.collection('articles').doc(docId).update({
-      hide: !currentHidden,
-      status: !currentHidden ? 'hidden' : 'published'
-    }).then(() => {
-      location.reload();
-    });
-  }
-</script>
+    // 2. 登出逻辑
+    function handleLogout() {
+      auth.signOut().then(() => {
+        window.location.href = 'admin-login.html';
+      });
+    }
+
+    // 解析首次发表时间
+    function parseDate(item) {
+      const val = item.createdAt || item.created_at || item.date || item.timestamp;
+      if (!val) return 0;
+      if (typeof val === 'number') return val;
+      if (val.seconds) return val.seconds * 1000;
+      if (typeof val === 'string') return new Date(val).getTime() || 0;
+      if (val.toDate && typeof val.toDate === 'function') return val.toDate().getTime();
+      return 0;
+    }
+
+    // 3. 智能兼容加载文章
+    async function loadAdminArticles() {
+      const tbody = document.getElementById('article-tbody');
+      try {
+        let docs = [];
+        
+        // 尝试从 posts 或 articles 读取
+        let snapshot = await db.collection('posts').get();
+        if (!snapshot.empty) {
+          targetCollectionName = 'posts';
+        } else {
+          snapshot = await db.collection('articles').get();
+          targetCollectionName = 'articles';
+        }
+
+        snapshot.forEach(doc => {
+          docs.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 首次发表时间降序排序
+        docs.sort((a, b) => parseDate(b) - parseDate(a));
+
+        if (docs.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="4" class="empty-text">数据库中暂无文章。</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = docs.map(item => {
+          const isHidden = item.hide === true || item.hidden === true || item.status === 'hidden';
+          const isFeatured = item.featured === true || item.is_featured === true || item.isFeatured === true;
+          const timeMs = parseDate(item);
+          const dateStr = timeMs ? new Date(timeMs).toLocaleDateString('zh-CN') : '未记录';
+          const tagStr = item.tag || item.tagName || '随笔';
+
+          return `
+            <tr>
+              <td>
+                <span class="${isHidden ? 'status-hidden' : ''}">${item.title || '无标题'}</span>
+                ${isFeatured ? '<span class="badge-featured">★ 精选</span>' : ''}
+                ${isHidden ? ' <small style="color:#94a3b8;">(已隐藏)</small>' : ''}
+              </td>
+              <td><span class="tag">${tagStr}</span></td>
+              <td>${dateStr}</td>
+              <td>
+                <div class="actions">
+                  <button class="btn-action" onclick="editArticle('${item.id}')">编辑</button>
+                  <button class="btn-action" onclick="toggleHide('${item.id}', ${isHidden})">
+                    ${isHidden ? '显示' : '隐藏'}
+                  </button>
+                  <button class="btn-action ${isFeatured ? 'btn-featured-active' : ''}" onclick="toggleFeatured('${item.id}', ${isFeatured})">
+                    ${isFeatured ? '取消精选' : '精选'}
+                  </button>
+                  <button class="btn-action btn-danger" onclick="deleteArticle('${item.id}')">删除</button>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        console.error("加载列表失败:", err);
+        tbody.innerHTML = `<tr><td colspan="4" class="empty-text" style="color:#dc2626;">加载失败: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 4. 切换精选状态
+    function toggleFeatured(id, currentFeatured) {
+      db.collection(targetCollectionName).doc(id).update({
+        featured: !currentFeatured,
+        is_featured: !currentFeatured
+      }).then(() => {
+        loadAdminArticles();
+      }).catch(err => alert("修改精选失败: " + err.message));
+    }
+
+    // 5. 切换隐藏状态
+    function toggleHide(id, currentHidden) {
+      db.collection(targetCollectionName).doc(id).update({
+        hide: !currentHidden,
+        status: !currentHidden ? 'hidden' : 'published'
+      }).then(() => {
+        loadAdminArticles();
+      }).catch(err => alert("修改隐藏失败: " + err.message));
+    }
+
+    // 跳转编辑
+    function editArticle(id) {
+      window.location.href = `admin-edit.html?id=${id}`;
+    }
+
+    // 删除文章
+    function deleteArticle(id) {
+      if (confirm("确定要永久删除这篇文章吗？")) {
+        db.collection(targetCollectionName).doc(id).delete().then(() => {
+          loadAdminArticles();
+        }).catch(err => alert("删除失败: " + err.message));
+      }
+    }
+  </script>
+</body>
+</html>
