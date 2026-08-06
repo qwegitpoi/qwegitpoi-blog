@@ -1,235 +1,150 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <title>文章</title>
-
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情</title>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; background: #f5f6fa; font-family: "Microsoft YaHei", Arial; color: #333; }
-    .header { background: white; padding: 15px; display: flex; justify-content: space-between; box-shadow: 0 2px 8px rgba(0,0,0,.08); }
-    .header a { color: #1677ff; text-decoration: none; font-size: 14px; }
-    .container { padding: 15px; max-width: 800px; margin: 0 auto; }
-    .article { background: white; padding: 20px; border-radius: 10px; }
-    h1 { font-size: 24px; line-height: 1.5; margin-top: 0; }
-    .info { font-size: 14px; color: #888; line-height: 2; }
-    .tags { margin: 15px 0; }
-    .tag { display: inline-block; background: #eef5ff; color: #1677ff; padding: 4px 10px; border-radius: 15px; font-size: 13px; margin-right: 5px; }
-    .content { font-size: 16px; line-height: 1.9; }
-    .content h2 { margin-top: 30px; }
-    .content img { max-width: 100%; }
-    .nav { margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; }
-    .nav a { display: block; color: #1677ff; text-decoration: none; margin: 12px 0; font-size: 15px; }
-
-    /* 留言区 */
-    .comments-section { margin-top: 25px; background: white; padding: 20px; border-radius: 10px; }
-    .comments-title { font-size: 18px; font-weight: bold; margin-bottom: 15px; border-left: 4px solid #1677ff; padding-left: 10px; }
-    .comment-form input, .comment-form textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; margin-bottom: 10px; font-family: inherit; }
-    .comment-form textarea { height: 80px; resize: vertical; }
-    .visibility-options { margin-bottom: 12px; font-size: 14px; color: #555; }
-    .visibility-options label { margin-right: 15px; cursor: pointer; }
-    .comment-form button { background: #1677ff; color: white; border: none; padding: 8px 18px; border-radius: 6px; font-size: 14px; cursor: pointer; }
-    .comment-list { margin-top: 20px; }
-    .comment-item { border-bottom: 1px solid #eee; padding: 12px 0; }
-    .comment-item:last-child { border-bottom: none; }
-    .comment-header { display: flex; justify-content: space-between; font-size: 13px; color: #888; margin-bottom: 6px; }
-    .comment-nickname { font-weight: bold; color: #333; }
-    .comment-content { font-size: 14px; line-height: 1.6; color: #444; white-space: pre-wrap; }
-    .private-tip { color: #999; font-style: italic; }
-    .empty-comments { color: #999; font-size: 14px; text-align: center; padding: 15px 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f7; padding: 20px; }
+    .article-container { max-width: 720px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; }
+    
+    /* 互动按钮组 */
+    .interaction-bar {
+      display: flex; gap: 12px; justify-content: center; align-items: center;
+      margin-top: 30px; padding-top: 16px; border-top: 1px solid #f0f0f0;
+    }
+    .action-btn {
+      display: flex; align-items: center; gap: 6px; font-size: 0.85rem;
+      padding: 8px 14px; border-radius: 20px; border: 1px solid #e5e5ea;
+      background: #fafafa; color: #1d1d1f; cursor: pointer; transition: all 0.2s;
+    }
+    .action-btn:hover { background: #f2f2f7; }
+    .action-btn.active { background: #e8f2ff; color: #0066cc; border-color: #0066cc; }
   </style>
 </head>
-
 <body>
 
-  <div class="header">
-    <a href="./index.html">← 返回首页</a>
-    <a href="archive.html">文章列表</a>
-  </div>
+  <div class="article-container">
+    <h1 id="article-title">加载中...</h1>
+    <div id="article-content" style="margin-top:16px; line-height:1.6;"></div>
 
-  <div class="container">
-    <div class="article">
-      <h1 id="title">加载中...</h1>
-      <div id="info" class="info"></div>
-      <div id="tags" class="tags"></div>
-      <hr>
-      <div id="content" class="content">加载文章中...</div>
+    <div class="interaction-bar">
+      <button class="action-btn" id="btn-like" onclick="handleLike()">
+        👍 赞 <span id="like-count">0</span>
+      </button>
 
-      <div class="nav">
-        <div id="prev"></div>
-        <div id="next"></div>
-      </div>
-    </div>
+      <button class="action-btn" id="btn-dislike" onclick="handleDislike()">
+        👎 踩 <span id="dislike-count">0</span>
+      </button>
 
-    <div class="comments-section">
-      <div class="comments-title">发表留言</div>
-      <div class="comment-form">
-        <input id="nickname" type="text" placeholder="昵称（选填，默认“热心网友”）" maxlength="20">
-        <textarea id="commentMsg" placeholder="欢迎留下你的评论..."></textarea>
-        
-        <div class="visibility-options">
-          <label><input type="radio" name="isPrivate" value="false" checked> 🌐 公开留言</label>
-          <label><input type="radio" name="isPrivate" value="true"> 🔒 仅对博主可见</label>
-        </div>
+      <button class="action-btn" id="btn-bookmark" onclick="handleBookmark()">
+        ⭐ <span id="bookmark-text">收藏</span>
+      </button>
 
-        <button onclick="submitComment()">提交留言</button>
-      </div>
-
-      <div class="comments-title" style="margin-top: 30px;">全部留言</div>
-      <div id="commentList" class="comment-list">加载留言中...</div>
+      <button class="action-btn" onclick="handleShare()">
+        🔗 分享
+      </button>
     </div>
   </div>
 
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-      authDomain: "qwegitpoi-blog.firebaseapp.com",
-      projectId: "qwegitpoi-blog",
-      messagingSenderId: "313324557146",
-      appId: "1:313324557146:web:4a93868894c9329006d963"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    let id = new URLSearchParams(location.search).get("id");
-    let articles = [];
-    let currentIndex = -1;
-    let isAdmin = false;
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('id');
 
-    // 检查当前是否为博主（已登录状态）
-    auth.onAuthStateChanged(user => {
-      if (user) isAdmin = true;
-      load();
-    });
+    let currentArticleData = {};
 
-    async function load() {
-      try {
-        let doc = await db.collection("articles").doc(id).get();
-        if (!doc.exists) {
-          document.getElementById("content").innerHTML = "文章不存在";
-          return;
+    if (articleId) {
+      db.collection('articles').doc(articleId).get().then(doc => {
+        if (doc.exists) {
+          currentArticleData = doc.data();
+          document.getElementById('article-title').innerText = currentArticleData.title || '';
+          document.getElementById('article-content').innerHTML = currentArticleData.content || '';
+          
+          // 更新数字
+          document.getElementById('like-count').innerText = currentArticleData.likes || 0;
+          document.getElementById('dislike-count').innerText = currentArticleData.dislikes || 0;
+
+          // 初始化检查本地收藏状态
+          checkBookmarkStatus();
         }
-
-        let article = { id: doc.id, ...doc.data() };
-        document.title = article.title;
-        document.getElementById("title").innerHTML = article.title;
-        document.getElementById("info").innerHTML = `发布时间：${format(article.createTime)}<br>作者：${article.author || "管理员"}`;
-
-        let tagHtml = "";
-        (article.tags || []).forEach(t => { tagHtml += `<span class="tag">${t}</span>`; });
-        document.getElementById("tags").innerHTML = tagHtml;
-
-        if (window.marked) {
-          document.getElementById("content").innerHTML = marked.parse(article.content || "");
-        } else {
-          document.getElementById("content").innerText = article.content || "";
-        }
-
-        loadNav();
-        loadComments();
-      } catch (e) {
-        document.getElementById("content").innerHTML = "加载失败：" + e.message;
-      }
-    }
-
-    async function loadNav() {
-      let snap = await db.collection("articles").where("status", "==", "published").get();
-      articles = [];
-      snap.forEach(doc => { articles.push({ id: doc.id, ...doc.data() }); });
-      articles.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
-      currentIndex = articles.findIndex(a => a.id === id);
-
-      if (currentIndex > 0) {
-        document.getElementById("prev").innerHTML = `<a href="article.html?id=${articles[currentIndex - 1].id}">上一篇：${articles[currentIndex - 1].title}</a>`;
-      }
-      if (currentIndex < articles.length - 1 && currentIndex !== -1) {
-        document.getElementById("next").innerHTML = `<a href="article.html?id=${articles[currentIndex + 1].id}">下一篇：${articles[currentIndex + 1].title}</a>`;
-      }
-    }
-
-    function loadComments() {
-      db.collection("comments").where("articleId", "==", id).get().then(snapshot => {
-        let list = [];
-        snapshot.forEach(doc => { list.push({ id: doc.id, ...doc.data() }); });
-        list.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
-
-        if (list.length === 0) {
-          document.getElementById("commentList").innerHTML = `<div class="empty-comments">暂无留言，快来抢沙发吧~</div>`;
-          return;
-        }
-
-        let html = "";
-        list.forEach(c => {
-          let isPrivate = c.isPrivate === true || c.isPrivate === "true";
-          let contentHtml = "";
-
-          // 判断显示逻辑：如果是公开的，或是博主本人，可以看内容；否则提示私密
-          if (!isPrivate || isAdmin) {
-            contentHtml = `<div class="comment-content">${escapeHtml(c.content || "")} ${isPrivate ? '<span style="color:#ff4d4f; font-size:12px;">(🔒 博主可见)</span>' : ''}</div>`;
-          } else {
-            contentHtml = `<div class="comment-content private-tip">🔒 该留言仅博主可见</div>`;
-          }
-
-          html += `
-            <div class="comment-item">
-              <div class="comment-header">
-                <span class="comment-nickname">${escapeHtml(c.nickname || "热心网友")}</span>
-                <span>${format(c.createTime)}</span>
-              </div>
-              ${contentHtml}
-            </div>
-          `;
-        });
-        document.getElementById("commentList").innerHTML = html;
-      }).catch(e => {
-        document.getElementById("commentList").innerHTML = `<div class="empty-comments">留言加载失败：${e.message}</div>`;
       });
     }
 
-    function submitComment() {
-      let nickname = document.getElementById("nickname").value.trim() || "热心网友";
-      let content = document.getElementById("commentMsg").value.trim();
-      let isPrivate = document.querySelector('input[name="isPrivate"]:checked').value === "true";
-
-      if (!content) {
-        alert("请输入留言内容！");
-        return;
-      }
-
-      let commentData = {
-        articleId: id,
-        nickname: nickname,
-        content: content,
-        isPrivate: isPrivate,
-        createTime: firebase.firestore.FieldValue.serverTimestamp()
-      };
-
-      db.collection("comments").add(commentData).then(() => {
-        alert("留言成功！");
-        document.getElementById("commentMsg").value = "";
-        loadComments();
-      }).catch(e => {
-        alert("留言失败：" + e.message);
+    // 点赞
+    function handleLike() {
+      if (!articleId) return;
+      db.collection('articles').doc(articleId).update({
+        likes: firebase.firestore.FieldValue.increment(1)
+      }).then(() => {
+        const el = document.getElementById('like-count');
+        el.innerText = parseInt(el.innerText) + 1;
       });
     }
 
-    function escapeHtml(str) {
-      return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    // 点踩
+    function handleDislike() {
+      if (!articleId) return;
+      db.collection('articles').doc(articleId).update({
+        dislikes: firebase.firestore.FieldValue.increment(1)
+      }).then(() => {
+        const el = document.getElementById('dislike-count');
+        el.innerText = parseInt(el.innerText) + 1;
+      });
     }
 
-    function format(t) {
-      return (t && t.toDate) ? t.toDate().toLocaleString("zh-CN") : "";
+    // 收藏 (保存在 LocalStorage)
+    function handleBookmark() {
+      let bookmarks = JSON.parse(localStorage.getItem('my_bookmarks') || '[]');
+      const index = bookmarks.indexOf(articleId);
+
+      if (index === -1) {
+        bookmarks.push(articleId);
+        alert('已成功添加到收藏！');
+      } else {
+        bookmarks.splice(index, 1);
+        alert('已取消收藏！');
+      }
+      localStorage.setItem('my_bookmarks', JSON.stringify(bookmarks));
+      checkBookmarkStatus();
+    }
+
+    function checkBookmarkStatus() {
+      let bookmarks = JSON.parse(localStorage.getItem('my_bookmarks') || '[]');
+      const btn = document.getElementById('btn-bookmark');
+      const text = document.getElementById('bookmark-text');
+
+      if (bookmarks.includes(articleId)) {
+        btn.classList.add('active');
+        text.innerText = '已收藏';
+      } else {
+        btn.classList.remove('active');
+        text.innerText = '收藏';
+      }
+    }
+
+    // 分享 (复制链接)
+    function handleShare() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('文章链接已复制到剪贴板，快去分享吧！');
+      }).catch(() => {
+        alert('复制失败，请手动复制当前网页地址：\n' + window.location.href);
+      });
     }
   </script>
 </body>
-
 </html>

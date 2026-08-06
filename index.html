@@ -1,399 +1,153 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人博客</title>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的个人博客 - 首页</title>
 
-    <style>
-        :root {
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --shadow-hover: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-            --radius-lg: 16px;
-            --radius-md: 10px;
-        }
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f5f5f7;
+      color: #333;
+      padding: 24px 16px;
+    }
+    .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+    
+    /* 顶部 Navigation */
+    header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 16px; background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(10px); border-radius: 12px; margin-bottom: 8px;
+    }
+    .blog-title { font-size: 1.1rem; font-weight: 700; color: #1d1d1f; text-decoration: none; }
+    .nav-links a { font-size: 0.85rem; color: #0066cc; text-decoration: none; margin-left: 12px; }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            padding-bottom: 60px;
-        }
+    /* 板块通用标题 */
+    .section-title { font-size: 1.1rem; font-weight: 600; color: #1d1d1f; margin-bottom: 8px; }
 
-        /* 顶部毛玻璃 Header */
-        header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem 0;
-        }
+    /* 紧凑卡片与小行距 */
+    .card {
+      background: #ffffff; border-radius: 10px; padding: 14px 18px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); line-height: 1.35;
+    }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .title { font-size: 1.05rem; font-weight: 600; color: #111; text-decoration: none; line-height: 1.25; }
+    .title:hover { color: #0066cc; }
+    
+    .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background-color: #e8f2ff; color: #0066cc; font-weight: 500; }
+    .summary { font-size: 0.875rem; color: #555; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-footer { font-size: 0.75rem; color: #888; }
 
-        .header-container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .more-link-container { margin-top: 8px; text-align: right; }
+    .more-link { font-size: 0.85rem; color: #0066cc; text-decoration: none; font-weight: 500; }
+    .more-link:hover { text-decoration: underline; }
 
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            letter-spacing: -0.5px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .nav-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .nav-btn-secondary {
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-        }
-
-        .nav-btn-secondary:hover {
-            background-color: #e2e8f0;
-            color: var(--text-main);
-        }
-
-        .nav-btn-primary {
-            background-color: var(--primary-color);
-            color: #fff;
-        }
-
-        .nav-btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        /* 个人 Hero 看板 */
-        .hero {
-            max-width: 900px;
-            margin: 2rem auto 3rem auto;
-            padding: 0 1.5rem;
-            text-align: center;
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2563eb, #3b82f6);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            margin: 0 auto 1rem auto;
-            box-shadow: var(--shadow-md);
-        }
-
-        .hero h1 {
-            font-size: 2rem;
-            font-weight: 800;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        .hero p {
-            color: var(--text-muted);
-            font-size: 1rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        /* 文章容器及卡片 */
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .article-card {
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            text-decoration: none;
-            display: block;
-            color: inherit;
-        }
-
-        .article-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-hover);
-            border-color: #cbd5e1;
-        }
-
-        .article-card h2 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            color: var(--text-main);
-            margin-bottom: 0.75rem;
-            transition: color 0.2s ease;
-        }
-
-        .article-card:hover h2 {
-            color: var(--primary-color);
-        }
-
-        /* 限制最多显示 3 行正文摘要 */
-        .article-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 1.25rem;
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            word-break: break-word;
-        }
-
-        .article-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .tag {
-            background-color: #eff6ff;
-            color: var(--primary-color);
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.8rem;
-        }
-
-        /* 底部显示全部文章跳转按钮 */
-        .view-all-container {
-            text-align: center;
-            margin-top: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .view-all-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 0.85rem 2rem;
-            background-color: var(--card-bg);
-            color: var(--primary-color);
-            border: 1px solid var(--border-color);
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.25s ease;
-        }
-
-        .view-all-btn:hover {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            border-color: var(--primary-color);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-
-        .loading, .empty, .error {
-            text-align: center;
-            padding: 3rem 0;
-            color: var(--text-muted);
-        }
-
-        .error {
-            color: #ef4444;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 4rem;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-    </style>
+    /* 精选入口卡片 */
+    .featured-preview-card {
+      background: linear-gradient(135deg, #fff9f0 0%, #ffffff 100%);
+      border: 1px solid #ffe8cc; display: flex; align-items: center; justify-content: space-between;
+      padding: 16px; text-decoration: none; color: inherit; transition: transform 0.15s ease;
+    }
+    .featured-preview-card:hover { transform: translateY(-2px); }
+    .featured-info { display: flex; flex-direction: column; gap: 4px; }
+    .featured-title { font-size: 0.95rem; font-weight: 600; color: #d97706; }
+    .featured-desc { font-size: 0.8rem; color: #6e6e73; }
+    .badge-go { font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; background-color: #ff9500; color: #fff; font-weight: 500; }
+  </style>
 </head>
 <body>
 
+  <div class="container">
     <header>
-        <div class="header-container">
-            <a href="index.html" class="logo">✨ Blog</a>
-            <div class="nav-links">
-                <a href="contact.html" class="nav-btn nav-btn-secondary">📩 私信博主</a>
-                <a href="admin-login.html" class="nav-btn nav-btn-primary">⚙️ 管理员登录</a>
-            </div>
-        </div>
+      <a href="index.html" class="blog-title">My Blog</a>
+      <div class="nav-links">
+        <a href="all-articles.html">全部文章</a>
+        <a href="featured.html">精选文章</a>
+        <a href="admin.html">后台管理</a>
+      </div>
     </header>
 
-    <div class="hero">
-        <div class="avatar">B</div>
-        <h1>欢迎来到我的博客</h1>
-        <p>记录技术成长、生活随笔与独立思考。</p>
-    </div>
+    <section>
+      <h2 class="section-title">最新动态</h2>
+      <div id="latest-article-container">
+        <div class="card"><p style="color:#888;">正在加载最新文章...</p></div>
+      </div>
+      <div class="more-link-container">
+        <a href="all-articles.html" class="more-link">查看全部文章 →</a>
+      </div>
+    </section>
 
-    <div class="container">
-        <div class="section-header">
-            <div class="section-title">最新文章</div>
+    <section>
+      <h2 class="section-title">精选内容</h2>
+      <a href="featured.html" class="card featured-preview-card">
+        <div class="featured-info">
+          <div class="featured-title">🌟 浏览深度精选文章</div>
+          <div class="featured-desc">包含经过精心筛选与沉淀的高质量原创文章。</div>
         </div>
-        
-        <div id="article-list">
-            <div class="loading">正在加载最新文章...</div>
-        </div>
+        <span class="badge-go">立即进入 →</span>
+      </a>
+    </section>
+  </div>
 
-        <div id="view-all-wrapper" class="view-all-container" style="display: none;">
-            <a href="all-articles.html" class="view-all-btn">查看全部文章 →</a>
-        </div>
-    </div>
+  <script>
+    // Firebase 初始化（请确保填入你自己的配置）
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    <footer>
-        <p>© Powered by Firebase & GitHub Pages</p>
-    </footer>
-
-    <script>
-        // 1. Firebase 配置 (已填入你的真实 Firebase 密钥)
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-            authDomain: "qwegitpoi-blog.firebaseapp.com",
-            databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "qwegitpoi-blog",
-            storageBucket: "qwegitpoi-blog.firebasestorage.app",
-            messagingSenderId: "313324557146",
-            appId: "1:313324557146:web:4a93868894c9329006d963",
-            measurementId: "G-M01JQCZ0WX"
-        };
-
-        // 清理 Markdown 标记以供摘要提取
-        function getCleanText(content) {
-            if (!content) return "暂无正文内容...";
-            return content
-                .replace(/#+\s+/g, '')
-                .replace(/!?\[.*?\]\(.*?\)/g, '')
-                .replace(/[*_`~>]/g, '')
-                .replace(/[\r\n]+/g, ' ')
-                .trim();
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            if (typeof firebase === 'undefined') {
-                document.getElementById('article-list').innerHTML = 
-                    '<div class="error">Firebase SDK 加载失败，请检查网络连接或刷新页面。</div>';
-                return;
-            }
-
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-            const db = firebase.firestore();
-
-            const listContainer = document.getElementById('article-list');
-            const viewAllBtn = document.getElementById('view-all-wrapper');
-
-            // 读取文章数据
-            db.collection("articles")
-                .get()
-                .then((querySnapshot) => {
-                    listContainer.innerHTML = "";
-                    
-                    const publicArticles = [];
-                    querySnapshot.forEach((doc) => {
-                        const data = doc.data();
-                        if (data.hide !== true) {
-                            publicArticles.push({ id: doc.id, ...data });
-                        }
-                    });
-
-                    if (publicArticles.length === 0) {
-                        listContainer.innerHTML = '<div class="empty">博主还没有发布任何文章哦 ~</div>';
-                        return;
-                    }
-
-                    // 截取最新的 4 篇文章
-                    const displayArticles = publicArticles.slice(0, 4);
-
-                    // 渲染首页卡片
-                    displayArticles.forEach((article) => {
-                        const title = article.title || "无标题";
-                        const date = article.date || "未知时间";
-                        const tag = article.tag || "随笔";
-                        const summary = getCleanText(article.content);
-
-                        const cardHTML = `
-                            <a href="article.html?id=${article.id}" class="article-card">
-                                <h2>${title}</h2>
-                                <p>${summary}</p>
-                                <div class="article-meta">
-                                    <span class="tag">${tag}</span>
-                                    <span>📅 ${date}</span>
-                                </div>
-                            </a>
-                        `;
-                        listContainer.innerHTML += cardHTML;
-                    });
-
-                    // 当文章总数大于 0 时，显示底部“查看全部文章”跳转按钮
-                    viewAllBtn.style.display = "block";
-                })
-                .catch((error) => {
-                    console.error("加载文章失败: ", error);
-                    listContainer.innerHTML = `<div class="error">加载文章失败：${error.message}</div>`;
-                });
+    // 加载最新发布的一条文章
+    db.collection('articles')
+      .get()
+      .then(snapshot => {
+        let docs = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          // 过滤掉隐藏文章
+          if (!data.hide && data.status !== 'hidden') {
+            docs.push({ id: doc.id, ...data });
+          }
         });
-    </script>
+
+        // 核心排序逻辑：按首次发表时间 (createdAt) 降序
+        docs.sort((a, b) => {
+          const timeA = a.createdAt ? (a.createdAt.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt).getTime()) : 0;
+          const timeB = b.createdAt ? (b.createdAt.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt).getTime()) : 0;
+          return timeB - timeA;
+        });
+
+        const container = document.getElementById('latest-article-container');
+        if (docs.length > 0) {
+          const latest = docs[0];
+          const pubDate = latest.createdAt ? new Date(latest.createdAt.seconds ? latest.createdAt.seconds * 1000 : latest.createdAt).toLocaleDateString('zh-CN') : '未记录';
+
+          container.innerHTML = `
+            <article class="card">
+              <div class="card-header">
+                <a href="article.html?id=${latest.id}" class="title">${latest.title || '无标题'}</a>
+                <span class="tag">${latest.tag || '随笔'}</span>
+              </div>
+              <p class="summary">${latest.summary || latest.content || ''}</p>
+              <div class="card-footer">
+                <span>发表于 ${pubDate}</span>
+              </div>
+            </article>
+          `;
+        } else {
+          container.innerHTML = `<div class="card"><p style="color:#888;">暂无公开文章。</p></div>`;
+        }
+      });
+  </script>
 </body>
 </html>

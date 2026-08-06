@@ -1,409 +1,59 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<script>
+  // 渲染文章列表函数片段
+  function renderTable(articles) {
+    const tbody = document.getElementById('article-tbody');
+    tbody.innerHTML = articles.map(item => {
+      const isFeatured = item.featured === true || item.is_featured === true;
+      const isHidden = item.hide === true || item.status === 'hidden';
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文章管理 - 博客后台</title>
+      return `
+        <tr>
+          <td>
+            <span class="${isHidden ? 'status-hidden' : ''}">${item.title}</span>
+            ${isFeatured ? '<span style="color:#ff9500; font-weight:bold; margin-left:4px;">[★ 精选]</span>' : ''}
+            ${isHidden ? ' <small style="color:#8e8e93;">(已隐藏)</small>' : ''}
+          </td>
+          <td>${item.tag || '随笔'}</td>
+          <td>
+            <button onclick="editArticle('${item.id}')">编辑</button>
+            
+            <button onclick="toggleHide('${item.id}', ${isHidden})">
+              ${isHidden ? '显示' : '隐藏'}
+            </button>
+            
+            <button 
+              style="background-color: ${isFeatured ? '#ff9500' : '#ffffff'}; color: ${isFeatured ? '#fff' : '#333'}; border: 1px solid #d1d1d6; border-radius: 4px; cursor: pointer; padding: 2px 8px;"
+              onclick="toggleFeatured('${item.id}', ${isFeatured})"
+            >
+              ${isFeatured ? '取消精选' : '精选'}
+            </button>
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+            <button onclick="deleteArticle('${item.id}')" style="color:red;">删除</button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
 
-  <style>
-    :root {
-      --primary-color: #1677ff;
-      --primary-hover: #4096ff;
-      --danger-color: #ff4d4f;
-      --danger-hover: #ff7875;
-      --warning-color: #faad14;
-      --text-main: #1f2937;
-      --text-muted: #6b7280;
-      --bg-body: #f5f6fa;
-      --card-bg: #ffffff;
-      --border-color: #e5e7eb;
-      --radius: 12px;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: var(--bg-body);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Microsoft YaHei", sans-serif;
-      color: var(--text-main);
-      min-height: 100vh;
-    }
-
-    .header {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(10px);
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: var(--shadow-sm);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header h1 {
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--text-main);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 15px;
-      align-items: center;
-    }
-
-    .nav-links a, .btn-logout {
-      text-decoration: none;
-      color: var(--primary-color);
-      font-size: 14px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      cursor: pointer;
-      border: none;
-      background: transparent;
-    }
-
-    .nav-links a:hover {
-      background: rgba(22, 119, 255, 0.08);
-    }
-
-    .btn-logout {
-      color: var(--danger-color);
-      border: 1px solid rgba(255, 77, 79, 0.3);
-    }
-
-    .btn-logout:hover {
-      background: #fff1f0;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 30px auto;
-      padding: 0 20px;
-    }
-
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
-    .toolbar h2 {
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .btn-primary {
-      background: var(--primary-color);
-      color: white;
-      padding: 8px 16px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-hover);
-    }
-
-    .table-card {
-      background: var(--card-bg);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      overflow: hidden;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-    }
-
-    th, td {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border-color);
-      font-size: 14px;
-    }
-
-    th {
-      background: #fafafa;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    tr:last-child td {
-      border-bottom: none;
-    }
-
-    .status-badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .status-published {
-      background: #e6f4ff;
-      color: #0958d9;
-    }
-
-    .status-hidden {
-      background: #fff7e6;
-      color: #d46b08;
-    }
-
-    .status-draft {
-      background: #f5f5f5;
-      color: #595959;
-    }
-
-    .action-btns {
-      display: flex;
-      gap: 10px;
-    }
-
-    .btn-sm {
-      padding: 4px 10px;
-      font-size: 12px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background: white;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-sm:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .btn-sm.danger:hover {
-      border-color: var(--danger-color);
-      color: var(--danger-color);
-    }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .pagination button {
-      padding: 6px 14px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      background: white;
-      cursor: pointer;
-    }
-
-    .pagination button:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
-    }
-
-    .empty {
-      text-align: center;
-      padding: 40px;
-      color: var(--text-muted);
-    }
-  </style>
-</head>
-
-<body>
-
-  <div class="header">
-    <h1>文章管理</h1>
-    <div class="nav-links">
-      <a href="admin.html">后台首页</a>
-      <a href="index.html" target="_blank">网站前台</a>
-      <button class="btn-logout" onclick="logout()">退出登录</button>
-    </div>
-  </div>
-
-  <div class="container">
-    <div class="toolbar">
-      <h2 id="pageTitle">所有文章</h2>
-      <a href="admin-edit.html" class="btn-primary">+ 新建文章</a>
-    </div>
-
-    <div class="table-card">
-      <table>
-        <thead>
-          <tr>
-            <th>标题</th>
-            <th>状态</th>
-            <th>创建时间</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody id="list">
-          <tr>
-            <td colspan="4" class="empty">加载中...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="pagination" id="pageBox"></div>
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-      authDomain: "qwegitpoi-blog.firebaseapp.com",
-      projectId: "qwegitpoi-blog",
-      messagingSenderId: "313324557146",
-      appId: "1:313324557146:web:4a93868894c9329006d963"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // 身份权限拦截
-    firebase.auth().onAuthStateChanged((user) => {
-      if (!user) {
-        location.href = "admin-login.html";
-      } else {
-        loadData();
-      }
+  // 切换【精选】状态写入 Firebase Firestore
+  function toggleFeatured(docId, currentFeatured) {
+    db.collection('articles').doc(docId).update({
+      featured: !currentFeatured
+    }).then(() => {
+      alert(currentFeatured ? '已取消精选' : '已设为精选');
+      location.reload(); // 重新刷新数据
+    }).catch(err => {
+      alert('更新失败: ' + err.message);
     });
+  }
 
-    function logout() {
-      if (confirm("确定要退出登录吗？")) {
-        firebase.auth().signOut().then(() => {
-          location.href = "admin-login.html";
-        });
-      }
-    }
-
-    const urlParams = new URLSearchParams(location.search);
-    const filterType = urlParams.get("type"); // draft, hidden 等
-
-    let articles = [];
-    let page = 1;
-    const size = 8;
-
-    async function loadData() {
-      let query = db.collection("articles");
-      if (filterType) {
-        query = query.where("status", "==", filterType);
-        document.getElementById("pageTitle").innerText = filterType === 'draft' ? '草稿箱' : '隐藏文章';
-      }
-
-      try {
-        const snap = await query.get();
-        articles = [];
-        snap.forEach(doc => {
-          articles.push({ id: doc.id, ...doc.data() });
-        });
-
-        // 降序排序
-        articles.sort((a, b) => (b.createTime?.seconds || 0) - (a.createTime?.seconds || 0));
-        render();
-      } catch (e) {
-        document.getElementById("list").innerHTML = `<tr><td colspan="4" class="empty">数据加载失败：${e.message}</td></tr>`;
-      }
-    }
-
-    function render() {
-      const listBox = document.getElementById("list");
-      if (articles.length === 0) {
-        listBox.innerHTML = `<tr><td colspan="4" class="empty">暂无相关文章</td></tr>`;
-        document.getElementById("pageBox").innerHTML = "";
-        return;
-      }
-
-      let start = (page - 1) * size;
-      let currentList = articles.slice(start, start + size);
-      let html = "";
-
-      currentList.forEach(item => {
-        let statusBadge = "";
-        if (item.status === 'published') statusBadge = '<span class="status-badge status-published">已发布</span>';
-        else if (item.status === 'hidden') statusBadge = '<span class="status-badge status-hidden">已隐藏</span>';
-        else statusBadge = '<span class="status-badge status-draft">草稿</span>';
-
-        let dateStr = item.createTime ? new Date(item.createTime.seconds * 1000).toLocaleDateString("zh-CN") : "-";
-
-        html += `
-          <tr>
-            <td><strong>${item.title || '无标题'}</strong></td>
-            <td>${statusBadge}</td>
-            <td>${dateStr}</td>
-            <td class="action-btns">
-              <button class="btn-sm" onclick="edit('${item.id}')">编辑</button>
-              <button class="btn-sm" onclick="toggleHide('${item.id}', '${item.status}')">
-                ${item.status === 'hidden' ? '取消隐藏' : '隐藏'}
-              </button>
-              <button class="btn-sm danger" onclick="deleteArticle('${item.id}')">删除</button>
-            </td>
-          </tr>
-        `;
-      });
-
-      listBox.innerHTML = html;
-      showPage();
-    }
-
-    function showPage() {
-      let total = Math.ceil(articles.length / size);
-      let pageBox = document.getElementById("pageBox");
-      let html = "";
-
-      if (page > 1) {
-        html += `<button onclick="changePage(${page - 1})">上一页</button>`;
-      }
-      html += `<span>${page} / ${total || 1}</span>`;
-      if (page < total) {
-        html += `<button onclick="changePage(${page + 1})">下一页</button>`;
-      }
-
-      pageBox.innerHTML = html;
-    }
-
-    function changePage(p) {
-      page = p;
-      render();
-    }
-
-    function edit(id) {
-      location.href = "admin-edit.html?id=" + id;
-    }
-
-    async function toggleHide(id, status) {
-      let newStatus = status === 'hidden' ? 'published' : 'hidden';
-      await db.collection("articles").doc(id).update({ status: newStatus });
-      loadData();
-    }
-
-    async function deleteArticle(id) {
-      if (confirm("确定要彻底删除这篇文章吗？此操作无法撤销。")) {
-        await db.collection("articles").doc(id).delete();
-        loadData();
-      }
-    }
-  </script>
-</body>
-
-</html>
+  // 切换【隐藏】状态写入 Firebase Firestore
+  function toggleHide(docId, currentHidden) {
+    db.collection('articles').doc(docId).update({
+      hide: !currentHidden,
+      status: !currentHidden ? 'hidden' : 'published'
+    }).then(() => {
+      location.reload();
+    });
+  }
+</script>
