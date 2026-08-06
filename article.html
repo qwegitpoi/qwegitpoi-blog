@@ -20,101 +20,101 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-    /* Markdown 排版微调（适配移动端小行距） */
-    .prose h1 { font-size: 1.5rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; }
-    .prose h2 { font-size: 1.25rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.5rem; color: #1e293b; }
-    .prose h3 { font-size: 1.1rem; font-weight: 600; margin-top: 0.85rem; margin-bottom: 0.4rem; color: #1e293b; }
-    .prose p { margin-bottom: 0.85rem; line-height: 1.65; color: #334155; font-size: 0.95rem; }
-    .prose ul { list-style-type: disc; padding-left: 1.2rem; margin-bottom: 0.85rem; font-size: 0.95rem; }
-    .prose ol { list-style-type: decimal; padding-left: 1.2rem; margin-bottom: 0.85rem; font-size: 0.95rem; }
+    /* Markdown 移动端小行距美化 */
+    .prose h1 { font-size: 1.4rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.5rem; color: #1e293b; }
+    .prose h2 { font-size: 1.2rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.4rem; color: #1e293b; }
+    .prose h3 { font-size: 1.05rem; font-weight: 600; margin-top: 0.8rem; margin-bottom: 0.3rem; color: #1e293b; }
+    .prose p { margin-bottom: 0.8rem; line-height: 1.65; color: #334155; font-size: 0.925rem; }
+    .prose ul { list-style-type: disc; padding-left: 1.2rem; margin-bottom: 0.8rem; font-size: 0.925rem; }
+    .prose ol { list-style-type: decimal; padding-left: 1.2rem; margin-bottom: 0.8rem; font-size: 0.925rem; }
     .prose code { background: #f1f5f9; color: #2563eb; padding: 0.15rem 0.35rem; border-radius: 0.25rem; font-size: 0.85em; }
-    .prose pre { background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.85rem; font-size: 0.85rem; }
-    .prose blockquote { border-left: 3px solid #3b82f6; padding-left: 0.85rem; color: #64748b; font-style: italic; margin-bottom: 0.85rem; }
+    .prose pre { background: #0f172a; color: #f8fafc; padding: 0.85rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 0.8rem; font-size: 0.85rem; }
+    .prose blockquote { border-left: 3px solid #3b82f6; padding-left: 0.8rem; color: #64748b; font-style: italic; margin-bottom: 0.8rem; }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
   <header class="glass-header sticky top-0 z-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center space-x-2 text-lg sm:text-xl font-bold text-slate-800 hover:text-blue-600 transition">
+    <div class="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition">
         <i class="fa-solid fa-book-open text-blue-600"></i>
         <span>我的个人博客</span>
       </a>
       <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
-        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-slate-100 transition">首页</a>
-        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-slate-100 transition">全部</a>
-        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-slate-100 transition">★ 精选</a>
-        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg hover:bg-slate-100 transition">📩 私信</a>
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">全部</a>
+        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">📩 私信</a>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-8 w-full flex-grow">
+  <main class="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6 w-full flex-grow">
     
-    <div class="mb-4">
-      <a href="javascript:history.back()" class="inline-flex items-center text-xs sm:text-sm font-medium text-slate-500 hover:text-blue-600 transition">
+    <div class="mb-3">
+      <a href="javascript:history.back()" class="inline-flex items-center text-xs font-medium text-slate-500 hover:text-blue-600 transition">
         <i class="fa-solid fa-arrow-left me-1.5"></i> 返回上一页
       </a>
     </div>
 
-    <div id="article-container" class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 border border-slate-100 shadow-sm mb-6">
-      <div class="text-center py-12">
+    <div id="article-container" class="bg-white rounded-xl p-4 sm:p-8 border border-slate-100 shadow-sm mb-5">
+      <div class="text-center py-10">
         <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-600 mb-2"></i>
-        <p class="text-slate-500 text-xs sm:text-sm">正在读取文章内容...</p>
+        <p class="text-slate-500 text-xs">正在读取文章内容...</p>
       </div>
     </div>
 
-    <div id="interaction-box" class="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-slate-100 shadow-sm mb-6 hidden">
+    <div id="interaction-box" class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm mb-5 hidden">
       <div class="flex items-center justify-center gap-2 sm:gap-6 text-center">
-        <button onclick="handleLike()" id="like-btn" class="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-100 hover:border-blue-200 hover:bg-blue-50/50 transition w-16 sm:w-24">
-          <i class="fa-solid fa-thumbs-up text-base sm:text-lg text-blue-500 mb-0.5"></i>
-          <span class="text-[11px] sm:text-xs text-slate-600 font-medium">赞 <span id="like-count">0</span></span>
+        <button onclick="handleLike()" class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 hover:bg-blue-50/50 transition w-16 sm:w-20">
+          <i class="fa-solid fa-thumbs-up text-sm sm:text-base text-blue-500 mb-0.5"></i>
+          <span class="text-[10px] sm:text-xs text-slate-600">赞 <span id="like-count">0</span></span>
         </button>
 
-        <button onclick="handleDislike()" id="dislike-btn" class="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-100 hover:border-rose-200 hover:bg-rose-50/50 transition w-16 sm:w-24">
-          <i class="fa-solid fa-thumbs-down text-base sm:text-lg text-rose-500 mb-0.5"></i>
-          <span class="text-[11px] sm:text-xs text-slate-600 font-medium">踩 <span id="dislike-count">0</span></span>
+        <button onclick="handleDislike()" class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 hover:bg-rose-50/50 transition w-16 sm:w-20">
+          <i class="fa-solid fa-thumbs-down text-sm sm:text-base text-rose-500 mb-0.5"></i>
+          <span class="text-[10px] sm:text-xs text-slate-600">踩 <span id="dislike-count">0</span></span>
         </button>
 
-        <button onclick="toggleFavorite()" id="favorite-btn" class="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition w-16 sm:w-24">
-          <i id="fav-icon" class="fa-regular fa-star text-base sm:text-lg text-amber-500 mb-0.5"></i>
-          <span id="fav-text" class="text-[11px] sm:text-xs text-slate-600 font-medium">收藏</span>
+        <button onclick="toggleFavorite()" id="favorite-btn" class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 hover:bg-amber-50/50 transition w-16 sm:w-20">
+          <i id="fav-icon" class="fa-regular fa-star text-sm sm:text-base text-amber-500 mb-0.5"></i>
+          <span id="fav-text" class="text-[10px] sm:text-xs text-slate-600">收藏</span>
         </button>
 
-        <button onclick="shareArticle()" class="flex flex-col items-center justify-center p-2 rounded-lg border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/50 transition w-16 sm:w-24">
-          <i class="fa-solid fa-share-nodes text-base sm:text-lg text-emerald-500 mb-0.5"></i>
-          <span class="text-[11px] sm:text-xs text-slate-600 font-medium">分享</span>
+        <button onclick="shareArticle()" class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 hover:bg-emerald-50/50 transition w-16 sm:w-20">
+          <i class="fa-solid fa-share-nodes text-sm sm:text-base text-emerald-500 mb-0.5"></i>
+          <span class="text-[10px] sm:text-xs text-slate-600">分享</span>
         </button>
       </div>
     </div>
 
-    <section id="comments-section" class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-slate-100 shadow-sm hidden">
-      <h3 class="text-base sm:text-lg font-bold text-slate-800 mb-4 flex items-center">
-        <i class="fa-solid fa-comments text-blue-600 me-2"></i> 文章留言区
+    <section id="comments-section" class="bg-white rounded-xl p-4 sm:p-6 border border-slate-100 shadow-sm hidden">
+      <h3 class="text-sm sm:text-base font-bold text-slate-800 mb-3 flex items-center">
+        <i class="fa-solid fa-comments text-blue-600 me-1.5"></i> 文章留言区
       </h3>
 
-      <form id="comment-form" onsubmit="submitComment(event)" class="space-y-3 mb-6 bg-slate-50 p-3 sm:p-4 rounded-xl border border-slate-200/60">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <form id="comment-form" onsubmit="submitComment(event)" class="space-y-2.5 mb-5 bg-slate-50 p-3 rounded-lg border border-slate-200/60">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">您的昵称 *</label>
-            <input type="text" id="comment-author" required placeholder="请输入昵称" class="w-full px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">昵称 *</label>
+            <input type="text" id="comment-author" required placeholder="请输入您的昵称" class="w-full px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
           </div>
           <div>
-            <label class="block text-[11px] font-semibold text-slate-600 mb-1">联系邮箱 / 网址 (选填)</label>
-            <input type="text" id="comment-contact" placeholder="方便博主回复联系" class="w-full px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
+            <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">联系方式 (选填)</label>
+            <input type="text" id="comment-contact" placeholder="邮箱或网址" class="w-full px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white">
           </div>
         </div>
 
         <div>
-          <label class="block text-[11px] font-semibold text-slate-600 mb-1">留言内容 *</label>
-          <textarea id="comment-content" rows="2" required placeholder="善意结缘，欢迎交流..." class="w-full px-2.5 py-1.5 text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"></textarea>
+          <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">留言内容 *</label>
+          <textarea id="comment-content" rows="2" required placeholder="欢迎理性交流探讨..." class="w-full px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 bg-white"></textarea>
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+        <div class="flex items-center justify-between pt-1">
           <div class="flex items-center space-x-3 text-xs text-slate-600">
             <label class="flex items-center space-x-1 cursor-pointer">
               <input type="radio" name="visibility" value="public" checked class="text-blue-600">
-              <span class="text-[11px]">公开留言</span>
+              <span class="text-[11px]">公开</span>
             </label>
             <label class="flex items-center space-x-1 cursor-pointer">
               <input type="radio" name="visibility" value="private" class="text-blue-600">
@@ -122,20 +122,20 @@
             </label>
           </div>
 
-          <button type="submit" id="submit-btn" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center justify-center space-x-1">
-            <i class="fa-solid fa-paper-plane me-1"></i> 发表留言
+          <button type="submit" id="submit-btn" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition flex items-center">
+            <i class="fa-solid fa-paper-plane me-1"></i> 发送
           </button>
         </div>
       </form>
 
-      <div id="comments-list" class="space-y-3">
-        <p class="text-xs text-slate-400 text-center py-3">正在加载留言列表...</p>
+      <div id="comments-list" class="space-y-2">
+        <p class="text-xs text-slate-400 text-center py-2">正在加载留言...</p>
       </div>
     </section>
 
   </main>
 
-  <footer class="bg-white border-t border-slate-200 py-4 text-center text-[11px] text-slate-500">
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-500">
     <p>© 2026 我的个人博客. All rights reserved.</p>
   </footer>
 
@@ -155,293 +155,186 @@
       measurementId: "G-M01JQCZ0WX"
     };
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let currentArticleId = null;
-    let currentCollection = "posts";
+    let articleId = new URLSearchParams(window.location.search).get('id');
+    let dbCollection = "posts";
     let isAdmin = false;
 
-    // 严谨时间解析（首次发表时间优先）
-    function parseArticleDate(data) {
+    // 解析首次发表时间
+    function parseDate(data) {
       let raw = data.createdAt || data.created_at || data.timestamp || data.date;
       if (!raw) return "近期发布";
 
       if (raw && typeof raw.toDate === 'function') {
         return raw.toDate().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
       }
-      if (typeof raw === 'number') {
-        return new Date(raw).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      }
-      if (typeof raw === 'string') {
-        const parsed = new Date(raw);
-        if (!isNaN(parsed.getTime())) {
-          return parsed.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
-        }
-        return raw;
-      }
-      return "近期发布";
+      let d = new Date(raw);
+      return !isNaN(d.getTime()) ? d.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "近期发布";
     }
 
-    function getArticleId() {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get('id');
-    }
-
-    // 页面主逻辑
     async function initPage() {
-      const articleId = getArticleId();
       const container = document.getElementById('article-container');
 
       if (!articleId) {
-        container.innerHTML = `
-          <div class="text-center py-10">
-            <i class="fa-solid fa-triangle-exclamation text-3xl text-amber-500 mb-2"></i>
-            <h2 class="text-base font-bold text-slate-800">未传入文章 ID</h2>
-            <a href="index.html" class="inline-block mt-3 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
-          </div>
-        `;
+        container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">参数缺失：未明确指定文章 ID</div>`;
         return;
       }
 
-      currentArticleId = articleId;
-
       auth.onAuthStateChanged(user => {
         isAdmin = !!user;
-        loadComments(); 
+        loadComments();
       });
 
       try {
-        let docSnap = await db.collection("posts").doc(articleId).get();
-        if (!docSnap.exists) {
-          docSnap = await db.collection("articles").doc(articleId).get();
-          currentCollection = "articles";
+        let snap = await db.collection("posts").doc(articleId).get();
+        if (!snap.exists) {
+          snap = await db.collection("articles").doc(articleId).get();
+          dbCollection = "articles";
         }
 
-        if (!docSnap.exists) {
-          throw new Error("文章不存在或已被删除");
-        }
+        if (!snap.exists) throw new Error("该文章不存在或已被删除");
 
-        const data = docSnap.data();
-
-        if (data.hide === true || data.status === 'hidden' || data.isHidden === true) {
-          container.innerHTML = `
-            <div class="text-center py-10">
-              <i class="fa-solid fa-eye-slash text-3xl text-slate-400 mb-2"></i>
-              <h2 class="text-base font-bold text-slate-800">文章已被隐藏</h2>
-              <p class="text-slate-500 text-xs mt-1">博主已将该文章设置为仅自己可见。</p>
-              <a href="index.html" class="inline-block mt-3 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
-            </div>
-          `;
+        const data = snap.data();
+        if (data.hide === true || data.status === 'hidden') {
+          container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">🔒 文章已被博主设为隐蔽</div>`;
           return;
         }
 
-        // 精准匹配标签
-        const dateStr = parseArticleDate(data);
-        const tag = data.tag || data.category || "精选随笔";
-        const contentHtml = typeof marked !== 'undefined' ? marked.parse(data.content || '') : (data.content || '');
+        const dateStr = parseDate(data);
+        const tag = data.tag || data.category || "随笔";
+        const contentHtml = window.marked ? marked.parse(data.content || '') : (data.content || '');
 
         container.innerHTML = `
-          <header class="border-b border-slate-100 pb-4 mb-6">
+          <header class="border-b border-slate-100 pb-3 mb-4">
             <div class="flex items-center space-x-2 text-xs text-slate-400 mb-2">
-              <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-100/60">${tag}</span>
+              <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">${tag}</span>
               <span>•</span>
               <span><i class="fa-regular fa-calendar-alt me-1"></i>${dateStr}</span>
             </div>
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-800 leading-snug">
+            <h1 class="text-lg sm:text-xl font-bold text-slate-800 leading-snug">
               ${data.title || "无标题文章"}
             </h1>
           </header>
-
-          <div class="prose max-w-none">
-            ${contentHtml}
-          </div>
+          <div class="prose max-w-none">${contentHtml}</div>
         `;
 
         document.getElementById('like-count').innerText = data.likes || 0;
         document.getElementById('dislike-count').innerText = data.dislikes || 0;
-        checkFavoriteStatus();
+        checkFav();
 
         document.getElementById('interaction-box').classList.remove('hidden');
         document.getElementById('comments-section').classList.remove('hidden');
 
       } catch (err) {
-        console.error("加载文章失败:", err);
-        container.innerHTML = `
-          <div class="text-center py-10">
-            <i class="fa-solid fa-circle-exclamation text-3xl text-red-500 mb-2"></i>
-            <h2 class="text-base font-bold text-slate-800">读取文章失败</h2>
-            <p class="text-slate-400 text-xs mt-1">${err.message || '请检查网络或配置'}</p>
-            <a href="index.html" class="inline-block mt-3 px-3 py-1.5 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
-          </div>
-        `;
+        container.innerHTML = `<div class="text-center py-8 text-xs text-red-500">${err.message || '加载文章数据失败'}</div>`;
       }
     }
 
-    // 点赞
+    // 赞/踩/收藏/分享
     async function handleLike() {
-      if (!currentArticleId) return;
-      const countEl = document.getElementById('like-count');
-      const current = parseInt(countEl.innerText) || 0;
-      countEl.innerText = current + 1;
-
-      try {
-        await db.collection(currentCollection).doc(currentArticleId).update({
-          likes: firebase.firestore.FieldValue.increment(1)
-        });
-      } catch (e) {
-        console.error("点赞失败:", e);
-      }
+      document.getElementById('like-count').innerText = (parseInt(document.getElementById('like-count').innerText) || 0) + 1;
+      db.collection(dbCollection).doc(articleId).update({ likes: firebase.firestore.FieldValue.increment(1) });
     }
 
-    // 点踩
     async function handleDislike() {
-      if (!currentArticleId) return;
-      const countEl = document.getElementById('dislike-count');
-      const current = parseInt(countEl.innerText) || 0;
-      countEl.innerText = current + 1;
-
-      try {
-        await db.collection(currentCollection).doc(currentArticleId).update({
-          dislikes: firebase.firestore.FieldValue.increment(1)
-        });
-      } catch (e) {
-        console.error("点踩失败:", e);
-      }
+      document.getElementById('dislike-count').innerText = (parseInt(document.getElementById('dislike-count').innerText) || 0) + 1;
+      db.collection(dbCollection).doc(articleId).update({ dislikes: firebase.firestore.FieldValue.increment(1) });
     }
 
-    // 收藏
-    function checkFavoriteStatus() {
+    function checkFav() {
       const favs = JSON.parse(localStorage.getItem('fav_articles') || '[]');
-      const isFav = favs.includes(currentArticleId);
-      const icon = document.getElementById('fav-icon');
-      const text = document.getElementById('fav-text');
-
-      if (isFav) {
-        icon.className = "fa-solid fa-star text-base sm:text-lg text-amber-500 mb-0.5";
-        text.innerText = "已收藏";
-      } else {
-        icon.className = "fa-regular fa-star text-base sm:text-lg text-amber-500 mb-0.5";
-        text.innerText = "收藏";
-      }
+      const isFav = favs.includes(articleId);
+      document.getElementById('fav-icon').className = isFav ? "fa-solid fa-star text-sm sm:text-base text-amber-500 mb-0.5" : "fa-regular fa-star text-sm sm:text-base text-amber-500 mb-0.5";
+      document.getElementById('fav-text').innerText = isFav ? "已收藏" : "收藏";
     }
 
     function toggleFavorite() {
       let favs = JSON.parse(localStorage.getItem('fav_articles') || '[]');
-      if (favs.includes(currentArticleId)) {
-        favs = favs.filter(id => id !== currentArticleId);
-      } else {
-        favs.push(currentArticleId);
-      }
+      favs = favs.includes(articleId) ? favs.filter(i => i !== articleId) : [...favs, articleId];
       localStorage.setItem('fav_articles', JSON.stringify(favs));
-      checkFavoriteStatus();
+      checkFav();
     }
 
-    // 分享
     function shareArticle() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert("文章链接已成功复制！");
-      }).catch(() => {
-        alert("链接复制失败，请手动复制当前页面地址。");
-      });
+      navigator.clipboard.writeText(location.href).then(() => alert("文章链接已复制到剪贴板！"));
     }
 
-    // 发表留言
+    // 提交留言
     async function submitComment(e) {
       e.preventDefault();
       const author = document.getElementById('comment-author').value.trim();
       const contact = document.getElementById('comment-contact').value.trim();
       const content = document.getElementById('comment-content').value.trim();
-      const visibility = document.querySelector('input[name="visibility"]:checked').value;
+      const isPrivate = document.querySelector('input[name="visibility"]:checked').value === 'private';
       const btn = document.getElementById('submit-btn');
 
       if (!author || !content) return;
-
       btn.disabled = true;
-      btn.innerText = "提交中...";
 
       try {
         await db.collection("comments").add({
-          articleId: currentArticleId,
-          author: author,
-          contact: contact,
-          content: content,
-          isPrivate: visibility === 'private',
+          articleId, author, contact, content, isPrivate,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
-
         document.getElementById('comment-form').reset();
-        alert("发表留言成功！");
         loadComments();
       } catch (err) {
-        console.error("发表留言失败：", err);
-        alert("发表失败：" + (err.message || "请检查网络"));
+        alert("发表失败，请重试");
       } finally {
         btn.disabled = false;
-        btn.innerHTML = `<i class="fa-solid fa-paper-plane me-1"></i> 发表留言`;
       }
     }
 
-    // 安全读取留言（免索引报错）
+    // 安全渲染留言列表（基于首次发表时间前端内存排序，免索引报错）
     async function loadComments() {
       const container = document.getElementById('comments-list');
-      if (!currentArticleId) return;
+      if (!articleId) return;
 
       try {
-        const snapshot = await db.collection("comments")
-          .where("articleId", "==", currentArticleId)
-          .get();
-
-        if (snapshot.empty) {
-          container.innerHTML = `<p class="text-xs text-slate-400 text-center py-3">暂无留言，快来抢沙发吧！</p>`;
+        const snap = await db.collection("comments").where("articleId", "==", articleId).get();
+        if (snap.empty) {
+          container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">暂无留言，欢迎发表你的看法！</p>`;
           return;
         }
 
         let comments = [];
-        snapshot.forEach(doc => {
-          comments.push({ id: doc.id, ...doc.data() });
-        });
+        snap.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
 
-        // 前端内存排序（按首次发表时间降序）
+        // 首次发表时间倒序排列
         comments.sort((a, b) => {
-          let tA = a.createdAt ? (a.createdAt.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt).getTime()) : 0;
-          let tB = b.createdAt ? (b.createdAt.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt).getTime()) : 0;
+          let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (new Date(a.createdAt || 0).getTime() || 0);
+          let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (new Date(b.createdAt || 0).getTime() || 0);
           return tB - tA;
         });
 
         let html = '';
         comments.forEach(c => {
-          const dateStr = parseArticleDate(c);
-
+          const dateStr = parseDate(c);
           if (c.isPrivate && !isAdmin) {
             html += `
-              <div class="p-3 rounded-lg bg-amber-50/50 border border-amber-100 text-[11px] text-amber-800 flex items-center space-x-2">
+              <div class="p-2 rounded bg-amber-50 border border-amber-100 text-[11px] text-amber-800 flex items-center space-x-1">
                 <i class="fa-solid fa-lock text-amber-600"></i>
                 <span>🔒 该留言仅博主可见</span>
-              </div>
-            `;
+              </div>`;
             return;
           }
 
           html += `
-            <div class="p-3 rounded-lg bg-slate-50 border border-slate-100 text-xs space-y-1">
+            <div class="p-2.5 rounded bg-slate-50 border border-slate-100 text-xs space-y-1">
               <div class="flex items-center justify-between text-slate-500">
-                <span class="font-bold text-slate-700">${c.author} ${c.isPrivate ? '<span class="text-amber-600 font-normal me-1">[🔒 仅博主可见]</span>' : ''}</span>
+                <span class="font-bold text-slate-700">${c.author} ${c.isPrivate ? '<span class="text-amber-600 font-normal">[🔒 仅博主可见]</span>' : ''}</span>
                 <span class="text-[10px] text-slate-400">${dateStr}</span>
               </div>
-              <p class="text-slate-700 leading-relaxed text-xs">${c.content}</p>
-            </div>
-          `;
+              <p class="text-slate-700 leading-relaxed text-[11px]">${c.content}</p>
+            </div>`;
         });
 
         container.innerHTML = html;
-
       } catch (err) {
-        console.error("读取留言失败:", err);
-        container.innerHTML = `<p class="text-xs text-red-400 text-center py-3">加载留言失败，请检查网络权限。</p>`;
+        container.innerHTML = `<p class="text-[11px] text-red-400 text-center py-2">加载留言失败</p>`;
       }
     }
 
