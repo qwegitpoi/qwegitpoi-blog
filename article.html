@@ -1,150 +1,179 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>文章详情</title>
-  
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f7; padding: 20px; }
-    .article-container { max-width: 720px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 12px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">文章详情 - 我的博客</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
-    /* 互动按钮组 */
-    .interaction-bar {
-      display: flex; gap: 12px; justify-content: center; align-items: center;
-      margin-top: 30px; padding-top: 16px; border-top: 1px solid #f0f0f0;
-    }
-    .action-btn {
-      display: flex; align-items: center; gap: 6px; font-size: 0.85rem;
-      padding: 8px 14px; border-radius: 20px; border: 1px solid #e5e5ea;
-      background: #fafafa; color: #1d1d1f; cursor: pointer; transition: all 0.2s;
-    }
-    .action-btn:hover { background: #f2f2f7; }
-    .action-btn.active { background: #e8f2ff; color: #0066cc; border-color: #0066cc; }
-  </style>
-</head>
-<body>
-
-  <div class="article-container">
-    <h1 id="article-title">加载中...</h1>
-    <div id="article-content" style="margin-top:16px; line-height:1.6;"></div>
-
-    <div class="interaction-bar">
-      <button class="action-btn" id="btn-like" onclick="handleLike()">
-        👍 赞 <span id="like-count">0</span>
-      </button>
-
-      <button class="action-btn" id="btn-dislike" onclick="handleDislike()">
-        👎 踩 <span id="dislike-count">0</span>
-      </button>
-
-      <button class="action-btn" id="btn-bookmark" onclick="handleBookmark()">
-        ⭐ <span id="bookmark-text">收藏</span>
-      </button>
-
-      <button class="action-btn" onclick="handleShare()">
-        🔗 分享
-      </button>
-    </div>
-  </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const articleId = urlParams.get('id');
-
-    let currentArticleData = {};
-
-    if (articleId) {
-      db.collection('articles').doc(articleId).get().then(doc => {
-        if (doc.exists) {
-          currentArticleData = doc.data();
-          document.getElementById('article-title').innerText = currentArticleData.title || '';
-          document.getElementById('article-content').innerHTML = currentArticleData.content || '';
-          
-          // 更新数字
-          document.getElementById('like-count').innerText = currentArticleData.likes || 0;
-          document.getElementById('dislike-count').innerText = currentArticleData.dislikes || 0;
-
-          // 初始化检查本地收藏状态
-          checkBookmarkStatus();
+    <style>
+        body {
+            background-color: #f8fafc;
+            color: #1e293b;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
-      });
-    }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        /* Markdown 正文优雅排版 */
+        .markdown-body {
+            line-height: 1.8;
+            font-size: 1.05rem;
+            color: #334155;
+        }
+        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
+            font-weight: 700;
+            color: #0f172a;
+            margin-top: 1.8em;
+            margin-bottom: 0.8em;
+        }
+        .markdown-body h1 { font-size: 1.75rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3em; }
+        .markdown-body h2 { font-size: 1.4rem; }
+        .markdown-body h3 { font-size: 1.2rem; }
+        .markdown-body p { margin-bottom: 1.25em; }
+        .markdown-body code {
+            background-color: #f1f5f9;
+            color: #2563eb;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-size: 0.9em;
+        }
+        .markdown-body pre {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            margin-bottom: 1.5em;
+        }
+        .markdown-body pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+        .markdown-body blockquote {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 1.25em;
+        }
+        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25em; }
+        .markdown-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25em; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
 
-    // 点赞
-    function handleLike() {
-      if (!articleId) return;
-      db.collection('articles').doc(articleId).update({
-        likes: firebase.firestore.FieldValue.increment(1)
-      }).then(() => {
-        const el = document.getElementById('like-count');
-        el.innerText = parseInt(el.innerText) + 1;
-      });
-    }
+    <header class="sticky top-0 z-50 glass-header">
+        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center space-x-2 text-slate-800 font-bold text-lg hover:text-blue-600 transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>返回首页</span>
+            </a>
+            <div class="flex items-center space-x-4">
+                <a href="all-articles.html" class="text-sm text-slate-600 hover:text-blue-600">全部文章</a>
+                <a href="admin.html" class="text-sm text-slate-500 hover:text-slate-800">后台管理</a>
+            </div>
+        </div>
+    </header>
 
-    // 点踩
-    function handleDislike() {
-      if (!articleId) return;
-      db.collection('articles').doc(articleId).update({
-        dislikes: firebase.firestore.FieldValue.increment(1)
-      }).then(() => {
-        const el = document.getElementById('dislike-count');
-        el.innerText = parseInt(el.innerText) + 1;
-      });
-    }
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+        
+        <div id="loading-state" class="flex flex-col items-center justify-center py-20 text-slate-400">
+            <i class="fa-solid fa-spinner fa-spin text-4xl mb-4 text-blue-500"></i>
+            <p class="text-sm">正在努力加载文章内容...</p>
+        </div>
 
-    // 收藏 (保存在 LocalStorage)
-    function handleBookmark() {
-      let bookmarks = JSON.parse(localStorage.getItem('my_bookmarks') || '[]');
-      const index = bookmarks.indexOf(articleId);
+        <div id="error-state" class="hidden bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100 my-10">
+            <i class="fa-solid fa-circle-exclamation text-5xl text-rose-400 mb-4"></i>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2" id="error-title">文章加载失败</h2>
+            <p class="text-slate-500 mb-6" id="error-desc">无法获取该文章，请检查链接是否正确或该文章已被隐藏。</p>
+            <a href="index.html" class="inline-flex items-center space-x-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium text-sm">
+                <i class="fa-solid fa-house"></i>
+                <span>返回首页</span>
+            </a>
+        </div>
 
-      if (index === -1) {
-        bookmarks.push(articleId);
-        alert('已成功添加到收藏！');
-      } else {
-        bookmarks.splice(index, 1);
-        alert('已取消收藏！');
-      }
-      localStorage.setItem('my_bookmarks', JSON.stringify(bookmarks));
-      checkBookmarkStatus();
-    }
+        <article id="article-container" class="hidden bg-white rounded-2xl p-6 md:p-10 shadow-sm border border-slate-100">
+            <header class="border-b border-slate-100 pb-6 mb-8">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <span id="article-tag" class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full">
+                        随笔
+                    </span>
+                    <span id="article-date" class="text-xs text-slate-400 flex items-center">
+                        <i class="fa-regular fa-clock mr-1"></i> 发布于 ----
+                    </span>
+                </div>
+                <h1 id="article-title" class="text-2xl md:text-4xl font-extrabold text-slate-900 leading-tight">
+                    文章标题加载中...
+                </h1>
+            </header>
 
-    function checkBookmarkStatus() {
-      let bookmarks = JSON.parse(localStorage.getItem('my_bookmarks') || '[]');
-      const btn = document.getElementById('btn-bookmark');
-      const text = document.getElementById('bookmark-text');
+            <div id="article-content" class="markdown-body">
+                </div>
+        </article>
 
-      if (bookmarks.includes(articleId)) {
-        btn.classList.add('active');
-        text.innerText = '已收藏';
-      } else {
-        btn.classList.remove('active');
-        text.innerText = '收藏';
-      }
-    }
+    </main>
 
-    // 分享 (复制链接)
-    function handleShare() {
-      navigator.clipboard.writeText(window.location.href).then(() => {
-        alert('文章链接已复制到剪贴板，快去分享吧！');
-      }).catch(() => {
-        alert('复制失败，请手动复制当前网页地址：\n' + window.location.href);
-      });
-    }
-  </script>
-</body>
-</html>
+    <footer class="bg-white border-t border-slate-100 py-6 mt-12 text-center text-xs text-slate-400">
+        <p>© 2026 我的个人博客. Powered by GitHub Pages & Firebase.</p>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // 🔑 1. 请填入你的 Firebase 配置信息（从 Firebase Console 项目设置中获取）
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // 初始化 Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        // 辅助函数：安全格式化日期
+        function formatDate(dateObj) {
+            if (!dateObj) return '未知时间';
+            try {
+                let date;
+                if (typeof dateObj.toDate === 'function') {
+                    date = dateObj.toDate();
+                } else if (dateObj instanceof Date) {
+                    date = dateObj;
+                } else {
+                    date = new Date(dateObj);
+                }
+                if (isNaN(date.getTime())) return '未知时间';
+                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            } catch (e) {
+                return '未知时间';
+            }
+        }
+
+        // 显示错误页面
+        function showError(title, desc) {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('article-container').classList.add('hidden');
+            const errorBox = document.getElementById('error-state');
+            if (title) document.getElementById('error-title').innerText = title;
+            if (desc) document.getElementById('error-desc').innerText = desc;
+            errorBox.classList.remove('hidden');
+        }
+
+        // 主函数：根据 URL ID 获取并加载文章
+        async function loadArticle() {
+            // 解析 URL 中的 ?id= 参数
+            const urlParams = new URLSearchParams(window.
