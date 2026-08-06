@@ -4,114 +4,354 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>精选文章 - 我的个人博客</title>
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    /* 全局背景与平滑滚动 */
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f5f5f7; color: #333; padding: 24px 16px;
+      background-color: #f8fafc;
+      color: #334155;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      scroll-behavior: smooth;
     }
-    .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 
-    header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 16px; background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px); border-radius: 12px; margin-bottom: 8px;
+    /* 毛玻璃 Header */
+    .glass-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-    .blog-title { font-size: 1.1rem; font-weight: 700; color: #1d1d1f; text-decoration: none; }
-    .nav-links a { font-size: 0.85rem; color: #0066cc; text-decoration: none; margin-left: 12px; }
 
-    .page-title { font-size: 1.25rem; font-weight: 700; color: #d97706; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
-    
-    .article-list { display: flex; flex-direction: column; gap: 10px; }
-
-    .card {
-      background: #ffffff; border-radius: 8px; padding: 12px 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); line-height: 1.35;
+    /* 卡片悬浮与微交互 */
+    .article-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-    .title { font-size: 1rem; font-weight: 600; color: #111; text-decoration: none; line-height: 1.25; }
-    .title:hover { color: #0066cc; }
-    .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; background-color: #fff3dc; color: #d97706; font-weight: 600; }
-    .summary { font-size: 0.875rem; color: #555; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-    .card-footer { font-size: 0.75rem; color: #888; }
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+    }
+
+    /* 文本最多截取 3 行 */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* 胶囊按钮 */
+    .pill-btn {
+      transition: all 0.2s ease;
+    }
+    .pill-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between">
 
-  <div class="container">
-    <header>
-      <a href="index.html" class="blog-title">My Blog</a>
-      <div class="nav-links">
-        <a href="index.html">首页</a>
-        <a href="all-articles.html">全部文章</a>
-      </div>
-    </header>
+  <header class="glass-header sticky top-0 z-50 transition-all duration-300">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-xl font-bold text-slate-800 hover:text-blue-600 transition">
+        <i class="fa-solid me-1 fa-book-open text-blue-600"></i>
+        <span>我的个人博客</span>
+      </a>
 
-    <h1 class="page-title">🌟 精选文章</h1>
-
-    <div id="featured-list" class="article-list">
-      <div class="card"><p style="color:#888;">正在获取精选内容...</p></div>
+      <nav class="flex items-center space-x-3 sm:space-x-4 text-sm font-medium">
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">全部文章</a>
+        <a href="featured.html" class="text-amber-600 font-semibold bg-amber-50 px-3 py-1.5 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">📩 私信</a>
+        <a href="admin-login.html" class="text-slate-500 hover:text-slate-800 px-2 py-1.5 transition" title="管理员入口">
+          <i class="fa-solid fa-gear"></i>
+        </a>
+      </nav>
     </div>
-  </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 w-full flex-grow">
+    
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8 relative overflow-hidden">
+      <div class="relative z-10">
+        <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+          <i class="fa-solid fa-star text-amber-200"></i>
+          <span>Curated Articles</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">★ 深度精选文章</h1>
+        <p class="text-amber-100 text-sm sm:text-base max-w-2xl">
+          沉淀优质思考、经典技术总结与个人随笔精选。每篇均为深度编辑与撰写的推荐内容。
+        </p>
+      </div>
+      <i class="fa-solid fa-award absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
+    </div>
+
+    <div id="articles-container" class="space-y-6">
+      <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500 mb-3"></i>
+        <p class="text-slate-500 text-sm">正在加载精选文章，请稍候...</p>
+      </div>
+    </div>
+
+    <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2 hidden">
+      </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 space-y-2">
+      <p>© 2026 我的个人博客. All rights reserved.</p>
+      <p class="text-slate-400">Powered by GitHub Pages & Firebase</p>
+    </div>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
+    // 真实 Firebase 配置信息
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qwegitpoi-blog",
+      storageBucket: "qwegitpoi-blog.firebasestorage.app",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963",
+      measurementId: "G-M01JQCZ0WX"
     };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    // 初始化 Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
 
-    // 获取精选文章 (featured === true)
-    db.collection('articles')
-      .get()
-      .then(snapshot => {
-        let docs = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          // 条件：已标记为精选 + 未被隐藏
-          if ((data.featured === true || data.is_featured === true) && !data.hide && data.status !== 'hidden') {
-            docs.push({ id: doc.id, ...data });
-          }
-        });
+    // 分页状态管理
+    const PAGE_SIZE = 10; // 每页 10 条
+    let currentPage = 1;
+    let featuredArticles = [];
 
-        // 首次发表时间降序
-        docs.sort((a, b) => {
-          const timeA = a.createdAt ? (a.createdAt.seconds ? a.createdAt.seconds * 1000 : new Date(a.createdAt).getTime()) : 0;
-          const timeB = b.createdAt ? (b.createdAt.seconds ? b.createdAt.seconds * 1000 : new Date(b.createdAt).getTime()) : 0;
-          return timeB - timeA;
-        });
+    // 时间兼容解析函数
+    function parseArticleDate(data) {
+      let rawDate = data.createdAt || data.created_at || data.timestamp || data.date;
+      if (!rawDate) return "未知时间";
 
-        const listEl = document.getElementById('featured-list');
-        if (docs.length === 0) {
-          listEl.innerHTML = `<div class="card"><p style="color:#888;">暂无精选文章，可以在后台点击“精选”加入。</p></div>`;
-          return;
+      if (rawDate && typeof rawDate.toDate === 'function') {
+        return rawDate.toDate().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      }
+      if (typeof rawDate === 'number') {
+        return new Date(rawDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      }
+      if (typeof rawDate === 'string') {
+        const parsed = new Date(rawDate);
+        if (!isNaN(parsed.getTime())) {
+          return parsed.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+        return rawDate;
+      }
+      return "未知时间";
+    }
+
+    // Markdown 纯文本清洗（用于生成摘要）
+    function extractSummary(content) {
+      if (!content) return "暂无正文摘要...";
+      return content
+        .replace(/#+\s+/g, '')        // 去除标题标记
+        .replace(/[\*\_~`]/g, '')     // 去除强调符
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // 提取链接文字
+        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')   // 去除图片
+        .replace(/>\s+/g, '')         // 去除引用
+        .replace(/\n+/g, ' ')         // 换行转空格
+        .trim();
+    }
+
+    // 从 Firestore 加载精选文章数据
+    async function loadFeaturedArticles() {
+      const container = document.getElementById('articles-container');
+
+      try {
+        let snapshot;
+        // 兼容 posts 和 articles 两个集合
+        try {
+          snapshot = await db.collection("posts").get();
+          if (snapshot.empty) throw new Error("posts empty");
+        } catch (e) {
+          snapshot = await db.collection("articles").get();
         }
 
-        listEl.innerHTML = docs.map(art => {
-          const pubDate = art.createdAt ? new Date(art.createdAt.seconds ? art.createdAt.seconds * 1000 : art.createdAt).toLocaleDateString('zh-CN') : '未记录';
-          return `
-            <article class="card">
-              <div class="card-header">
-                <a href="article.html?id=${art.id}" class="title">${art.title || '无标题'}</a>
-                <span class="tag">★ ${art.tag || '精选'}</span>
+        let list = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+
+          // 1. 隐藏筛选：非隐藏文章才显示
+          const isHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
+          if (isHidden) return;
+
+          // 2. 精选筛选：匹配 featured / is_featured / isFeatured 字段
+          const isFeatured = data.featured === true || data.is_featured === true || data.isFeatured === true;
+          if (!isFeatured) return;
+
+          // 解析时间用于排序
+          let timestampVal = 0;
+          let rawDate = data.createdAt || data.created_at || data.timestamp || data.date;
+          if (rawDate && typeof rawDate.toDate === 'function') {
+            timestampVal = rawDate.toDate().getTime();
+          } else if (typeof rawDate === 'number') {
+            timestampVal = rawDate;
+          } else if (typeof rawDate === 'string') {
+            timestampVal = new Date(rawDate).getTime() || 0;
+          }
+
+          list.push({
+            id: doc.id,
+            title: data.title || "无标题文章",
+            content: data.content || "",
+            tag: data.tag || data.category || "精选",
+            dateStr: parseArticleDate(data),
+            timestamp: timestampVal
+          });
+        });
+
+        // 按首次发表/创建时间倒序排列（最新发布的在前）
+        list.sort((a, b) => b.timestamp - a.timestamp);
+        featuredArticles = list;
+
+        // 渲染页面
+        renderPage(1);
+
+      } catch (err) {
+        console.error("加载精选文章失败：", err);
+        container.innerHTML = `
+          <div class="text-center py-12 bg-white rounded-2xl border border-red-100 p-6">
+            <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 mb-3"></i>
+            <p class="text-slate-700 font-medium">加载精选文章失败</p>
+            <p class="text-slate-400 text-xs mt-1">${err.message || '请稍后刷新重试'}</p>
+          </div>
+        `;
+      }
+    }
+
+    // 渲染特定页码的数据
+    function renderPage(page) {
+      currentPage = page;
+      const container = document.getElementById('articles-container');
+      const pagination = document.getElementById('pagination-container');
+
+      if (featuredArticles.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <i class="fa-solid fa-box-open text-4xl text-slate-300 mb-3"></i>
+            <p class="text-slate-600 font-medium">暂无精选文章</p>
+            <p class="text-slate-400 text-xs mt-1">博主还没有把文章标记为“精选”，先去看看全部文章吧！</p>
+            <a href="all-articles.html" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition">
+              查看全部文章 →
+            </a>
+          </div>
+        `;
+        pagination.classList.add('hidden');
+        return;
+      }
+
+      // 计算当前页的数据范围
+      const totalPages = Math.ceil(featuredArticles.length / PAGE_SIZE);
+      const startIndex = (page - 1) * PAGE_SIZE;
+      const pageArticles = featuredArticles.slice(startIndex, startIndex + PAGE_SIZE);
+
+      // 渲染文章卡片
+      let html = '';
+      pageArticles.forEach(item => {
+        const summary = extractSummary(item.content);
+        html += `
+          <article class="article-card bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden group">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+              <div class="flex items-center space-x-2">
+                <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium border border-amber-200/60">
+                  <i class="fa-solid fa-star text-[10px]"></i>
+                  <span>${item.tag}</span>
+                </span>
+                <span>•</span>
+                <span><i class="fa-regular fa-calendar-alt me-1"></i>${item.dateStr}</span>
               </div>
-              <p class="summary">${art.summary || art.content || ''}</p>
-              <div class="card-footer">
-                <span>发表于 ${pubDate}</span>
-              </div>
-            </article>
-          `;
-        }).join('');
+              <span class="text-amber-500 text-xs font-semibold flex items-center">
+                ★ 精选推荐
+              </span>
+            </div>
+
+            <h2 class="text-xl font-bold text-slate-800 group-hover:text-amber-600 transition duration-200 mb-2">
+              <a href="article.html?id=${item.id}">
+                ${item.title}
+              </a>
+            </h2>
+
+            <p class="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-4">
+              ${summary}
+            </p>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-50 text-xs">
+              <a href="article.html?id=${item.id}" class="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center group-hover:translate-x-1 transition-transform">
+                阅读全文 <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+              </a>
+              <span class="text-slate-400">点击进入详情页</span>
+            </div>
+          </article>
+        `;
       });
+
+      container.innerHTML = html;
+
+      // 渲染分页控件
+      renderPagination(totalPages);
+    }
+
+    // 渲染分页导航
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination-container');
+      if (totalPages <= 1) {
+        pagination.classList.add('hidden');
+        return;
+      }
+
+      pagination.classList.remove('hidden');
+      let html = '';
+
+      // 上一页
+      html += `
+        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          <i class="fa-solid fa-chevron-left me-1"></i> 上一页
+        </button>
+      `;
+
+      // 页码按钮
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          html += `<span class="px-3 py-1.5 rounded-lg bg-amber-500 text-white font-bold text-xs shadow-sm">${i}</span>`;
+        } else {
+          html += `<button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition">${i}</button>`;
+        }
+      }
+
+      // 下一页
+      html += `
+        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          下一页 <i class="fa-solid fa-chevron-right ms-1"></i>
+        </button>
+      `;
+
+      pagination.innerHTML = html;
+    }
+
+    // 切换页码并平滑滚动回顶部
+    function changePage(page) {
+      if (page < 1 || page > Math.ceil(featuredArticles.length / PAGE_SIZE)) return;
+      renderPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 页面加载完成后启动
+    window.addEventListener('DOMContentLoaded', loadFeaturedArticles);
   </script>
 </body>
 </html>
