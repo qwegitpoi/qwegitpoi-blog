@@ -1,609 +1,342 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>全部文章 - 博客</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <style>
-        /* Modern Design Tokens */
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 20px -2px rgba(0,0,0,0.05);
-            --shadow-hover: 0 10px 25px -5px rgba(37, 99, 235, 0.12);
-            --radius-lg: 16px;
-            --radius-md: 10px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>全部文章 - 我的个人博客</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Glassmorphism Header */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border-color);
-            transition: all 0.3s ease;
-        }
-
-        .header-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 1rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo i {
-            color: var(--primary);
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
-            font-weight: 600;
-            border-radius: 9999px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: 1px solid transparent;
-        }
-
-        .btn-ghost {
-            color: var(--text-muted);
-            background: transparent;
-        }
-
-        .btn-ghost:hover {
-            color: var(--primary);
-            background: rgba(37, 99, 235, 0.08);
-        }
-
-        .btn-outline {
-            color: var(--primary);
-            border-color: rgba(37, 99, 235, 0.3);
-            background: transparent;
-        }
-
-        .btn-outline:hover {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1.5rem;
-            flex: 1;
-            width: 100%;
-        }
-
-        /* Page Banner / Search Section */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 2rem;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .page-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .page-title p {
-            font-size: 0.875rem;
-            color: var(--text-muted);
-            margin-top: 0.25rem;
-        }
-
-        .search-box {
-            position: relative;
-            min-width: 260px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.6rem 1rem 0.6rem 2.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            outline: none;
-            transition: all 0.2s ease;
-            background: #ffffff;
-        }
-
-        .search-box input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 0.9rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            font-size: 0.875rem;
-        }
-
-        /* Articles Grid */
-        .articles-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1.25rem;
-        }
-
-        .article-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 1.5rem;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: var(--shadow-sm);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .article-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-            border-color: rgba(37, 99, 235, 0.3);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .article-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-            transition: color 0.2s ease;
-        }
-
-        .article-card:hover .article-title {
-            color: var(--primary);
-        }
-
-        .tag-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.75rem;
-            background-color: rgba(37, 99, 235, 0.1);
-            color: var(--primary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            border-radius: 9999px;
-            white-space: nowrap;
-        }
-
-        .article-summary {
-            color: var(--text-muted);
-            font-size: 0.9375rem;
-            line-height: 1.6;
-            margin-bottom: 1.25rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .card-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.8125rem;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(226, 232, 240, 0.6);
-            padding-top: 0.75rem;
-        }
-
-        .read-more {
-            color: var(--primary);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        /* Pagination Controls */
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 2.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .page-btn {
-            min-width: 38px;
-            height: 38px;
-            padding: 0 0.5rem;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-            background: #ffffff;
-            color: var(--text-main);
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            user-select: none;
-        }
-
-        .page-btn:hover:not(:disabled) {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: rgba(37, 99, 235, 0.05);
-        }
-
-        .page-btn.active {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary);
-        }
-
-        .page-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        /* State Indicator */
-        .state-box {
-            text-align: center;
-            padding: 4rem 2rem;
-            background: var(--card-bg);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border-color);
-            color: var(--text-muted);
-        }
-
-        .state-box i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: var(--primary);
-        }
-
-        /* Footer */
-        .footer {
-            border-top: 1px solid var(--border-color);
-            padding: 2rem 1.5rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            background: #ffffff;
-            margin-top: auto;
-        }
-
-        @media (max-width: 640px) {
-            .page-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            .search-box {
-                width: 100%;
-            }
-        }
-    </style>
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #334155;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      scroll-behavior: smooth;
+    }
+    .glass-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .article-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .article-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+    }
+    /* 最多截取 3 行摘要 */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between">
 
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <i class="fa-solid fa-feather-pointed"></i> 我的个人博客
-            </a>
-            <nav class="nav-links">
-                <a href="index.html" class="btn btn-ghost"><i class="fa-solid fa-house"></i> 首页</a>
-                <a href="contact.html" class="btn btn-ghost"><i class="fa-regular fa-envelope"></i> 私信</a>
-                <a href="admin-login.html" class="btn btn-outline"><i class="fa-solid fa-gear"></i> 管理员登录</a>
-            </nav>
-        </div>
-    </header>
+  <header class="glass-header sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-book-open text-blue-600"></i>
+        <span>我的个人博客</span>
+      </a>
+      <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">首页</a>
+        <a href="all-articles.html" class="text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg transition">全部文章</a>
+        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">📩 私信</a>
+      </nav>
+    </div>
+  </header>
 
-    <main class="main-container">
-        
-        <div class="page-header">
-            <div class="page-title">
-                <h1><i class="fa-solid fa-box-archive" style="color: var(--primary);"></i> 全部文章</h1>
-                <p>探索所有公开发布的思考、技术与生活记录</p>
-            </div>
-            <div class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="搜索文章标题、标签或内容..." oninput="handleSearch()">
-            </div>
-        </div>
-
-        <div id="articlesContainer" class="articles-grid">
-            <div class="state-box">
-                <i class="fa-solid fa-circle-notch fa-spin"></i>
-                <p>正在加载文章内容，请稍候...</p>
-            </div>
+  <main class="max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full flex-grow">
+    
+    <div class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-100 shadow-sm mb-6">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold text-slate-800 flex items-center">
+            <i class="fa-solid fa-layer-group text-blue-600 me-2 text-lg"></i> 全部文章
+          </h1>
+          <p class="text-slate-500 text-xs sm:text-sm mt-1">按首次发表时间由新到旧排列（每页 10 条）</p>
         </div>
 
-        <div id="pagination" class="pagination-container"></div>
+        <div class="relative w-full sm:w-72">
+          <input type="text" id="search-input" oninput="handleSearch()" placeholder="搜索文章标题、内容或标签..." class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition bg-slate-50/50">
+          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+        </div>
+      </div>
+    </div>
 
-    </main>
+    <div id="articles-container" class="space-y-4">
+      <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-600 mb-2"></i>
+        <p class="text-slate-500 text-xs">正在按发表时间加载全部文章...</p>
+      </div>
+    </div>
 
-    <footer class="footer">
-        <p>© 2026 个人博客. Powered by Firebase & GitHub Pages</p>
-    </footer>
+    <div id="pagination-container" class="mt-8 flex justify-center items-center space-x-1.5 hidden">
+      </div>
 
-    <script>
-        // 1. Firebase Credentials Setup
-        const firebaseConfig = {
-            apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
-            authDomain: "qwegitpoi-blog.firebaseapp.com",
-            databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "qwegitpoi-blog",
-            storageBucket: "qwegitpoi-blog.firebasestorage.app",
-            messagingSenderId: "313324557146",
-            appId: "1:313324557146:web:4a93868894c9329006d963",
-            measurementId: "G-M01JQCZ0WX"
-        };
+  </main>
 
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-[11px] text-slate-500 mt-12">
+    <p>© 2026 我的个人博客. All rights reserved.</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qwegitpoi-blog",
+      storageBucket: "qwegitpoi-blog.firebasestorage.app",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963",
+      measurementId: "G-M01JQCZ0WX"
+    };
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const PAGE_SIZE = 10;
+    let currentPage = 1;
+    let allArticles = [];
+    let filteredArticles = [];
+
+    // 1. 获取标准 Unix 时间戳（用于排序）
+    function getArticleTimestamp(data) {
+      const raw = data.createdAt || data.created_at || data.publishedAt || data.published_at || data.timestamp || data.date;
+      if (!raw) return 0;
+
+      try {
+        if (raw && typeof raw.toDate === 'function') {
+          return raw.toDate().getTime();
         }
-        const db = firebase.firestore();
-
-        // 2. Pagination & Search State Management
-        const PAGE_SIZE = 10;
-        let allArticles = [];
-        let filteredArticles = [];
-        let currentPage = 1;
-
-        // Strip Markdown syntax to render clean preview text
-        function cleanMarkdown(text) {
-            if (!text) return "";
-            return text
-                .replace(/[#*`_~>-]/g, "")
-                .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-                .trim();
+        if (typeof raw === 'number') {
+          return raw < 1e11 ? raw * 1000 : raw;
         }
-
-        // Helper: Robust Date Parsing for Various Firestore Formats
-        function parseArticleDate(data) {
-            const rawDate = data.createdAt || data.date || data.time || data.updatedAt;
-            if (!rawDate) return new Date();
-
-            // Handle Firestore Timestamp object
-            if (rawDate && typeof rawDate.toDate === 'function') {
-                return rawDate.toDate();
-            }
-            // Handle Unix Timestamp (seconds or milliseconds)
-            if (typeof rawDate === 'number') {
-                return new Date(rawDate < 1e11 ? rawDate * 1000 : rawDate);
-            }
-            // Handle ISO string or date format strings
-            const parsed = new Date(rawDate);
-            return isNaN(parsed.getTime()) ? new Date() : parsed;
+        if (typeof raw === 'string') {
+          const d = new Date(raw);
+          return !isNaN(d.getTime()) ? d.getTime() : 0;
         }
+      } catch (e) {
+        console.error("时间戳解析异常:", e);
+      }
+      return 0;
+    }
 
-        // Load visible articles from Firestore
-        async function loadAllArticles() {
-            const container = document.getElementById('articlesContainer');
-            try {
-                const snapshot = await db.collection('articles').get();
-                let articles = [];
-                
-                snapshot.forEach(doc => {
-                    const data = doc.data();
-                    
-                    // Dual Filter Protection: Exclude articles marked as hidden in any format
-                    const isExplicitlyHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
+    // 2. 格式化发表时间为 YYYY/MM/DD
+    function parseArticleDate(data) {
+      const ts = getArticleTimestamp(data);
+      if (!ts) return "近期发布";
+      const d = new Date(ts);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}/${m}/${day}`;
+    }
 
-                    if (!isExplicitlyHidden) {
-                        articles.push({
-                            id: doc.id,
-                            title: data.title || "无标题文章",
-                            content: data.content || "",
-                            tag: data.tag || "随笔",
-                            createdAt: parseArticleDate(data)
-                        });
-                    }
-                });
+    // 3. 解析文章标签
+    function parseArticleTag(data) {
+      let t = data.tag || data.category || data.tags;
+      if (Array.isArray(t)) return t.length > 0 ? t[0] : "随笔";
+      if (typeof t === 'string' && t.trim() !== '') return t.trim();
+      return "随笔";
+    }
 
-                // Sort articles by creation date (Newest First)
-                articles.sort((a, b) => b.createdAt - a.createdAt);
+    // 4. 清理 Markdown 标记提取纯文本摘要
+    function extractSummary(content) {
+      if (!content) return "暂无正文内容...";
+      return content
+        .replace(/#+\s+/g, '')
+        .replace(/[\*\_~`]/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')
+        .replace(/>\s+/g, '')
+        .replace(/\n+/g, ' ')
+        .trim();
+    }
 
-                allArticles = articles;
-                filteredArticles = articles;
-                renderPage(1);
+    // 从 Firestore 加载全部公开文章并排序
+    async function loadArticles() {
+      const container = document.getElementById('articles-container');
 
-            } catch (error) {
-                console.error("Firestore Error:", error);
-                container.innerHTML = `
-                    <div class="state-box">
-                        <i class="fa-solid fa-triangle-exclamation" style="color: #ef4444;"></i>
-                        <p>加载失败：${error.message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        // Render Page Articles
-        function renderPage(page) {
-            currentPage = page;
-            const container = document.getElementById('articlesContainer');
-            const totalArticles = filteredArticles.length;
-
-            if (totalArticles === 0) {
-                container.innerHTML = `
-                    <div class="state-box">
-                        <i class="fa-regular fa-folder-open"></i>
-                        <p>没有找到相关文章</p>
-                    </div>
-                `;
-                document.getElementById('pagination').innerHTML = '';
-                return;
-            }
-
-            const startIndex = (page - 1) * PAGE_SIZE;
-            const endIndex = Math.min(startIndex + PAGE_SIZE, totalArticles);
-            const pageData = filteredArticles.slice(startIndex, endIndex);
-
-            let html = '';
-            pageData.forEach(art => {
-                const dateStr = art.createdAt.toLocaleDateString('zh-CN', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
-                const cleanText = cleanMarkdown(art.content);
-
-                html += `
-                    <a href="article.html?id=${art.id}" class="article-card">
-                        <div>
-                            <div class="card-header">
-                                <h2 class="article-title">${escapeHtml(art.title)}</h2>
-                                <span class="tag-badge"><i class="fa-solid fa-hashtag"></i> ${escapeHtml(art.tag)}</span>
-                            </div>
-                            <p class="article-summary">${escapeHtml(cleanText)}</p>
-                        </div>
-                        <div class="card-footer">
-                            <span><i class="fa-regular fa-calendar"></i> ${dateStr}</span>
-                            <span class="read-more">阅读全文 <i class="fa-solid fa-arrow-right"></i></span>
-                        </div>
-                    </a>
-                `;
-            });
-
-            container.innerHTML = html;
-            renderPaginationControls(totalArticles);
+      try {
+        let snapshot;
+        try {
+          snapshot = await db.collection("posts").get();
+          if (snapshot.empty) throw new Error("posts empty");
+        } catch (e) {
+          snapshot = await db.collection("articles").get();
         }
 
-        // Render Pagination Control Buttons
-        function renderPaginationControls(totalItems) {
-            const paginationEl = document.getElementById('pagination');
-            const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+        let list = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
 
-            if (totalPages <= 1) {
-                paginationEl.innerHTML = '';
-                return;
-            }
+          // 剔除隐藏文章
+          const isHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
+          if (isHidden) return;
 
-            let html = '';
+          list.push({
+            id: doc.id,
+            title: data.title || "无标题文章",
+            content: data.content || "",
+            tag: parseArticleTag(data),
+            dateStr: parseArticleDate(data),
+            timestamp: getArticleTimestamp(data)
+          });
+        });
 
-            // Previous Page Button
-            html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></button>`;
+        // ⭐ 核心重点：按首次发表时间戳绝对降序排列（最新的排前面）
+        list.sort((a, b) => b.timestamp - a.timestamp);
 
-            // Numeric Page Buttons
-            for (let i = 1; i <= totalPages; i++) {
-                html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="changePage(${i})">${i}</button>`;
-            }
+        allArticles = list;
+        filteredArticles = [...allArticles];
 
-            // Next Page Button
-            html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></button>`;
+        renderPage(1);
 
-            paginationEl.innerHTML = html;
+      } catch (err) {
+        console.error("加载全部文章失败:", err);
+        container.innerHTML = `
+          <div class="text-center py-12 bg-white rounded-2xl border border-red-100 p-6">
+            <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 mb-2"></i>
+            <p class="text-slate-700 font-medium text-sm">加载文章列表失败</p>
+            <p class="text-slate-400 text-xs mt-1">${err.message || '请检查数据库访问权限'}</p>
+          </div>
+        `;
+      }
+    }
+
+    // 渲染指定页码的数据
+    function renderPage(page) {
+      currentPage = page;
+      const container = document.getElementById('articles-container');
+      const pagination = document.getElementById('pagination-container');
+
+      if (filteredArticles.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
+            <i class="fa-solid fa-folder-open text-3xl text-slate-300 mb-2"></i>
+            <p class="text-slate-600 font-medium text-sm">没有检索到符合条件的文章</p>
+            <p class="text-slate-400 text-xs mt-1">尝试更换搜索关键字重试</p>
+          </div>
+        `;
+        pagination.classList.add('hidden');
+        return;
+      }
+
+      const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
+      const startIndex = (page - 1) * PAGE_SIZE;
+      const pageArticles = filteredArticles.slice(startIndex, startIndex + PAGE_SIZE);
+
+      let html = '';
+      pageArticles.forEach(item => {
+        const summary = extractSummary(item.content);
+        html += `
+          <article class="article-card bg-white rounded-xl p-4 sm:p-5 border border-slate-100 shadow-sm relative group">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium text-[11px]">
+                  ${item.tag}
+                </span>
+                <span>•</span>
+                <span><i class="fa-regular fa-calendar-alt me-1"></i>${item.dateStr}</span>
+              </div>
+            </div>
+
+            <h2 class="text-base sm:text-lg font-bold text-slate-800 group-hover:text-blue-600 transition mb-1.5">
+              <a href="article.html?id=${item.id}">
+                ${item.title}
+              </a>
+            </h2>
+
+            <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed mb-3">
+              ${summary}
+            </p>
+
+            <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-xs">
+              <a href="article.html?id=${item.id}" class="text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center">
+                阅读全文 <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+              </a>
+              <span class="text-slate-300 text-[10px]">点击查看详情</span>
+            </div>
+          </article>
+        `;
+      });
+
+      container.innerHTML = html;
+      renderPagination(totalPages);
+    }
+
+    // 渲染底部分页按键
+    function renderPagination(totalPages) {
+      const pagination = document.getElementById('pagination-container');
+      if (totalPages <= 1) {
+        pagination.classList.add('hidden');
+        return;
+      }
+
+      pagination.classList.remove('hidden');
+      let html = '';
+
+      // 上一页
+      html += `
+        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-2.5 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+      `;
+
+      // 页码数字按钮
+      for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+          html += `<span class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold text-xs shadow-sm">${i}</span>`;
+        } else {
+          html += `<button onclick="changePage(${i})" class="px-3 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition">${i}</button>`;
         }
+      }
 
-        // Switch Page Function
-        function changePage(page) {
-            renderPage(page);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+      // 下一页
+      html += `
+        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-2.5 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      `;
 
-        // Real-time Search Handler
-        function handleSearch() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
-            if (!query) {
-                filteredArticles = allArticles;
-            } else {
-                filteredArticles = allArticles.filter(art => 
-                    art.title.toLowerCase().includes(query) ||
-                    art.tag.toLowerCase().includes(query) ||
-                    art.content.toLowerCase().includes(query)
-                );
-            }
-            renderPage(1);
-        }
+      pagination.innerHTML = html;
+    }
 
-        // Helper: Prevent XSS
-        function escapeHtml(str) {
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+    // 切换页码
+    function changePage(page) {
+      const totalPages = Math.ceil(filteredArticles.length / PAGE_SIZE);
+      if (page < 1 || page > totalPages) return;
+      renderPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-        // Execute loading on page load
-        window.onload = loadAllArticles;
-    </script>
+    // 实时搜索过滤
+    function handleSearch() {
+      const keyword = document.getElementById('search-input').value.trim().toLowerCase();
+      if (!keyword) {
+        filteredArticles = [...allArticles];
+      } else {
+        filteredArticles = allArticles.filter(item => 
+          item.title.toLowerCase().includes(keyword) ||
+          item.content.toLowerCase().includes(keyword) ||
+          item.tag.toLowerCase().includes(keyword)
+        );
+      }
+      renderPage(1);
+    }
+
+    window.addEventListener('DOMContentLoaded', loadArticles);
+  </script>
 </body>
 </html>
