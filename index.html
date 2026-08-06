@@ -3,338 +3,114 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我的个人博客</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <title>我的个人博客 - 首页</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* --------------------------------------------------
-       1. 全局变量与质感主题配色
-       -------------------------------------------------- */
-    :root {
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --bg-color: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border-color: #e2e8f0;
-      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
-      --shadow-hover: 0 10px 25px -5px rgba(37, 99, 235, 0.12);
-      --radius-lg: 16px;
-      --radius-md: 10px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      line-height: 1.5;
-      padding: 24px 16px;
+      background-color: #f8fafc;
+      color: #334155;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     }
-
-    .container {
-      max-width: 740px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
-
-    /* --------------------------------------------------
-       2. 毛玻璃固顶 Header 导航
-       -------------------------------------------------- */
-    header {
-      position: sticky;
-      top: 12px;
-      z-index: 100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 20px;
+    .glass-header {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.6);
-      border-radius: 999px;
-      box-shadow: var(--shadow-md);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-
-    .blog-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-      text-decoration: none;
-      letter-spacing: -0.02em;
+    .article-card {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 14px;
+    .article-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
     }
-
-    .nav-links a {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.15s ease;
-    }
-
-    .nav-links a:hover { color: var(--primary-color); }
-
-    .btn-pill {
-      font-size: 0.8rem !important;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background-color: #eff6ff;
-      color: var(--primary-color) !important;
-      font-weight: 600 !important;
-      transition: all 0.2s ease !important;
-    }
-
-    .btn-pill:hover {
-      background-color: var(--primary-color);
-      color: #ffffff !important;
-    }
-
-    /* --------------------------------------------------
-       3. 个人 Hero 看板
-       -------------------------------------------------- */
-    .hero-card {
-      background: linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%);
-      border: 1px solid var(--border-color);
-      border-radius: var(--radius-lg);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .hero-avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-      color: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 700;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
-    }
-
-    .hero-info h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-      line-height: 1.2;
-      margin-bottom: 4px;
-    }
-
-    .hero-info p {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      line-height: 1.4;
-    }
-
-    /* --------------------------------------------------
-       4. 板块标题与卡片样式 (紧凑排版)
-       -------------------------------------------------- */
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    .article-list {
-      display: flex;
-      flex-direction: column;
-      gap: 10px; /* 紧凑卡片间距 */
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: var(--radius-md);
-      padding: 12px 16px; /* 紧凑内边距 */
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-sm);
-      line-height: 1.35;   /* 紧凑行距 */
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-hover);
-      border-color: #dbeafe;
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 6px;
-    }
-
-    .title {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-main);
-      text-decoration: none;
-      line-height: 1.3;
-      transition: color 0.15s ease;
-    }
-
-    .title:hover { color: var(--primary-color); }
-
-    /* 动态标签 */
-    .tag {
-      font-size: 0.75rem;
-      padding: 2px 8px;
-      border-radius: 6px;
-      background-color: #eff6ff;
-      color: var(--primary-color);
-      font-weight: 600;
-      white-space: nowrap;
-    }
-
-    .tag-featured {
-      background-color: #fff7ed;
-      color: #ea580c;
-    }
-
-    .summary {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-      line-height: 1.4;
+    .line-clamp-3 {
       display: -webkit-box;
-      -webkit-line-clamp: 2; /* 限制为 2 行 */
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
-    .card-footer {
-      font-size: 0.75rem;
-      color: #94a3b8;
-    }
-
-    /* 跳转引导链接 */
-    .more-link-container {
-      margin-top: 10px;
-      text-align: right;
-    }
-
-    .more-link {
-      font-size: 0.85rem;
-      color: var(--primary-color);
-      text-decoration: none;
-      font-weight: 600;
-      transition: opacity 0.15s ease;
-    }
-
-    .more-link:hover {
-      text-decoration: underline;
-      opacity: 0.85;
-    }
-
-    .loading-card {
-      background: #ffffff;
-      border-radius: var(--radius-md);
-      padding: 16px;
-      text-align: center;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      border: 1px dashed #cbd5e1;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      margin-top: 12px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border-color);
-    }
   </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between">
 
-  <div class="container">
-    
-    <header>
-      <a href="index.html" class="blog-title">My Blog</a>
-      <nav class="nav-links">
-        <a href="all-articles.html">全部文章</a>
-        <a href="featured.html">精选文章</a>
-        <a href="contact.html" class="btn-pill">📩 私信博主</a>
-        <a href="admin.html">后台管理</a>
+  <header class="glass-header sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-book-open text-blue-600"></i>
+        <span>我的个人博客</span>
+      </a>
+      <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
+        <a href="index.html" class="text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">全部文章</a>
+        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">📩 私信</a>
+        <a href="admin-login.html" class="text-slate-400 hover:text-slate-700 px-1.5 py-1 transition" title="后台管理">
+          <i class="fa-solid fa-gear"></i>
+        </a>
       </nav>
-    </header>
+    </div>
+  </header>
 
-    <div class="hero-card">
-      <div class="hero-avatar">B</div>
-      <div class="hero-info">
-        <h1>欢迎来到我的博客</h1>
-        <p>记录技术探索、生活感悟与深度思考空间。</p>
+  <main class="max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full flex-grow space-y-8">
+    
+    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
+      <div class="relative z-10 space-y-2">
+        <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wider">Welcome</span>
+        <h1 class="text-2xl sm:text-3xl font-bold">记录技术、思考与生活</h1>
+        <p class="text-blue-100 text-xs sm:text-sm max-w-xl">欢迎来到我的个人博客空间，这里汇集了最新的技术经验总结、思考随笔与精选深度文章。</p>
       </div>
+      <i class="fa-solid fa-laptop-code absolute -right-4 -bottom-4 text-8xl text-white/10 pointer-events-none"></i>
     </div>
 
     <section>
-      <div class="section-header">
-        <h2 class="section-title">⚡ 最新动态</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-star text-amber-500 me-2"></i> 精选文章
+        </h2>
+        <a href="featured.html" class="text-xs text-amber-600 font-semibold hover:text-amber-700 flex items-center">
+          查看更多精选 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+        </a>
       </div>
 
-      <div id="latest-list" class="article-list">
-        <div class="loading-card">正在拉取最新文章...</div>
-      </div>
-
-      <div class="more-link-container">
-        <a href="all-articles.html" class="more-link">查看全部文章 →</a>
+      <div id="featured-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="col-span-3 text-center py-8 bg-white rounded-xl border border-slate-100 shadow-sm">
+          <i class="fa-solid fa-circle-notch fa-spin text-xl text-amber-500 mb-2"></i>
+          <p class="text-slate-400 text-xs">正在读取精选文章...</p>
+        </div>
       </div>
     </section>
 
     <section>
-      <div class="section-header">
-        <h2 class="section-title">🌟 精选文章</h2>
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-bold text-slate-800 flex items-center">
+          <i class="fa-solid fa-clock-rotate-left text-blue-600 me-2"></i> 最新动态
+        </h2>
+        <a href="all-articles.html" class="text-xs text-blue-600 font-semibold hover:text-blue-700 flex items-center">
+          查看全部文章 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+        </a>
       </div>
 
-      <div id="featured-list" class="article-list">
-        <div class="loading-card">正在拉取精选内容...</div>
-      </div>
-
-      <div class="more-link-container">
-        <a href="featured.html" class="more-link">查看更多精选文章 →</a>
+      <div id="latest-container" class="space-y-4">
+        <div class="text-center py-8 bg-white rounded-xl border border-slate-100 shadow-sm">
+          <i class="fa-solid fa-circle-notch fa-spin text-xl text-blue-600 mb-2"></i>
+          <p class="text-slate-400 text-xs">正在读取最新动态...</p>
+        </div>
       </div>
     </section>
 
-    <footer>
-      <p>© 2026 My Blog. Powered by GitHub Pages & Firebase.</p>
-    </footer>
+  </main>
 
-  </div>
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-[11px] text-slate-500 mt-12">
+    <p>© 2026 我的个人博客. All rights reserved.</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // 你的真实 Firebase 凭证 (已准确应用)
     const firebaseConfig = {
       apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
       authDomain: "qwegitpoi-blog.firebaseapp.com",
@@ -346,125 +122,206 @@
       measurementId: "G-M01JQCZ0WX"
     };
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 格式化解析首次发表时间
-    function parseArticleDate(item) {
-      const val = item.createdAt || item.created_at || item.date || item.timestamp;
-      if (!val) return 0;
-      if (typeof val === 'number') return val;
-      if (val.seconds) return val.seconds * 1000;
-      if (typeof val === 'string') return new Date(val).getTime() || 0;
-      if (val.toDate && typeof val.toDate === 'function') return val.toDate().getTime();
+    // ⭐ 全能强壮时间戳解析器
+    function getArticleTimestamp(data) {
+      if (!data || typeof data !== 'object') return 0;
+      const raw = data.createdAt || data.created_at || data.createTime || data.create_time || data.created ||
+                  data.publishedAt || data.published_at || data.pubDate || data.pub_date ||
+                  data.timestamp || data.date || data.time || data.datetime ||
+                  data.updatedAt || data.updated_at;
+
+      if (raw === undefined || raw === null) return 0;
+
+      try {
+        if (typeof raw.toDate === 'function') {
+          const d = raw.toDate();
+          if (d && !isNaN(d.getTime())) return d.getTime();
+        }
+        if (raw instanceof Date) {
+          if (!isNaN(raw.getTime())) return raw.getTime();
+        }
+        if (typeof raw === 'object') {
+          const secs = raw.seconds !== undefined ? raw.seconds : raw._seconds;
+          if (typeof secs === 'number') return secs * 1000;
+        }
+        if (typeof raw === 'number') {
+          if (isNaN(raw)) return 0;
+          return raw < 1e11 ? raw * 1000 : raw;
+        }
+        if (typeof raw === 'string') {
+          const trimmed = raw.trim();
+          if (!trimmed) return 0;
+          if (/^\d+$/.test(trimmed)) {
+            const num = Number(trimmed);
+            return num < 1e11 ? num * 1000 : num;
+          }
+          const formattedStr = trimmed.replace(/-/g, '/').replace('T', ' ').replace('Z', '');
+          const d = new Date(formattedStr);
+          if (!isNaN(d.getTime())) return d.getTime();
+          const d2 = new Date(trimmed);
+          if (!isNaN(d2.getTime())) return d2.getTime();
+        }
+      } catch (e) {
+        console.error("时间戳解析异常:", e);
+      }
       return 0;
     }
 
-    // 格式化日期显示
-    function formatDateStr(ms) {
-      if (!ms) return '未记录时间';
-      return new Date(ms).toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
+    function parseArticleDate(data) {
+      const ts = getArticleTimestamp(data);
+      if (ts > 0) {
+        const d = new Date(ts);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}/${m}/${day}`;
+      }
+      if (data && typeof data === 'object') {
+        for (const key of ['date', 'time', 'createdAt', 'created_at', 'publishedAt']) {
+          if (typeof data[key] === 'string' && data[key].trim() !== '') {
+            return data[key].trim();
+          }
+        }
+      }
+      return "暂无时间";
     }
 
-    // 判断文章隐藏状态
-    function isHidden(data) {
-      return data.hide === true || data.hidden === true || data.status === 'hidden';
+    function parseArticleTag(data) {
+      if (!data) return "随笔";
+      let t = data.tag || data.category || data.tags || data.categories;
+      if (Array.isArray(t)) return t.length > 0 ? t[0] : "随笔";
+      if (typeof t === 'string' && t.trim() !== '') return t.trim();
+      return "随笔";
     }
 
-    // 判断精选文章状态
-    function isFeatured(data) {
-      return data.featured === true || data.is_featured === true || data.isFeatured === true;
+    function extractSummary(content) {
+      if (!content) return "暂无正文内容...";
+      return content
+        .replace(/#+\s+/g, '')
+        .replace(/[\*\_~`]/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')
+        .replace(/>\s+/g, '')
+        .replace(/\n+/g, ' ')
+        .trim();
     }
 
-    // 核心读取与渲染逻辑
-    async function loadHomepage() {
-      const latestContainer = document.getElementById('latest-list');
-      const featuredContainer = document.getElementById('featured-list');
+    async function loadIndexData() {
+      const featuredContainer = document.getElementById('featured-container');
+      const latestContainer = document.getElementById('latest-container');
 
       try {
-        let docs = [];
-
-        // 优先从 'posts' 读取，如空回退至 'articles'
-        let snapshot = await db.collection('posts').get();
-        if (snapshot.empty) {
-          snapshot = await db.collection('articles').get();
+        let snapshot;
+        try {
+          snapshot = await db.collection("posts").get();
+          if (snapshot.empty) throw new Error("posts empty");
+        } catch (e) {
+          snapshot = await db.collection("articles").get();
         }
 
+        let allList = [];
         snapshot.forEach(doc => {
           const data = doc.data();
-          if (!isHidden(data)) {
-            docs.push({ id: doc.id, ...data });
-          }
+          const isHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
+          if (isHidden) return;
+
+          allList.push({
+            id: doc.id,
+            title: data.title || "无标题文章",
+            content: data.content || "",
+            tag: parseArticleTag(data),
+            dateStr: parseArticleDate(data),
+            timestamp: getArticleTimestamp(data),
+            isFeatured: data.featured === true || data.is_featured === true || data.isFeatured === true
+          });
         });
 
-        // 按首次发表时间降序（最新在上）
-        docs.sort((a, b) => parseArticleDate(b) - parseArticleDate(a));
+        // ⭐ 首次发表时间倒序排列
+        allList.sort((a, b) => b.timestamp - a.timestamp);
 
-        // 1. 渲染【最新动态】(仅 2 篇)
-        const latestDocs = docs.slice(0, 2);
-        if (latestDocs.length === 0) {
-          latestContainer.innerHTML = `<div class="loading-card">暂无公开文章。</div>`;
+        // 1. 渲染精选文章（最新 3 篇）
+        const featuredList = allList.filter(item => item.isFeatured).slice(0, 3);
+        if (featuredList.length === 0) {
+          featuredContainer.innerHTML = `
+            <div class="col-span-3 text-center py-6 bg-amber-50/50 rounded-xl border border-amber-100 p-4">
+              <p class="text-amber-800 text-xs">博主正在挑选精彩内容，先看看最新动态吧！</p>
+            </div>`;
         } else {
-          latestContainer.innerHTML = latestDocs.map(item => {
-            const timeMs = parseArticleDate(item);
-            const pubDate = formatDateStr(timeMs);
-            const tagText = item.tag || item.tagName || '随笔';
-
-            return `
-              <article class="card">
-                <div class="card-header">
-                  <a href="article.html?id=${item.id}" class="title">${item.title || '无标题文章'}</a>
-                  <span class="tag">${tagText}</span>
+          let fHtml = '';
+          featuredList.forEach(item => {
+            fHtml += `
+              <article class="article-card bg-white rounded-xl p-4 border border-amber-100/80 shadow-sm relative group flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                    <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium text-[11px]">
+                      ★ ${item.tag}
+                    </span>
+                    <span>${item.dateStr}</span>
+                  </div>
+                  <h3 class="text-sm font-bold text-slate-800 group-hover:text-amber-600 transition mb-1.5 line-clamp-2">
+                    <a href="article.html?id=${item.id}">${item.title}</a>
+                  </h3>
+                  <p class="text-slate-600 text-xs line-clamp-3 leading-relaxed mb-3">
+                    ${extractSummary(item.content)}
+                  </p>
                 </div>
-                <p class="summary">${item.summary || item.content || ''}</p>
-                <div class="card-footer">
-                  <span>发表于 ${pubDate}</span>
+                <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-[11px]">
+                  <a href="article.html?id=${item.id}" class="text-amber-600 hover:text-amber-700 font-semibold">阅读详情 →</a>
                 </div>
               </article>
             `;
-          }).join('');
+          });
+          featuredContainer.innerHTML = fHtml;
         }
 
-        // 2. 渲染【精选文章】(仅 3 篇)
-        const featuredDocs = docs.filter(item => isFeatured(item)).slice(0, 3);
-        if (featuredDocs.length === 0) {
-          featuredContainer.innerHTML = `<div class="loading-card">暂无精选文章（可在后台管理页面点击“精选”加入）。</div>`;
+        // 2. 渲染最新动态（最新 2 篇）
+        const latestList = allList.slice(0, 2);
+        if (latestList.length === 0) {
+          latestContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">暂无发布的公开文章</p>`;
         } else {
-          featuredContainer.innerHTML = featuredDocs.map(item => {
-            const timeMs = parseArticleDate(item);
-            const pubDate = formatDateStr(timeMs);
-            const tagText = item.tag || item.tagName || '精选';
-
-            return `
-              <article class="card">
-                <div class="card-header">
-                  <a href="article.html?id=${item.id}" class="title">${item.title || '无标题文章'}</a>
-                  <span class="tag tag-featured">★ ${tagText}</span>
+          let lHtml = '';
+          latestList.forEach(item => {
+            lHtml += `
+              <article class="article-card bg-white rounded-xl p-4 sm:p-5 border border-slate-100 shadow-sm relative group">
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <div class="flex items-center space-x-2">
+                    <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium text-[11px]">
+                      ${item.tag}
+                    </span>
+                    <span>•</span>
+                    <span><i class="fa-regular fa-calendar-alt me-1"></i>${item.dateStr}</span>
+                  </div>
                 </div>
-                <p class="summary">${item.summary || item.content || ''}</p>
-                <div class="card-footer">
-                  <span>发表于 ${pubDate}</span>
+
+                <h2 class="text-base sm:text-lg font-bold text-slate-800 group-hover:text-blue-600 transition mb-1.5">
+                  <a href="article.html?id=${item.id}">${item.title}</a>
+                </h2>
+
+                <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed mb-3">
+                  ${extractSummary(item.content)}
+                </p>
+
+                <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-xs">
+                  <a href="article.html?id=${item.id}" class="text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center">
+                    阅读全文 <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
+                  </a>
+                  <span class="text-slate-300 text-[10px]">点击查看详情</span>
                 </div>
               </article>
             `;
-          }).join('');
+          });
+          latestContainer.innerHTML = lHtml;
         }
 
       } catch (err) {
-        console.error("加载首页错误:", err);
-        latestContainer.innerHTML = `<div class="loading-card" style="color:#dc2626;">加载失败，请刷新重试。</div>`;
-        featuredContainer.innerHTML = `<div class="loading-card" style="color:#dc2626;">精选文章加载失败。</div>`;
+        console.error("加载首页失败:", err);
       }
     }
 
-    // 启动加载
-    document.addEventListener('DOMContentLoaded', loadHomepage);
+    window.addEventListener('DOMContentLoaded', loadIndexData);
   </script>
 </body>
 </html>

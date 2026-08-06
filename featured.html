@@ -9,109 +9,83 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    /* 全局背景与平滑滚动 */
     body {
       background-color: #f8fafc;
       color: #334155;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       scroll-behavior: smooth;
     }
-
-    /* 毛玻璃 Header */
     .glass-header {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-
-    /* 卡片悬浮与微交互 */
     .article-card {
       transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .article-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.08), 0 4px 16px -4px rgba(0, 0, 0, 0.04);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
     }
-
-    /* 文本最多截取 3 行 */
     .line-clamp-3 {
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
-
-    /* 胶囊按钮 */
-    .pill-btn {
-      transition: all 0.2s ease;
-    }
-    .pill-btn:hover {
-      opacity: 0.9;
-      transform: scale(1.02);
-    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-  <header class="glass-header sticky top-0 z-50 transition-all duration-300">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center space-x-2 text-xl font-bold text-slate-800 hover:text-blue-600 transition">
-        <i class="fa-solid me-1 fa-book-open text-blue-600"></i>
+  <header class="glass-header sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-book-open text-blue-600"></i>
         <span>我的个人博客</span>
       </a>
-
-      <nav class="flex items-center space-x-3 sm:space-x-4 text-sm font-medium">
-        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">首页</a>
-        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">全部文章</a>
-        <a href="featured.html" class="text-amber-600 font-semibold bg-amber-50 px-3 py-1.5 rounded-lg transition">★ 精选</a>
-        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">📩 私信</a>
-        <a href="admin-login.html" class="text-slate-500 hover:text-slate-800 px-2 py-1.5 transition" title="管理员入口">
-          <i class="fa-solid fa-gear"></i>
-        </a>
+      <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">全部文章</a>
+        <a href="featured.html" class="text-amber-600 font-semibold bg-amber-50 px-2.5 py-1 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">📩 私信</a>
       </nav>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-4 sm:px-6 py-8 w-full flex-grow">
+  <main class="max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full flex-grow">
     
-    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8 relative overflow-hidden">
-      <div class="relative z-10">
-        <div class="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+    <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 rounded-2xl p-5 sm:p-6 text-white shadow-md mb-6 relative overflow-hidden">
+      <div class="relative z-10 space-y-1">
+        <div class="inline-flex items-center space-x-1 bg-white/20 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
           <i class="fa-solid fa-star text-amber-200"></i>
           <span>Curated Articles</span>
         </div>
-        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-2">★ 深度精选文章</h1>
-        <p class="text-amber-100 text-sm sm:text-base max-w-2xl">
-          沉淀优质思考、经典技术总结与个人随笔精选。每篇均为深度编辑与撰写的推荐内容。
-        </p>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-tight">★ 深度精选文章</h1>
+        <p class="text-amber-100 text-xs sm:text-sm">沉淀优质思考与经典总结，按发表时间排序（每页 10 条）</p>
       </div>
-      <i class="fa-solid fa-award absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
+      <i class="fa-solid fa-award absolute -right-4 -bottom-4 text-8xl text-white/10 pointer-events-none"></i>
     </div>
 
-    <div id="articles-container" class="space-y-6">
+    <div id="articles-container" class="space-y-4">
       <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm">
-        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500 mb-3"></i>
-        <p class="text-slate-500 text-sm">正在加载精选文章，请稍候...</p>
+        <i class="fa-solid fa-circle-notch fa-spin text-2xl text-amber-500 mb-2"></i>
+        <p class="text-slate-500 text-xs">正在按发表时间加载精选文章...</p>
       </div>
     </div>
 
-    <div id="pagination-container" class="mt-10 flex justify-center items-center space-x-2 hidden">
-      </div>
+    <div id="pagination-container" class="mt-8 flex justify-center items-center space-x-1.5 hidden">
+    </div>
 
   </main>
 
-  <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
-    <div class="max-w-5xl mx-auto px-4 space-y-2">
-      <p>© 2026 我的个人博客. All rights reserved.</p>
-      <p class="text-slate-400">Powered by GitHub Pages & Firebase</p>
-    </div>
+  <footer class="bg-white border-t border-slate-200 py-4 text-center text-[11px] text-slate-500 mt-12">
+    <p>© 2026 我的个人博客. All rights reserved.</p>
   </footer>
 
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 
   <script>
-    // 真实 Firebase 配置信息
     const firebaseConfig = {
       apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
       authDomain: "qwegitpoi-blog.firebaseapp.com",
@@ -123,58 +97,102 @@
       measurementId: "G-M01JQCZ0WX"
     };
 
-    // 初始化 Firebase
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 分页状态管理
-    const PAGE_SIZE = 10; // 每页 10 条
+    const PAGE_SIZE = 10;
     let currentPage = 1;
     let featuredArticles = [];
 
-    // 时间兼容解析函数
-    function parseArticleDate(data) {
-      let rawDate = data.createdAt || data.created_at || data.timestamp || data.date;
-      if (!rawDate) return "未知时间";
+    // ⭐ 全能强壮时间戳解析器
+    function getArticleTimestamp(data) {
+      if (!data || typeof data !== 'object') return 0;
+      const raw = data.createdAt || data.created_at || data.createTime || data.create_time || data.created ||
+                  data.publishedAt || data.published_at || data.pubDate || data.pub_date ||
+                  data.timestamp || data.date || data.time || data.datetime ||
+                  data.updatedAt || data.updated_at;
 
-      if (rawDate && typeof rawDate.toDate === 'function') {
-        return rawDate.toDate().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      }
-      if (typeof rawDate === 'number') {
-        return new Date(rawDate).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
-      }
-      if (typeof rawDate === 'string') {
-        const parsed = new Date(rawDate);
-        if (!isNaN(parsed.getTime())) {
-          return parsed.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      if (raw === undefined || raw === null) return 0;
+
+      try {
+        if (typeof raw.toDate === 'function') {
+          const d = raw.toDate();
+          if (d && !isNaN(d.getTime())) return d.getTime();
         }
-        return rawDate;
+        if (raw instanceof Date) {
+          if (!isNaN(raw.getTime())) return raw.getTime();
+        }
+        if (typeof raw === 'object') {
+          const secs = raw.seconds !== undefined ? raw.seconds : raw._seconds;
+          if (typeof secs === 'number') return secs * 1000;
+        }
+        if (typeof raw === 'number') {
+          if (isNaN(raw)) return 0;
+          return raw < 1e11 ? raw * 1000 : raw;
+        }
+        if (typeof raw === 'string') {
+          const trimmed = raw.trim();
+          if (!trimmed) return 0;
+          if (/^\d+$/.test(trimmed)) {
+            const num = Number(trimmed);
+            return num < 1e11 ? num * 1000 : num;
+          }
+          const formattedStr = trimmed.replace(/-/g, '/').replace('T', ' ').replace('Z', '');
+          const d = new Date(formattedStr);
+          if (!isNaN(d.getTime())) return d.getTime();
+          const d2 = new Date(trimmed);
+          if (!isNaN(d2.getTime())) return d2.getTime();
+        }
+      } catch (e) {
+        console.error("时间戳解析异常:", e);
       }
-      return "未知时间";
+      return 0;
     }
 
-    // Markdown 纯文本清洗（用于生成摘要）
+    function parseArticleDate(data) {
+      const ts = getArticleTimestamp(data);
+      if (ts > 0) {
+        const d = new Date(ts);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}/${m}/${day}`;
+      }
+      if (data && typeof data === 'object') {
+        for (const key of ['date', 'time', 'createdAt', 'created_at', 'publishedAt']) {
+          if (typeof data[key] === 'string' && data[key].trim() !== '') {
+            return data[key].trim();
+          }
+        }
+      }
+      return "暂无时间";
+    }
+
+    function parseArticleTag(data) {
+      if (!data) return "精选";
+      let t = data.tag || data.category || data.tags || data.categories;
+      if (Array.isArray(t)) return t.length > 0 ? t[0] : "精选";
+      if (typeof t === 'string' && t.trim() !== '') return t.trim();
+      return "精选";
+    }
+
     function extractSummary(content) {
-      if (!content) return "暂无正文摘要...";
+      if (!content) return "暂无正文内容...";
       return content
-        .replace(/#+\s+/g, '')        // 去除标题标记
-        .replace(/[\*\_~`]/g, '')     // 去除强调符
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // 提取链接文字
-        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')   // 去除图片
-        .replace(/>\s+/g, '')         // 去除引用
-        .replace(/\n+/g, ' ')         // 换行转空格
+        .replace(/#+\s+/g, '')
+        .replace(/[\*\_~`]/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
+        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')
+        .replace(/>\s+/g, '')
+        .replace(/\n+/g, ' ')
         .trim();
     }
 
-    // 从 Firestore 加载精选文章数据
     async function loadFeaturedArticles() {
       const container = document.getElementById('articles-container');
 
       try {
         let snapshot;
-        // 兼容 posts 和 articles 两个集合
         try {
           snapshot = await db.collection("posts").get();
           if (snapshot.empty) throw new Error("posts empty");
@@ -186,55 +204,40 @@
         snapshot.forEach(doc => {
           const data = doc.data();
 
-          // 1. 隐藏筛选：非隐藏文章才显示
           const isHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
           if (isHidden) return;
 
-          // 2. 精选筛选：匹配 featured / is_featured / isFeatured 字段
           const isFeatured = data.featured === true || data.is_featured === true || data.isFeatured === true;
           if (!isFeatured) return;
-
-          // 解析时间用于排序
-          let timestampVal = 0;
-          let rawDate = data.createdAt || data.created_at || data.timestamp || data.date;
-          if (rawDate && typeof rawDate.toDate === 'function') {
-            timestampVal = rawDate.toDate().getTime();
-          } else if (typeof rawDate === 'number') {
-            timestampVal = rawDate;
-          } else if (typeof rawDate === 'string') {
-            timestampVal = new Date(rawDate).getTime() || 0;
-          }
 
           list.push({
             id: doc.id,
             title: data.title || "无标题文章",
             content: data.content || "",
-            tag: data.tag || data.category || "精选",
+            tag: parseArticleTag(data),
             dateStr: parseArticleDate(data),
-            timestamp: timestampVal
+            timestamp: getArticleTimestamp(data)
           });
         });
 
-        // 按首次发表/创建时间倒序排列（最新发布的在前）
+        // ⭐ 首次发表时间严格倒序排列
         list.sort((a, b) => b.timestamp - a.timestamp);
         featuredArticles = list;
 
-        // 渲染页面
         renderPage(1);
 
       } catch (err) {
-        console.error("加载精选文章失败：", err);
+        console.error("加载精选文章失败:", err);
         container.innerHTML = `
           <div class="text-center py-12 bg-white rounded-2xl border border-red-100 p-6">
-            <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 mb-3"></i>
-            <p class="text-slate-700 font-medium">加载精选文章失败</p>
-            <p class="text-slate-400 text-xs mt-1">${err.message || '请稍后刷新重试'}</p>
+            <i class="fa-solid fa-triangle-exclamation text-3xl text-red-500 mb-2"></i>
+            <p class="text-slate-700 font-medium text-sm">加载精选文章失败</p>
+            <p class="text-slate-400 text-xs mt-1">${err.message || '请检查数据库权限'}</p>
           </div>
         `;
       }
     }
 
-    // 渲染特定页码的数据
     function renderPage(page) {
       currentPage = page;
       const container = document.getElementById('articles-container');
@@ -243,10 +246,9 @@
       if (featuredArticles.length === 0) {
         container.innerHTML = `
           <div class="text-center py-16 bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
-            <i class="fa-solid fa-box-open text-4xl text-slate-300 mb-3"></i>
-            <p class="text-slate-600 font-medium">暂无精选文章</p>
-            <p class="text-slate-400 text-xs mt-1">博主还没有把文章标记为“精选”，先去看看全部文章吧！</p>
-            <a href="all-articles.html" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition">
+            <i class="fa-solid fa-box-open text-3xl text-slate-300 mb-2"></i>
+            <p class="text-slate-600 font-medium text-sm">暂无精选文章</p>
+            <a href="all-articles.html" class="inline-block mt-3 px-3 py-1.5 bg-amber-500 text-white text-xs font-semibold rounded-lg hover:bg-amber-600 transition">
               查看全部文章 →
             </a>
           </div>
@@ -255,58 +257,49 @@
         return;
       }
 
-      // 计算当前页的数据范围
       const totalPages = Math.ceil(featuredArticles.length / PAGE_SIZE);
       const startIndex = (page - 1) * PAGE_SIZE;
       const pageArticles = featuredArticles.slice(startIndex, startIndex + PAGE_SIZE);
 
-      // 渲染文章卡片
       let html = '';
       pageArticles.forEach(item => {
         const summary = extractSummary(item.content);
         html += `
-          <article class="article-card bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative overflow-hidden group">
-            <div class="flex items-center justify-between text-xs text-slate-400 mb-3">
+          <article class="article-card bg-white rounded-xl p-4 sm:p-5 border border-slate-100 shadow-sm relative group">
+            <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
               <div class="flex items-center space-x-2">
-                <span class="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium border border-amber-200/60">
-                  <i class="fa-solid fa-star text-[10px]"></i>
-                  <span>${item.tag}</span>
+                <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium text-[11px] border border-amber-200/50">
+                  <i class="fa-solid fa-star text-[10px] me-0.5"></i>${item.tag}
                 </span>
                 <span>•</span>
                 <span><i class="fa-regular fa-calendar-alt me-1"></i>${item.dateStr}</span>
               </div>
-              <span class="text-amber-500 text-xs font-semibold flex items-center">
-                ★ 精选推荐
-              </span>
             </div>
 
-            <h2 class="text-xl font-bold text-slate-800 group-hover:text-amber-600 transition duration-200 mb-2">
+            <h2 class="text-base sm:text-lg font-bold text-slate-800 group-hover:text-amber-600 transition mb-1.5">
               <a href="article.html?id=${item.id}">
                 ${item.title}
               </a>
             </h2>
 
-            <p class="text-slate-600 text-sm line-clamp-3 leading-relaxed mb-4">
+            <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed mb-3">
               ${summary}
             </p>
 
-            <div class="flex items-center justify-between pt-3 border-t border-slate-50 text-xs">
-              <a href="article.html?id=${item.id}" class="text-amber-600 hover:text-amber-700 font-medium inline-flex items-center group-hover:translate-x-1 transition-transform">
+            <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-xs">
+              <a href="article.html?id=${item.id}" class="text-amber-600 hover:text-amber-700 font-semibold inline-flex items-center">
                 阅读全文 <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
               </a>
-              <span class="text-slate-400">点击进入详情页</span>
+              <span class="text-slate-300 text-[10px]">点击查看详情</span>
             </div>
           </article>
         `;
       });
 
       container.innerHTML = html;
-
-      // 渲染分页控件
       renderPagination(totalPages);
     }
 
-    // 渲染分页导航
     function renderPagination(totalPages) {
       const pagination = document.getElementById('pagination-container');
       if (totalPages <= 1) {
@@ -317,40 +310,36 @@
       pagination.classList.remove('hidden');
       let html = '';
 
-      // 上一页
       html += `
-        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
-          <i class="fa-solid fa-chevron-left me-1"></i> 上一页
+        <button onclick="changePage(${currentPage - 1})" ${currentPage === 1 ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-2.5 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          <i class="fa-solid fa-chevron-left"></i>
         </button>
       `;
 
-      // 页码按钮
       for (let i = 1; i <= totalPages; i++) {
         if (i === currentPage) {
-          html += `<span class="px-3 py-1.5 rounded-lg bg-amber-500 text-white font-bold text-xs shadow-sm">${i}</span>`;
+          html += `<span class="px-3 py-1 rounded-lg bg-amber-500 text-white font-bold text-xs shadow-sm">${i}</span>`;
         } else {
-          html += `<button onclick="changePage(${i})" class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition">${i}</button>`;
+          html += `<button onclick="changePage(${i})" class="px-3 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition">${i}</button>`;
         }
       }
 
-      // 下一页
       html += `
-        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-3 py-1.5 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-3 py-1.5 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
-          下一页 <i class="fa-solid fa-chevron-right ms-1"></i>
+        <button onclick="changePage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled class="opacity-40 cursor-not-allowed px-2.5 py-1 rounded-lg border bg-white text-slate-400 text-xs"' : 'class="px-2.5 py-1 rounded-lg border bg-white hover:bg-slate-50 text-slate-700 text-xs transition"'}>
+          <i class="fa-solid fa-chevron-right"></i>
         </button>
       `;
 
       pagination.innerHTML = html;
     }
 
-    // 切换页码并平滑滚动回顶部
     function changePage(page) {
-      if (page < 1 || page > Math.ceil(featuredArticles.length / PAGE_SIZE)) return;
+      const totalPages = Math.ceil(featuredArticles.length / PAGE_SIZE);
+      if (page < 1 || page > totalPages) return;
       renderPage(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // 页面加载完成后启动
     window.addEventListener('DOMContentLoaded', loadFeaturedArticles);
   </script>
 </body>
