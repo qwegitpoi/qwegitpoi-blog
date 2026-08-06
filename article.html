@@ -1,179 +1,195 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page-title">文章详情 - 我的博客</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <style>
-        body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
-        .glass-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        /* Markdown 正文优雅排版 */
-        .markdown-body {
-            line-height: 1.8;
-            font-size: 1.05rem;
-            color: #334155;
-        }
-        .markdown-body h1, .markdown-body h2, .markdown-body h3 {
-            font-weight: 700;
-            color: #0f172a;
-            margin-top: 1.8em;
-            margin-bottom: 0.8em;
-        }
-        .markdown-body h1 { font-size: 1.75rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.3em; }
-        .markdown-body h2 { font-size: 1.4rem; }
-        .markdown-body h3 { font-size: 1.2rem; }
-        .markdown-body p { margin-bottom: 1.25em; }
-        .markdown-body code {
-            background-color: #f1f5f9;
-            color: #2563eb;
-            padding: 0.2em 0.4em;
-            border-radius: 0.25rem;
-            font-size: 0.9em;
-        }
-        .markdown-body pre {
-            background-color: #1e293b;
-            color: #f8fafc;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            overflow-x: auto;
-            margin-bottom: 1.5em;
-        }
-        .markdown-body pre code {
-            background-color: transparent;
-            color: inherit;
-            padding: 0;
-        }
-        .markdown-body blockquote {
-            border-left: 4px solid #3b82f6;
-            padding-left: 1rem;
-            color: #64748b;
-            font-style: italic;
-            margin-bottom: 1.25em;
-        }
-        .markdown-body ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1.25em; }
-        .markdown-body ol { list-style-type: decimal; padding-left: 1.5rem; margin-bottom: 1.25em; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>文章详情 - 我的个人博客</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #334155;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    .glass-header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    /* Markdown 样式还原 */
+    .prose h1 { font-size: 1.75rem; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    .prose h2 { font-size: 1.35rem; font-weight: 700; margin-top: 1.25rem; margin-bottom: 0.5rem; }
+    .prose h3 { font-size: 1.15rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+    .prose p { margin-bottom: 1rem; line-height: 1.75; }
+    .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 1rem; }
+    .prose ol { list-style-type: decimal; padding-left: 1.25rem; margin-bottom: 1rem; }
+    .prose code { background: #f1f5f9; padding: 0.2rem 0.4rem; rounded: 0.25rem; font-size: 0.875em; }
+    .prose pre { background: #1e293b; color: #f8fafc; padding: 1rem; rounded-lg: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+    .prose blockquote { border-left: 4px solid #3b82f6; padding-left: 1rem; color: #64748b; margin-bottom: 1rem; italic: true; }
+  </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <header class="sticky top-0 z-50 glass-header">
-        <div class="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center space-x-2 text-slate-800 font-bold text-lg hover:text-blue-600 transition">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>返回首页</span>
-            </a>
-            <div class="flex items-center space-x-4">
-                <a href="all-articles.html" class="text-sm text-slate-600 hover:text-blue-600">全部文章</a>
-                <a href="admin.html" class="text-sm text-slate-500 hover:text-slate-800">后台管理</a>
-            </div>
-        </div>
-    </header>
+  <header class="glass-header sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center space-x-2 text-xl font-bold text-slate-800 hover:text-blue-600 transition">
+        <i class="fa-solid fa-book-open text-blue-600"></i>
+        <span>我的个人博客</span>
+      </a>
+      <nav class="flex items-center space-x-3 text-sm font-medium">
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">全部文章</a>
+        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition">📩 私信</a>
+      </nav>
+    </div>
+  </header>
 
-    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8 w-full flex-grow">
+    
+    <div class="mb-6">
+      <a href="javascript:history.back()" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition">
+        <i class="fa-solid fa-arrow-left me-2"></i> 返回上一页
+      </a>
+    </div>
+
+    <div id="article-container" class="bg-white rounded-2xl p-6 sm:p-10 border border-slate-100 shadow-sm">
+      <div class="text-center py-16">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl text-blue-600 mb-3"></i>
+        <p class="text-slate-500 text-sm">正在加载文章内容，请稍候...</p>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
+    <p>© 2026 我的个人博客. All rights reserved.</p>
+  </footer>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
+      authDomain: "qwegitpoi-blog.firebaseapp.com",
+      databaseURL: "https://qwegitpoi-blog-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qwegitpoi-blog",
+      storageBucket: "qwegitpoi-blog.firebasestorage.app",
+      messagingSenderId: "313324557146",
+      appId: "1:313324557146:web:4a93868894c9329006d963",
+      measurementId: "G-M01JQCZ0WX"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const db = firebase.firestore();
+
+    // 解析日期
+    function parseDate(data) {
+      let raw = data.createdAt || data.created_at || data.timestamp || data.date;
+      if (!raw) return "未知发表时间";
+      if (raw && typeof raw.toDate === 'function') {
+        return raw.toDate().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      }
+      if (typeof raw === 'number') {
+        return new Date(raw).toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+      }
+      return raw;
+    }
+
+    // 获取 URL 参数 id
+    function getArticleId() {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get('id');
+    }
+
+    async function loadArticleDetail() {
+      const container = document.getElementById('article-container');
+      const articleId = getArticleId();
+
+      if (!articleId) {
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <i class="fa-solid fa-triangle-exclamation text-4xl text-amber-500 mb-3"></i>
+            <h2 class="text-lg font-bold text-slate-800">未能指定文章 ID</h2>
+            <p class="text-slate-500 text-sm mt-1">请从首页或文章列表点击文章链接进入。</p>
+            <a href="index.html" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
+          </div>
+        `;
+        return;
+      }
+
+      try {
+        let docSnap = null;
         
-        <div id="loading-state" class="flex flex-col items-center justify-center py-20 text-slate-400">
-            <i class="fa-solid fa-spinner fa-spin text-4xl mb-4 text-blue-500"></i>
-            <p class="text-sm">正在努力加载文章内容...</p>
-        </div>
-
-        <div id="error-state" class="hidden bg-white rounded-2xl p-12 text-center shadow-sm border border-slate-100 my-10">
-            <i class="fa-solid fa-circle-exclamation text-5xl text-rose-400 mb-4"></i>
-            <h2 class="text-2xl font-bold text-slate-800 mb-2" id="error-title">文章加载失败</h2>
-            <p class="text-slate-500 mb-6" id="error-desc">无法获取该文章，请检查链接是否正确或该文章已被隐藏。</p>
-            <a href="index.html" class="inline-flex items-center space-x-2 px-5 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition font-medium text-sm">
-                <i class="fa-solid fa-house"></i>
-                <span>返回首页</span>
-            </a>
-        </div>
-
-        <article id="article-container" class="hidden bg-white rounded-2xl p-6 md:p-10 shadow-sm border border-slate-100">
-            <header class="border-b border-slate-100 pb-6 mb-8">
-                <div class="flex flex-wrap items-center gap-2 mb-3">
-                    <span id="article-tag" class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full">
-                        随笔
-                    </span>
-                    <span id="article-date" class="text-xs text-slate-400 flex items-center">
-                        <i class="fa-regular fa-clock mr-1"></i> 发布于 ----
-                    </span>
-                </div>
-                <h1 id="article-title" class="text-2xl md:text-4xl font-extrabold text-slate-900 leading-tight">
-                    文章标题加载中...
-                </h1>
-            </header>
-
-            <div id="article-content" class="markdown-body">
-                </div>
-        </article>
-
-    </main>
-
-    <footer class="bg-white border-t border-slate-100 py-6 mt-12 text-center text-xs text-slate-400">
-        <p>© 2026 我的个人博客. Powered by GitHub Pages & Firebase.</p>
-    </footer>
-
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
-    <script>
-        // 🔑 1. 请填入你的 Firebase 配置信息（从 Firebase Console 项目设置中获取）
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // 初始化 Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.firestore();
-
-        // 辅助函数：安全格式化日期
-        function formatDate(dateObj) {
-            if (!dateObj) return '未知时间';
-            try {
-                let date;
-                if (typeof dateObj.toDate === 'function') {
-                    date = dateObj.toDate();
-                } else if (dateObj instanceof Date) {
-                    date = dateObj;
-                } else {
-                    date = new Date(dateObj);
-                }
-                if (isNaN(date.getTime())) return '未知时间';
-                return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-            } catch (e) {
-                return '未知时间';
-            }
+        // 先查 posts 集合
+        docSnap = await db.collection("posts").doc(articleId).get();
+        // 如果 posts 没查到，尝试 articles 集合
+        if (!docSnap.exists) {
+          docSnap = await db.collection("articles").doc(articleId).get();
         }
 
-        // 显示错误页面
-        function showError(title, desc) {
-            document.getElementById('loading-state').classList.add('hidden');
-            document.getElementById('article-container').classList.add('hidden');
-            const errorBox = document.getElementById('error-state');
-            if (title) document.getElementById('error-title').innerText = title;
-            if (desc) document.getElementById('error-desc').innerText = desc;
-            errorBox.classList.remove('hidden');
+        if (!docSnap.exists) {
+          throw new Error("文章不存在或已被删除");
         }
 
-        // 主函数：根据 URL ID 获取并加载文章
-        async function loadArticle() {
-            // 解析 URL 中的 ?id= 参数
-            const urlParams = new URLSearchParams(window.
+        const data = docSnap.data();
+
+        // 判断是否隐藏
+        if (data.hide === true || data.status === 'hidden' || data.isHidden === true) {
+          container.innerHTML = `
+            <div class="text-center py-12">
+              <i class="fa-solid fa-eye-slash text-4xl text-slate-400 mb-3"></i>
+              <h2 class="text-lg font-bold text-slate-800">文章暂不可见</h2>
+              <p class="text-slate-500 text-sm mt-1">该文章已被博主设置为隐藏。</p>
+              <a href="index.html" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
+            </div>
+          `;
+          return;
+        }
+
+        // 渲染 Markdown 内容
+        const htmlContent = typeof marked !== 'undefined' ? marked.parse(data.content || '') : (data.content || '');
+        const dateStr = parseDate(data);
+        const tag = data.tag || data.category || "随笔";
+
+        container.innerHTML = `
+          <header class="border-b border-slate-100 pb-6 mb-8">
+            <div class="flex items-center space-x-2 text-xs text-slate-400 mb-3">
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium">${tag}</span>
+              <span>•</span>
+              <span><i class="fa-regular fa-calendar-alt me-1"></i>${dateStr}</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
+              ${data.title || "无标题文章"}
+            </h1>
+          </header>
+
+          <div class="prose text-slate-700 leading-relaxed max-w-none">
+            ${htmlContent}
+          </div>
+        `;
+
+      } catch (err) {
+        console.error("读取文章失败：", err);
+        container.innerHTML = `
+          <div class="text-center py-12">
+            <i class="fa-solid fa-circle-exclamation text-4xl text-red-500 mb-3"></i>
+            <h2 class="text-lg font-bold text-slate-800">加载文章失败</h2>
+            <p class="text-slate-500 text-sm mt-1">${err.message || '网络连接超时或数据库权限拒绝'}</p>
+            <a href="index.html" class="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium">返回首页</a>
+          </div>
+        `;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadArticleDetail);
+  </script>
+</body>
+</html>
