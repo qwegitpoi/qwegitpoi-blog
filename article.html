@@ -20,7 +20,6 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-    /* Markdown 移动端适配 */
     .prose h1 { font-size: 1.35rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.5rem; color: #1e293b; }
     .prose h2 { font-size: 1.15rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.4rem; color: #1e293b; }
     .prose h3 { font-size: 1.05rem; font-weight: 600; margin-top: 0.8rem; margin-bottom: 0.3rem; color: #1e293b; }
@@ -163,48 +162,78 @@
     let dbCollection = "posts";
     let isAdmin = false;
 
-    // 1. 健壮标签解析（支持多字段名、数组及字符串）
+    // ⭐ 与 all-articles.html 保持完全一致的超强时间戳解析器
+    function getArticleTimestamp(data) {
+      if (!data || typeof data !== 'object') return 0;
+      const raw = data.createdAt || data.created_at || data.createTime || data.create_time || data.created ||
+                  data.publishedAt || data.published_at || data.pubDate || data.pub_date ||
+                  data.timestamp || data.date || data.time || data.datetime ||
+                  data.updatedAt || data.updated_at;
+
+      if (raw === undefined || raw === null) return 0;
+
+      try {
+        if (typeof raw.toDate === 'function') {
+          const d = raw.toDate();
+          if (d && !isNaN(d.getTime())) return d.getTime();
+        }
+        if (raw instanceof Date) {
+          if (!isNaN(raw.getTime())) return raw.getTime();
+        }
+        if (typeof raw === 'object') {
+          const secs = raw.seconds !== undefined ? raw.seconds : raw._seconds;
+          if (typeof secs === 'number') return secs * 1000;
+        }
+        if (typeof raw === 'number') {
+          if (isNaN(raw)) return 0;
+          return raw < 1e11 ? raw * 1000 : raw;
+        }
+        if (typeof raw === 'string') {
+          const trimmed = raw.trim();
+          if (!trimmed) return 0;
+          if (/^\d+$/.test(trimmed)) {
+            const num = Number(trimmed);
+            return num < 1e11 ? num * 1000 : num;
+          }
+          const formattedStr = trimmed.replace(/-/g, '/').replace('T', ' ').replace('Z', '');
+          const d = new Date(formattedStr);
+          if (!isNaN(d.getTime())) return d.getTime();
+          const d2 = new Date(trimmed);
+          if (!isNaN(d2.getTime())) return d2.getTime();
+        }
+      } catch (e) {
+        console.error("时间戳解析异常:", e);
+      }
+      return 0;
+    }
+
+    function parseArticleDate(data) {
+      const ts = getArticleTimestamp(data);
+      if (ts > 0) {
+        const d = new Date(ts);
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}/${m}/${day}`;
+      }
+      if (data && typeof data === 'object') {
+        for (const key of ['date', 'time', 'createdAt', 'created_at', 'publishedAt']) {
+          if (typeof data[key] === 'string' && data[key].trim() !== '') {
+            return data[key].trim();
+          }
+        }
+      }
+      return "暂无时间";
+    }
+
     function parseArticleTag(data) {
+      if (!data) return "随笔";
       let t = data.tag || data.category || data.tags || data.categories;
-      if (Array.isArray(t)) {
-        return t.length > 0 ? t[0] : "随笔";
-      }
-      if (typeof t === 'string' && t.trim() !== '') {
-        return t.trim();
-      }
+      if (Array.isArray(t)) return t.length > 0 ? t[0] : "随笔";
+      if (typeof t === 'string' && t.trim() !== '') return t.trim();
       return "随笔";
     }
 
-    // 2. 健壮发表时间解析（兼容各种 Timestamp / 时间戳 / 字符串）
-    function parseArticleDate(data) {
-      const raw = data.createdAt || data.created_at || data.publishedAt || data.published_at || data.timestamp || data.date;
-      if (!raw) return "近期发布";
-
-      try {
-        if (raw && typeof raw.toDate === 'function') {
-          return formatDateStr(raw.toDate());
-        }
-        if (typeof raw === 'number') {
-          return formatDateStr(new Date(raw < 1e11 ? raw * 1000 : raw));
-        }
-        if (typeof raw === 'string') {
-          const d = new Date(raw);
-          return !isNaN(d.getTime()) ? formatDateStr(d) : raw;
-        }
-      } catch (e) {
-        console.error("时间解析异常:", e);
-      }
-      return "近期发布";
-    }
-
-    function formatDateStr(d) {
-      const y = d.getFullYear();
-      const m = String(d.getMonth() + 1).padStart(2, '0');
-      const day = String(d.getDate()).padStart(2, '0');
-      return `${y}/${m}/${day}`;
-    }
-
-    // 页面初始化
     async function initPage() {
       const container = document.getElementById('article-container');
 
@@ -263,7 +292,6 @@
       }
     }
 
-    // 互动操作
     async function handleLike() {
       const el = document.getElementById('like-count');
       el.innerText = (parseInt(el.innerText) || 0) + 1;
@@ -294,7 +322,6 @@
       navigator.clipboard.writeText(location.href).then(() => alert("链接已复制到剪贴板！"));
     }
 
-    // 发表留言逻辑（带防护与报错诊断）
     async function submitComment(e) {
       e.preventDefault();
       const author = document.getElementById('comment-author').value.trim();
@@ -329,7 +356,6 @@
       }
     }
 
-    // 读取留言列表
     async function loadComments() {
       const container = document.getElementById('comments-list');
       if (!articleId) return;
@@ -344,12 +370,7 @@
         let comments = [];
         snap.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
 
-        // 按时间倒序
-        comments.sort((a, b) => {
-          let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (new Date(a.createdAt || 0).getTime() || 0);
-          let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (new Date(b.createdAt || 0).getTime() || 0);
-          return tB - tA;
-        });
+        comments.sort((a, b) => getArticleTimestamp(b) - getArticleTimestamp(a));
 
         let html = '';
         comments.forEach(c => {
