@@ -20,9 +20,9 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     }
-    /* Markdown 移动端小行距美化 */
-    .prose h1 { font-size: 1.4rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.5rem; color: #1e293b; }
-    .prose h2 { font-size: 1.2rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.4rem; color: #1e293b; }
+    /* Markdown 移动端适配 */
+    .prose h1 { font-size: 1.35rem; font-weight: 700; margin-top: 1.2rem; margin-bottom: 0.5rem; color: #1e293b; }
+    .prose h2 { font-size: 1.15rem; font-weight: 700; margin-top: 1rem; margin-bottom: 0.4rem; color: #1e293b; }
     .prose h3 { font-size: 1.05rem; font-weight: 600; margin-top: 0.8rem; margin-bottom: 0.3rem; color: #1e293b; }
     .prose p { margin-bottom: 0.8rem; line-height: 1.65; color: #334155; font-size: 0.925rem; }
     .prose ul { list-style-type: disc; padding-left: 1.2rem; margin-bottom: 0.8rem; font-size: 0.925rem; }
@@ -41,10 +41,10 @@
         <span>我的个人博客</span>
       </a>
       <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
-        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">首页</a>
-        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">全部</a>
-        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">★ 精选</a>
-        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 rounded-lg transition">📩 私信</a>
+        <a href="index.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">首页</a>
+        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">全部</a>
+        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">★ 精选</a>
+        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">📩 私信</a>
       </nav>
     </div>
   </header>
@@ -58,13 +58,13 @@
     </div>
 
     <div id="article-container" class="bg-white rounded-xl p-4 sm:p-8 border border-slate-100 shadow-sm mb-5">
-      <div class="text-center py-10">
+      <div class="text-center py-12">
         <i class="fa-solid fa-circle-notch fa-spin text-2xl text-blue-600 mb-2"></i>
         <p class="text-slate-500 text-xs">正在读取文章内容...</p>
       </div>
     </div>
 
-    <div id="interaction-box" class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm mb-5 hidden">
+    <div id="interaction-box" class="bg-white rounded-xl p-2.5 border border-slate-100 shadow-sm mb-5 hidden">
       <div class="flex items-center justify-center gap-2 sm:gap-6 text-center">
         <button onclick="handleLike()" class="flex flex-col items-center justify-center p-1.5 rounded-lg border border-slate-100 hover:bg-blue-50/50 transition w-16 sm:w-20">
           <i class="fa-solid fa-thumbs-up text-sm sm:text-base text-blue-500 mb-0.5"></i>
@@ -122,7 +122,7 @@
             </label>
           </div>
 
-          <button type="submit" id="submit-btn" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition flex items-center">
+          <button type="submit" id="submit-btn" class="px-3.5 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition flex items-center shadow-sm">
             <i class="fa-solid fa-paper-plane me-1"></i> 发送
           </button>
         </div>
@@ -159,27 +159,57 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    let articleId = new URLSearchParams(window.location.search).get('id');
+    const articleId = new URLSearchParams(window.location.search).get('id');
     let dbCollection = "posts";
     let isAdmin = false;
 
-    // 解析首次发表时间
-    function parseDate(data) {
-      let raw = data.createdAt || data.created_at || data.timestamp || data.date;
-      if (!raw) return "近期发布";
-
-      if (raw && typeof raw.toDate === 'function') {
-        return raw.toDate().toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    // 1. 健壮标签解析（支持多字段名、数组及字符串）
+    function parseArticleTag(data) {
+      let t = data.tag || data.category || data.tags || data.categories;
+      if (Array.isArray(t)) {
+        return t.length > 0 ? t[0] : "随笔";
       }
-      let d = new Date(raw);
-      return !isNaN(d.getTime()) ? d.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "近期发布";
+      if (typeof t === 'string' && t.trim() !== '') {
+        return t.trim();
+      }
+      return "随笔";
     }
 
+    // 2. 健壮发表时间解析（兼容各种 Timestamp / 时间戳 / 字符串）
+    function parseArticleDate(data) {
+      const raw = data.createdAt || data.created_at || data.publishedAt || data.published_at || data.timestamp || data.date;
+      if (!raw) return "近期发布";
+
+      try {
+        if (raw && typeof raw.toDate === 'function') {
+          return formatDateStr(raw.toDate());
+        }
+        if (typeof raw === 'number') {
+          return formatDateStr(new Date(raw < 1e11 ? raw * 1000 : raw));
+        }
+        if (typeof raw === 'string') {
+          const d = new Date(raw);
+          return !isNaN(d.getTime()) ? formatDateStr(d) : raw;
+        }
+      } catch (e) {
+        console.error("时间解析异常:", e);
+      }
+      return "近期发布";
+    }
+
+    function formatDateStr(d) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}/${m}/${day}`;
+    }
+
+    // 页面初始化
     async function initPage() {
       const container = document.getElementById('article-container');
 
       if (!articleId) {
-        container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">参数缺失：未明确指定文章 ID</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">无法检索文章：URL 参数缺失</div>`;
         return;
       }
 
@@ -198,13 +228,13 @@
         if (!snap.exists) throw new Error("该文章不存在或已被删除");
 
         const data = snap.data();
-        if (data.hide === true || data.status === 'hidden') {
-          container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">🔒 文章已被博主设为隐蔽</div>`;
+        if (data.hide === true || data.status === 'hidden' || data.isHidden === true) {
+          container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">🔒 文章已被博主设为隐藏</div>`;
           return;
         }
 
-        const dateStr = parseDate(data);
-        const tag = data.tag || data.category || "随笔";
+        const dateStr = parseArticleDate(data);
+        const tag = parseArticleTag(data);
         const contentHtml = window.marked ? marked.parse(data.content || '') : (data.content || '');
 
         container.innerHTML = `
@@ -229,19 +259,21 @@
         document.getElementById('comments-section').classList.remove('hidden');
 
       } catch (err) {
-        container.innerHTML = `<div class="text-center py-8 text-xs text-red-500">${err.message || '加载文章数据失败'}</div>`;
+        container.innerHTML = `<div class="text-center py-8 text-xs text-red-500">${err.message || '数据读取异常'}</div>`;
       }
     }
 
-    // 赞/踩/收藏/分享
+    // 互动操作
     async function handleLike() {
-      document.getElementById('like-count').innerText = (parseInt(document.getElementById('like-count').innerText) || 0) + 1;
-      db.collection(dbCollection).doc(articleId).update({ likes: firebase.firestore.FieldValue.increment(1) });
+      const el = document.getElementById('like-count');
+      el.innerText = (parseInt(el.innerText) || 0) + 1;
+      db.collection(dbCollection).doc(articleId).update({ likes: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
     }
 
     async function handleDislike() {
-      document.getElementById('dislike-count').innerText = (parseInt(document.getElementById('dislike-count').innerText) || 0) + 1;
-      db.collection(dbCollection).doc(articleId).update({ dislikes: firebase.firestore.FieldValue.increment(1) });
+      const el = document.getElementById('dislike-count');
+      el.innerText = (parseInt(el.innerText) || 0) + 1;
+      db.collection(dbCollection).doc(articleId).update({ dislikes: firebase.firestore.FieldValue.increment(1) }).catch(()=>{});
     }
 
     function checkFav() {
@@ -259,10 +291,10 @@
     }
 
     function shareArticle() {
-      navigator.clipboard.writeText(location.href).then(() => alert("文章链接已复制到剪贴板！"));
+      navigator.clipboard.writeText(location.href).then(() => alert("链接已复制到剪贴板！"));
     }
 
-    // 提交留言
+    // 发表留言逻辑（带防护与报错诊断）
     async function submitComment(e) {
       e.preventDefault();
       const author = document.getElementById('comment-author').value.trim();
@@ -273,22 +305,31 @@
 
       if (!author || !content) return;
       btn.disabled = true;
+      btn.innerText = "发送中...";
 
       try {
         await db.collection("comments").add({
-          articleId, author, contact, content, isPrivate,
+          articleId: articleId,
+          author: author,
+          contact: contact,
+          content: content,
+          isPrivate: isPrivate,
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+
         document.getElementById('comment-form').reset();
+        alert("留言成功！");
         loadComments();
       } catch (err) {
-        alert("发表失败，请重试");
+        console.error("提交留言失败：", err);
+        alert("留言失败：" + (err.message.includes("permission") ? "Firebase 数据库拒绝写入权限，请检查 Firestore Rules 配置" : err.message));
       } finally {
         btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane me-1"></i> 发送`;
       }
     }
 
-    // 安全渲染留言列表（基于首次发表时间前端内存排序，免索引报错）
+    // 读取留言列表
     async function loadComments() {
       const container = document.getElementById('comments-list');
       if (!articleId) return;
@@ -296,14 +337,14 @@
       try {
         const snap = await db.collection("comments").where("articleId", "==", articleId).get();
         if (snap.empty) {
-          container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">暂无留言，欢迎发表你的看法！</p>`;
+          container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2">暂无留言，抢先发表第一条吧！</p>`;
           return;
         }
 
         let comments = [];
         snap.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
 
-        // 首次发表时间倒序排列
+        // 按时间倒序
         comments.sort((a, b) => {
           let tA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : (new Date(a.createdAt || 0).getTime() || 0);
           let tB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : (new Date(b.createdAt || 0).getTime() || 0);
@@ -312,7 +353,7 @@
 
         let html = '';
         comments.forEach(c => {
-          const dateStr = parseDate(c);
+          const dateStr = parseArticleDate(c);
           if (c.isPrivate && !isAdmin) {
             html += `
               <div class="p-2 rounded bg-amber-50 border border-amber-100 text-[11px] text-amber-800 flex items-center space-x-1">
@@ -334,7 +375,8 @@
 
         container.innerHTML = html;
       } catch (err) {
-        container.innerHTML = `<p class="text-[11px] text-red-400 text-center py-2">加载留言失败</p>`;
+        console.error("加载留言报错：", err);
+        container.innerHTML = `<p class="text-[11px] text-red-400 text-center py-2">留言加载失败：权限缺失或配置错误</p>`;
       }
     }
 
