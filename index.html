@@ -3,28 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rogue</title>
-  
+  <title>首页 - Rogue Blog</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
   <style>
-    body {
-      background-color: #f8fafc;
-      color: #334155;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    }
     .glass-header {
       background: rgba(255, 255, 255, 0.85);
       backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
-    }
-    .article-card {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .article-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06);
+      -webkit-backdrop-filter: blur(12px);
     }
     .line-clamp-3 {
       display: -webkit-box;
@@ -34,83 +21,81 @@
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
 
-  <header class="glass-header sticky top-0 z-50">
-    <div class="max-w-5xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center space-x-2 text-base sm:text-lg font-bold text-slate-800 hover:text-blue-600 transition">
-        <i class="fa-solid fa-book-open text-blue-600"></i>
-        <span>Rogue</span>
+  <header class="sticky top-0 z-50 glass-header border-b border-slate-200/80 transition-all duration-300">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent hover:opacity-80 transition">
+        Rogue Blog
       </a>
-      <nav class="flex items-center space-x-2 sm:space-x-3 text-xs sm:text-sm font-medium">
-        <a href="index.html" class="text-blue-600 font-semibold bg-blue-50 px-2.5 py-1 rounded-lg transition">首页</a>
-        <a href="all-articles.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">全部文章</a>
-        <a href="featured.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">★ 精选</a>
-        <a href="contact.html" class="text-slate-600 hover:text-blue-600 px-2 py-1 hover:bg-slate-100 rounded-lg transition">📩 私信</a>
-        <a href="admin-login.html" class="text-slate-400 hover:text-slate-700 px-1.5 py-1 transition" title="后台管理">
-          <i class="fa-solid fa-gear"></i>
+      <div class="flex items-center space-x-3 sm:space-x-4">
+        <a href="contact.html" class="inline-flex items-center text-sm text-slate-600 hover:text-blue-600 font-medium px-3 py-1.5 rounded-full hover:bg-slate-100 transition">
+          📩 给博主发私信
         </a>
-      </nav>
+        <a href="admin-login.html" class="inline-flex items-center text-sm text-slate-500 hover:text-slate-800 font-medium px-3 py-1.5 rounded-full hover:bg-slate-100 transition">
+          ⚙️ 管理员登录
+        </a>
+      </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-3 sm:px-6 py-6 w-full flex-grow space-y-8">
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 py-8">
     
-    <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 sm:p-8 text-white shadow-md relative overflow-hidden">
-      <div class="relative z-10 space-y-2">
-        <span class="px-2.5 py-0.5 rounded-full bg-white/20 text-xs font-semibold uppercase tracking-wider">Welcome</span>
-        <h1 class="text-2xl sm:text-3xl font-bold">记录技术、思考与生活</h1>
-        <p class="text-blue-100 text-xs sm:text-sm max-w-xl">欢迎来到我的blog，这里汇集了最新的技术经验总结、思考随笔与精选深度文章。</p>
-      </div>
-      <i class="fa-solid fa-laptop-code absolute -right-4 -bottom-4 text-8xl text-white/10 pointer-events-none"></i>
-    </div>
-
-    <section>
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center">
-          <i class="fa-solid fa-star text-amber-500 me-2"></i> 精选文章
-        </h2>
-        <a href="featured.html" class="text-xs text-amber-600 font-semibold hover:text-amber-700 flex items-center">
-          查看更多精选 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
-        </a>
-      </div>
-
-      <div id="featured-container" class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="col-span-3 text-center py-8 bg-white rounded-xl border border-slate-100 shadow-sm">
-          <i class="fa-solid fa-circle-notch fa-spin text-xl text-amber-500 mb-2"></i>
-          <p class="text-slate-400 text-xs">正在读取精选文章...</p>
+    <section class="mb-12 bg-white rounded-2xl p-6 sm:p-8 border border-slate-100 shadow-sm relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-indigo-50 rounded-bl-full -z-0 opacity-50"></div>
+      <div class="relative z-10 flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold shadow-md shrink-0">
+          R
+        </div>
+        <div class="text-center sm:text-left flex-1">
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">欢迎来到 Rogue Blog</h1>
+          <p class="mt-2 text-slate-600 leading-relaxed max-w-2xl">
+            记录技术探索、个人思考与生活随笔。很高兴与你相遇，欢迎阅读文章或留言交流。
+          </p>
         </div>
       </div>
     </section>
 
-    <section>
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold text-slate-800 flex items-center">
-          <i class="fa-solid fa-clock-rotate-left text-blue-600 me-2"></i> 最新动态
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span>🔥</span> 最新动态
         </h2>
-        <a href="all-articles.html" class="text-xs text-blue-600 font-semibold hover:text-blue-700 flex items-center">
-          查看全部文章 <i class="fa-solid fa-chevron-right ml-1 text-[10px]"></i>
+        <a href="all-articles.html" class="text-sm font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 transition group">
+          查看全部文章 <span class="group-hover:translate-x-1 transition-transform">→</span>
         </a>
       </div>
 
-      <div id="latest-container" class="space-y-4">
-        <div class="text-center py-8 bg-white rounded-xl border border-slate-100 shadow-sm">
-          <i class="fa-solid fa-circle-notch fa-spin text-xl text-blue-600 mb-2"></i>
-          <p class="text-slate-400 text-xs">正在读取最新动态...</p>
-        </div>
+      <div id="latest-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="col-span-full py-12 text-center text-slate-400">正在加载最新动态...</div>
+      </div>
+    </section>
+
+    <section class="mb-12">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span>🌟</span> 精选文章
+        </h2>
+        <a href="featured.html" class="text-sm font-semibold text-amber-600 hover:text-amber-700 flex items-center gap-1 transition group">
+          查看更多精选文章 <span class="group-hover:translate-x-1 transition-transform">→</span>
+        </a>
+      </div>
+
+      <div id="featured-container" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="col-span-full py-12 text-center text-slate-400">正在加载精选文章...</div>
       </div>
     </section>
 
   </main>
 
-  <footer class="bg-white border-t border-slate-200 py-4 text-center text-[11px] text-slate-500 mt-12">
-    <p>© 2026 我的blog. All rights reserved.</p>
+  <footer class="border-t border-slate-200 bg-white mt-auto py-6">
+    <div class="max-w-5xl mx-auto px-4 text-center text-sm text-slate-500">
+      <p>© 2026 Rogue Blog. Powered by GitHub Pages & Firebase.</p>
+    </div>
   </footer>
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
   <script>
+    // Firebase 配置
     const firebaseConfig = {
       apiKey: "AIzaSyA-8LCfJCnWFKuOZght5GYX-SATKw0goXk",
       authDomain: "qwegitpoi-blog.firebaseapp.com",
@@ -122,202 +107,161 @@
       measurementId: "G-M01JQCZ0WX"
     };
 
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.firestore();
 
-    // ⭐ 全能强壮时间戳解析器
+    // 强壮的时间解析器
     function getArticleTimestamp(data) {
-      if (!data || typeof data !== 'object') return 0;
-      const raw = data.createdAt || data.created_at || data.createTime || data.create_time || data.created ||
-                  data.publishedAt || data.published_at || data.pubDate || data.pub_date ||
-                  data.timestamp || data.date || data.time || data.datetime ||
-                  data.updatedAt || data.updated_at;
-
-      if (raw === undefined || raw === null) return 0;
-
-      try {
-        if (typeof raw.toDate === 'function') {
-          const d = raw.toDate();
-          if (d && !isNaN(d.getTime())) return d.getTime();
+      if (!data) return 0;
+      const fields = ['createdAt', 'created_at', 'createTime', 'publishedAt', 'published_at', 'timestamp', 'date', 'time'];
+      for (let field of fields) {
+        let val = data[field];
+        if (!val) continue;
+        if (typeof val.toDate === 'function') {
+          try { return val.toDate().getTime(); } catch(e){}
         }
-        if (raw instanceof Date) {
-          if (!isNaN(raw.getTime())) return raw.getTime();
+        if (typeof val === 'object' && val.seconds !== undefined) {
+          return val.seconds * 1000;
         }
-        if (typeof raw === 'object') {
-          const secs = raw.seconds !== undefined ? raw.seconds : raw._seconds;
-          if (typeof secs === 'number') return secs * 1000;
+        if (typeof val === 'number') {
+          return val < 10000000000 ? val * 1000 : val;
         }
-        if (typeof raw === 'number') {
-          if (isNaN(raw)) return 0;
-          return raw < 1e11 ? raw * 1000 : raw;
+        if (typeof val === 'string') {
+          let parsed = Date.parse(val.replace(/-/g, '/'));
+          if (!isNaN(parsed)) return parsed;
         }
-        if (typeof raw === 'string') {
-          const trimmed = raw.trim();
-          if (!trimmed) return 0;
-          if (/^\d+$/.test(trimmed)) {
-            const num = Number(trimmed);
-            return num < 1e11 ? num * 1000 : num;
-          }
-          const formattedStr = trimmed.replace(/-/g, '/').replace('T', ' ').replace('Z', '');
-          const d = new Date(formattedStr);
-          if (!isNaN(d.getTime())) return d.getTime();
-          const d2 = new Date(trimmed);
-          if (!isNaN(d2.getTime())) return d2.getTime();
-        }
-      } catch (e) {
-        console.error("时间戳解析异常:", e);
       }
       return 0;
     }
 
+    // 时间格式化
     function parseArticleDate(data) {
-      const ts = getArticleTimestamp(data);
+      let ts = getArticleTimestamp(data);
       if (ts > 0) {
-        const d = new Date(ts);
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
+        let d = new Date(ts);
+        let y = d.getFullYear();
+        let m = String(d.getMonth() + 1).padStart(2, '0');
+        let day = String(d.getDate()).padStart(2, '0');
         return `${y}/${m}/${day}`;
       }
-      if (data && typeof data === 'object') {
-        for (const key of ['date', 'time', 'createdAt', 'created_at', 'publishedAt']) {
-          if (typeof data[key] === 'string' && data[key].trim() !== '') {
-            return data[key].trim();
-          }
-        }
-      }
-      return "暂无时间";
+      return '近期发布';
     }
 
+    // 标签解析器
     function parseArticleTag(data) {
-      if (!data) return "随笔";
-      let t = data.tag || data.category || data.tags || data.categories;
-      if (Array.isArray(t)) return t.length > 0 ? t[0] : "随笔";
-      if (typeof t === 'string' && t.trim() !== '') return t.trim();
-      return "随笔";
+      if (!data) return '随笔';
+      let tagVal = data.tag || data.category || data.tags || data.categories;
+      if (Array.isArray(tagVal) && tagVal.length > 0) return tagVal[0];
+      if (typeof tagVal === 'string' && tagVal.trim() !== '') return tagVal.trim();
+      return '随笔';
     }
 
-    function extractSummary(content) {
-      if (!content) return "暂无正文内容...";
-      return content
-        .replace(/#+\s+/g, '')
-        .replace(/[\*\_~`]/g, '')
-        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')
-        .replace(/!\[[^\]]*\]\([^\)]+\)/g, '')
-        .replace(/>\s+/g, '')
-        .replace(/\n+/g, ' ')
-        .trim();
+    // 纯文本摘要提取（取前3行）
+    function getSummary(content) {
+      if (!content) return '暂无正文内容...';
+      let plainText = content.replace(/[#*`_~\[\]()>-]/g, '').trim();
+      return plainText || '暂无正文内容...';
     }
 
+    // 渲染页面数据
     async function loadIndexData() {
-      const featuredContainer = document.getElementById('featured-container');
-      const latestContainer = document.getElementById('latest-container');
+      const latestBox = document.getElementById('latest-container');
+      const featuredBox = document.getElementById('featured-container');
 
       try {
-        let snapshot;
+        let docs = [];
+        // 兼容 posts 和 articles 两个集合
         try {
-          snapshot = await db.collection("posts").get();
-          if (snapshot.empty) throw new Error("posts empty");
-        } catch (e) {
-          snapshot = await db.collection("articles").get();
+          const snapshot = await db.collection("posts").get();
+          snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
+        } catch(e) {}
+
+        if (docs.length === 0) {
+          const snapshot = await db.collection("articles").get();
+          snapshot.forEach(doc => docs.push({ id: doc.id, ...doc.data() }));
         }
 
-        let allList = [];
-        snapshot.forEach(doc => {
-          const data = doc.data();
-          const isHidden = data.hide === true || data.status === 'hidden' || data.isHidden === true;
-          if (isHidden) return;
+        // 过滤公开文章（未被隐藏）
+        let publicArticles = docs.filter(a => !(a.hide === true || a.status === 'hidden' || a.isHidden === true));
 
-          allList.push({
-            id: doc.id,
-            title: data.title || "无标题文章",
-            content: data.content || "",
-            tag: parseArticleTag(data),
-            dateStr: parseArticleDate(data),
-            timestamp: getArticleTimestamp(data),
-            isFeatured: data.featured === true || data.is_featured === true || data.isFeatured === true
-          });
-        });
+        // 按首次发表时间戳精准倒序排序
+        publicArticles.sort((a, b) => getArticleTimestamp(b) - getArticleTimestamp(a));
 
-        // ⭐ 首次发表时间倒序排列
-        allList.sort((a, b) => b.timestamp - a.timestamp);
-
-        // 1. 渲染精选文章（最新 3 篇）
-        const featuredList = allList.filter(item => item.isFeatured).slice(0, 3);
-        if (featuredList.length === 0) {
-          featuredContainer.innerHTML = `
-            <div class="col-span-3 text-center py-6 bg-amber-50/50 rounded-xl border border-amber-100 p-4">
-              <p class="text-amber-800 text-xs">博主正在挑选精彩内容，先看看最新动态吧！</p>
-            </div>`;
+        // 1. 渲染最新动态（最多最新 2 篇）
+        let latestArticles = publicArticles.slice(0, 2);
+        if (latestArticles.length === 0) {
+          latestBox.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400">暂无公开发布的最新动态。</div>`;
         } else {
-          let fHtml = '';
-          featuredList.forEach(item => {
-            fHtml += `
-              <article class="article-card bg-white rounded-xl p-4 border border-amber-100/80 shadow-sm relative group flex flex-col justify-between">
+          latestBox.innerHTML = latestArticles.map(a => {
+            let dateStr = parseArticleDate(a);
+            let tagStr = parseArticleTag(a);
+            let summary = getSummary(a.content);
+            return `
+              <a href="article.html?id=${a.id}" class="group bg-white rounded-xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between">
                 <div>
-                  <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                    <span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 font-medium text-[11px]">
-                      ★ ${item.tag}
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <span class="inline-block px-2.5 py-0.5 text-xs font-semibold text-blue-600 bg-blue-50 rounded-full border border-blue-100">
+                      ${tagStr}
                     </span>
-                    <span>${item.dateStr}</span>
+                    <span class="text-xs text-slate-400 font-mono">${dateStr}</span>
                   </div>
-                  <h3 class="text-sm font-bold text-slate-800 group-hover:text-amber-600 transition mb-1.5 line-clamp-2">
-                    <a href="article.html?id=${item.id}">${item.title}</a>
+                  <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1 mb-2">
+                    ${a.title || '无标题'}
                   </h3>
-                  <p class="text-slate-600 text-xs line-clamp-3 leading-relaxed mb-3">
-                    ${extractSummary(item.content)}
+                  <p class="text-sm text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                    ${summary}
                   </p>
                 </div>
-                <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-[11px]">
-                  <a href="article.html?id=${item.id}" class="text-amber-600 hover:text-amber-700 font-semibold">阅读详情 →</a>
+                <div class="text-xs font-semibold text-blue-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                  阅读全文 <span>→</span>
                 </div>
-              </article>
+              </a>
             `;
-          });
-          featuredContainer.innerHTML = fHtml;
+          }).join('');
         }
 
-        // 2. 渲染最新动态（最新 2 篇）
-        const latestList = allList.slice(0, 2);
-        if (latestList.length === 0) {
-          latestContainer.innerHTML = `<p class="text-xs text-slate-400 text-center py-6">暂无发布的公开文章</p>`;
+        // 2. 渲染精选文章（筛选 featured/is_featured 标记，最多 3 篇）
+        let featuredArticles = publicArticles.filter(a => a.featured === true || a.is_featured === true || a.isFeatured === true).slice(0, 3);
+        if (featuredArticles.length === 0) {
+          featuredBox.innerHTML = `<div class="col-span-full py-8 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-200">暂无标记为精选的文章。</div>`;
         } else {
-          let lHtml = '';
-          latestList.forEach(item => {
-            lHtml += `
-              <article class="article-card bg-white rounded-xl p-4 sm:p-5 border border-slate-100 shadow-sm relative group">
-                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
-                  <div class="flex items-center space-x-2">
-                    <span class="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-medium text-[11px]">
-                      ${item.tag}
+          featuredBox.innerHTML = featuredArticles.map(a => {
+            let dateStr = parseArticleDate(a);
+            let tagStr = parseArticleTag(a);
+            let summary = getSummary(a.content);
+            return `
+              <a href="article.html?id=${a.id}" class="group bg-white rounded-xl p-5 border border-amber-200/80 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                  ★ 精选
+                </div>
+                <div>
+                  <div class="flex items-center justify-between gap-2 mb-3">
+                    <span class="inline-block px-2.5 py-0.5 text-xs font-semibold text-amber-700 bg-amber-50 rounded-full border border-amber-200">
+                      ${tagStr}
                     </span>
-                    <span>•</span>
-                    <span><i class="fa-regular fa-calendar-alt me-1"></i>${item.dateStr}</span>
+                    <span class="text-xs text-slate-400 font-mono">${dateStr}</span>
                   </div>
+                  <h3 class="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors line-clamp-1 mb-2">
+                    ${a.title || '无标题'}
+                  </h3>
+                  <p class="text-xs text-slate-600 line-clamp-3 leading-relaxed mb-4">
+                    ${summary}
+                  </p>
                 </div>
-
-                <h2 class="text-base sm:text-lg font-bold text-slate-800 group-hover:text-blue-600 transition mb-1.5">
-                  <a href="article.html?id=${item.id}">${item.title}</a>
-                </h2>
-
-                <p class="text-slate-600 text-xs sm:text-sm line-clamp-3 leading-relaxed mb-3">
-                  ${extractSummary(item.content)}
-                </p>
-
-                <div class="pt-2 border-t border-slate-50 flex items-center justify-between text-xs">
-                  <a href="article.html?id=${item.id}" class="text-blue-600 hover:text-blue-700 font-semibold inline-flex items-center">
-                    阅读全文 <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
-                  </a>
-                  <span class="text-slate-300 text-[10px]">点击查看详情</span>
+                <div class="text-xs font-semibold text-amber-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                  查看精选 <span>→</span>
                 </div>
-              </article>
+              </a>
             `;
-          });
-          latestContainer.innerHTML = lHtml;
+          }).join('');
         }
 
       } catch (err) {
         console.error("加载首页失败:", err);
+        latestBox.innerHTML = `<div class="col-span-full py-8 text-center text-red-500">加载数据失败，请检查网络或配置。</div>`;
+        featuredBox.innerHTML = `<div class="col-span-full py-8 text-center text-red-500">加载精选失败。</div>`;
       }
     }
 
